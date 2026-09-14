@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "nonviolent-communication",
+      "source_file": "非暴力沟通db8.4.epub",
+      "title": "非暴力沟通",
+      "authors": ["马歇尔·卢森堡"],
+      "publisher": "华夏出版社",
+      "published_at": "2016-01-01",
+      "summary": "通过观察、感受、需要和请求四个要素，帮助读者减少评判与对抗，在冲突和日常交流中建立清晰、诚实且有同理心的沟通。",
+      "tags": ["沟通", "同理心", "冲突管理"],
+      "cover": "/assets/resource/ebooks/covers/nonviolent-communication.jpg"
+    },
+    {
+      "id": "the-art-of-communication",
+      "source_file": "沟通的艺术-罗纳德·阿德勒-拉塞尔·普罗克特-db8.8.epub",
+      "title": "沟通的艺术",
+      "authors": ["罗纳德·阿德勒", "拉塞尔·普罗克特"],
+      "publisher": null,
+      "published_at": null,
+      "summary": "从自我认知、倾听、语言与非语言表达、人际关系和冲突处理等方面系统解释沟通机制，并提供可直接练习的方法。",
+      "tags": ["人际沟通", "倾听", "关系管理"],
+      "cover": "/assets/resource/ebooks/covers/the-art-of-communication.jpg"
+    },
+    {
+      "id": "never-split-the-difference",
+      "source_file": "掌控谈话-db8.2.epub",
+      "title": "掌控谈话",
+      "authors": ["克里斯·沃斯", "塔尔·拉兹"],
+      "publisher": "北京联合出版公司",
+      "published_at": "2018-08-31",
+      "summary": "结合高风险谈判经验，讲解战术同理心、镜像回应、校准问题与情绪标注等方法，帮助读者在复杂对话中推进共识。",
+      "tags": ["谈判", "沟通技巧", "影响"],
+      "cover": "/assets/resource/ebooks/covers/never-split-the-difference.jpg"
+    },
+    {
+      "id": "harvard-classic-negotiation",
+      "source_file": "哈佛经典谈判术-db9.1.epub",
+      "title": "哈佛经典谈判术",
+      "authors": ["迪帕克·马尔霍特拉", "马克斯·巴泽曼"],
+      "publisher": "四川人民出版社",
+      "published_at": "2020-11-09",
+      "summary": "以决策科学和行为研究为基础，系统说明信息获取、价值创造、协议设计与认知偏差，帮助谈判者形成更稳健的策略。",
+      "tags": ["谈判", "决策", "策略"],
+      "cover": "/assets/resource/ebooks/covers/harvard-classic-negotiation.jpg"
+    },
+    {
+      "id": "conflict-resolution-skills",
+      "source_file": "解决冲突的关键技巧：如何增加你的有效社交-db7.8.epub",
+      "title": "解决冲突的关键技巧",
+      "authors": ["达纳·卡斯帕森"],
+      "publisher": "九州出版社",
+      "published_at": "2016-07-01",
+      "summary": "以可执行的对话原则帮助读者识别冲突结构、区分事实与解释，并在高张力互动中建立更有效的回应方式。",
+      "tags": ["冲突管理", "问题解决", "沟通"],
+      "cover": "/assets/resource/ebooks/covers/conflict-resolution-skills.jpg"
+    },
+    {
+      "id": "influence",
+      "source_file": "影响力(你为什么会说是)-db8.9.epub",
+      "title": "影响力",
+      "authors": ["罗伯特·B·西奥迪尼"],
+      "publisher": "中国社会科学出版社",
+      "published_at": "2001-12-01",
+      "summary": "围绕互惠、承诺一致、社会认同、喜好、权威与稀缺等原则，分析人们为何会被说服，并说明如何识别和审慎运用影响机制。",
+      "tags": ["影响力", "心理学", "决策"],
+      "cover": "/assets/resource/ebooks/covers/influence.jpg"
+    },
+    {
+      "id": "ted-talks-speaking",
+      "source_file": "演讲的力量+克里斯·安德森-db8.1.epub",
+      "title": "演讲的力量",
+      "authors": ["克里斯·安德森"],
+      "publisher": "中信出版社",
+      "published_at": "2016-08-01",
+      "summary": "从主题提炼、叙事结构、解释方式到现场呈现，说明如何把值得传播的观点组织成清晰、有说服力且尊重听众的演讲。",
+      "tags": ["演讲", "表达", "故事叙述"],
+      "cover": "/assets/resource/ebooks/covers/ted-talks-speaking.jpg"
+    },
+    {
+      "id": "deliberate-practice",
+      "source_file": "刻意练习：如何从新手到大师-db7.8.epub",
+      "title": "刻意练习",
+      "authors": ["安德斯·艾利克森", "罗伯特·普尔"],
+      "publisher": "北京华章图文信息有限公司",
+      "published_at": "2016-10-01",
+      "summary": "基于专业表现研究，阐明明确目标、专注练习、即时反馈和持续修正如何共同推动能力成长，并区分有效训练与机械重复。",
+      "tags": ["学习", "能力发展", "绩效"],
+      "cover": "/assets/resource/ebooks/covers/deliberate-practice.jpg"
+    },
+    {
+      "id": "enneagram",
+      "source_file": "九型人格·珍藏版-海伦·帕尔默-db7.4.epub",
+      "title": "九型人格",
+      "authors": ["海伦·帕尔默"],
+      "publisher": "华夏出版社",
+      "published_at": "2017-03-01",
+      "summary": "介绍九种人格模式的注意力习惯、核心动机与互动倾向，帮助读者理解自身和他人的行为差异，改善协作与沟通。",
+      "tags": ["人格", "自我认知", "团队协作"],
+      "cover": "/assets/resource/ebooks/covers/enneagram.jpg"
+    }
+  ]
+}

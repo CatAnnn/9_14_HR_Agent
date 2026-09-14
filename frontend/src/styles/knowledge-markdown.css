@@ -1,0 +1,56 @@
+.knowledge-reference-content strong {
+  color: #173947;
+  font-weight: 700;
+}
+
+.knowledge-reference-content em {
+  color: #35545f;
+  font-style: italic;
+}
+
+.knowledge-reference-content s {
+  color: #71838b;
+  text-decoration-thickness: 1px;
+}
+
+.knowledge-reference-content code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #edf3f6;
+  color: #17465a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .9em;
+  overflow-wrap: anywhere;
+}
+
+.knowledge-reference-content a {
+  color: #006ead;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.knowledge-reference-content a:hover,
+.knowledge-reference-content a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.knowledge-reference-content blockquote {
+  margin: 8px 0;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 5px;
+  color: #35545f;
+  background: #f3f8fa;
+  line-height: 1.6;
+}
+
+.knowledge-reference-content .knowledge-reference-bullet {
+  grid-template-columns: max-content minmax(0, 1fr);
+}
+
+.knowledge-reference-content .knowledge-reference-bullet > span {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}

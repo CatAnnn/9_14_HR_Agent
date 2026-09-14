@@ -1,0 +1,71 @@
+version: v1.1
+dimension:
+  id: summary_and_intent_specific_development_plan
+  name: 总结与差异化发展计划
+  description: 评估管理者是否基于前述讨论形成准确总结，并根据本次对话意图给出明确、有针对性且可执行的发展或改进计划。
+  review_focus:
+  - 是否准确总结已确认的绩效结论、核心差距、员工关切和双方共识。
+  - 是否区分已达成共识与仍存在分歧的内容。
+  - 发展计划是否与前述诊断结果直接对应，而不是输出通用建议。
+  - 是否根据对话意图调整重点，例如晋升辅导、低绩效改进、核心人才保留或其他发展场景。
+  - career_elements_applicable=true 时，是否将 Career Elements 与下一岗级要求、员工当前基础、实践行动和可观察结果建立明确联系。
+  - 行动是否具体、可衡量、可实现、相关且有时间节点。
+  - 是否明确员工行动、管理者支持、资源条件和责任边界。
+  - 是否设置跟进时间、检查方式和达标标准。
+  - 员工是否能够清楚说明下一步要做什么。
+  observable_evidence:
+    positive:
+    - 管理者准确总结绩效结果、关键事实、员工观点和核心共识。
+    - 明确指出仍未解决的分歧或待验证事项。
+    - 行动计划与前述差距逐项对应。
+    - 计划包含具体行动、责任人、完成时间和验证标准。
+    - 明确管理者或组织能够提供的资源和支持。
+    - 发展计划体现当前对话意图的差异化重点。
+    - 员工确认或复述下一步行动和跟进节点。
+    negative:
+    - 没有总结，或只重复管理者自己的观点。
+    - 建议停留在“加强沟通”“多学习”“继续努力”等泛泛表述。
+    - 计划与前述问题诊断无直接关系。
+    - 没有责任人、时间节点、验证标准或跟进安排。
+    - 对不同对话意图使用完全相同的模板计划。
+    - career_elements_applicable=true，但总结与发展计划完全遗漏 Career Elements，或只泛泛提及而未形成可执行的发展路径。
+    - 对晋升、调薪、转岗或正式绩效流程作出未经确认的承诺。
+    - 对话结束时员工仍不知道下一步要做什么。
+  intent_selection_mapping:
+    development: development
+    improvement: improvement
+    development_improvement: development_improvement
+    exit: exit
+    improvement_exit: improvement_exit
+  intent_focus:
+    development: 重点关注能力提升、职业路径、机会暴露、资源支持和期望管理。
+    improvement: 重点关注关键差距、改进行动、里程碑、验证标准、支持资源和检查频率。
+    development_improvement: 重点关注整体优势与发展潜力，同时把局部短板转化为轻量、可验证且不削弱发展预期的改进行动。
+    exit: 重点关注绩效事实、合规流程、HR/Legal 边界、交接安排和后续确认，不得越权承诺解除、赔偿或签字结论。
+    improvement_exit: 重点关注既往辅导与差距证据、最后窗口期的硬性目标与期限、支持和检查点，以及未达标后果和 HR/Legal 升级安排。
+  score_scale:
+    5:
+      label: 精准总结并形成差异化可执行计划
+      criteria: 精准总结绩效结论、核心事实、员工关切、共识和分歧。根据当前对话意图量身制定发展或改进计划，措施具体并符合SMART原则，资源支持、责任边界、验证标准和跟进节点明确。计划与前述诊断高度一致，员工能够清楚说明下一步行动。
+    4:
+      label: 总结和计划清楚，但针对性或可追踪性略弱
+      criteria: 有效总结讨论内容，并给出清晰、现实且可执行的发展计划。计划基本符合对话意图，但对不同意图的重点差异把握不够精准，或在行动具体度、资源支持、衡量标准和跟进机制上存在轻微不足。
+    3:
+      label: 有总结和计划，但较为宽泛
+      criteria: 简单总结谈话内容并提出未来计划，但计划较为通用，例如“加强沟通”“多学习”。计划与前述诊断结合不深，缺乏针对性、可衡量标准、明确责任或跟进节点。
+    2:
+      label: 总结仓促，计划流于形式
+      criteria: 总结仓促、不完整或偏离员工真实关切。发展计划流于形式、不切实际，或与员工的实际差距和痛点脱节；没有明确的支持、责任分工和后续跟进机制。
+    1:
+      label: 没有总结或具体计划
+      criteria: 没有对讨论进行有效总结，也没有给出具体发展或改进计划。对话在负面情绪、争议或迷茫中结束，员工不知道后续方向、行动和判断标准。
+  scoring_constraints:
+  - condition: 没有任何具体行动计划
+    maximum_score: 1
+  - condition: 计划只有泛化建议，没有时间、责任或验证标准
+    maximum_score: 3
+  - condition: 计划未与前述诊断结果建立明确联系
+    maximum_score: 3
+
+  - condition: career_elements_applicable=true，且对话已进入计划阶段，但 Manager 未将 Career Elements 纳入发展计划
+    maximum_score: 4

@@ -1,0 +1,2 @@
+# Frontend is now React + TypeScript + Vite.
+# Use npm scripts in package.json; this file is kept only for backward reference.

@@ -1,0 +1,8 @@
+include:
+  - path:
+      - deployment/compose/compose.services.yml
+      - deployment/compose/compose.model-provider.${MODEL_PROVIDER_MODE:?Set MODEL_PROVIDER_MODE to local or platform}.yml
+      - deployment/compose/compose.asr-provider.${ASR_PROVIDER_MODE:-local}.yml
+      - deployment/compose/compose.tts.${TTS_ENABLED:-true}.yml
+      - deployment/compose/compose.app-runtime.${APP_RUNTIME_MODE:-production}.yml
+    project_directory: .

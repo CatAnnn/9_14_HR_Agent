@@ -1,0 +1,32 @@
+;
+; Archive created at 2026-08-27 08:32:28 UTC
+;     dbname: hr_agent
+;     TOC Entries: 21
+;     Compression: gzip
+;     Dump Version: 1.15-0
+;     Format: CUSTOM
+;     Integer: 4 bytes
+;     Offset: 8 bytes
+;     Dumped from database version: 16.13 (Debian 16.13-1.pgdg12+1)
+;     Dumped by pg_dump version: 16.13 (Debian 16.13-1.pgdg12+1)
+;
+;
+; Selected TOC Entries:
+;
+4100; 0 35887 TABLE DATA public app_users hr_agent
+4103; 0 35915 TABLE DATA public auth_audit_log hr_agent
+4101; 0 35904 TABLE DATA public auth_whitelist hr_agent
+4096; 0 16725 TABLE DATA public sessions hr_agent
+4109; 0 324459 TABLE DATA public coach_report_versions hr_agent
+4099; 0 16752 TABLE DATA public coach_reports hr_agent
+4105; 0 126229 TABLE DATA public coach_task_results hr_agent
+4104; 0 76980 TABLE DATA public conversation_summaries hr_agent
+4097; 0 16734 TABLE DATA public documents hr_agent
+4111; 0 1060458 TABLE DATA public employee_import_manifests hr_agent
+4095; 0 16713 TABLE DATA public employees hr_agent
+4107; 0 324441 TABLE DATA public guidance_report_versions hr_agent
+4098; 0 16743 TABLE DATA public guidance_reports hr_agent
+4110; 0 1044057 TABLE DATA public personality_facet_profiles hr_agent
+4118; 0 0 SEQUENCE SET public auth_audit_log_id_seq hr_agent
+4119; 0 0 SEQUENCE SET public coach_report_versions_history_id_seq hr_agent
+4120; 0 0 SEQUENCE SET public guidance_report_versions_history_id_seq hr_agent

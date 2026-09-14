@@ -1,0 +1,16 @@
+--- a/vllm_omni/entrypoints/openai/tts_adapters/fish_speech.py
++++ b/vllm_omni/entrypoints/openai/tts_adapters/fish_speech.py
+@@ -16,9 +16,10 @@
+     name = "fish_tts"
+ 
+     def validate(self, request: "OpenAICreateSpeechRequest") -> str | None:
+-        err = self.ctx.server._apply_uploaded_speaker(request)
+-        if err:
+-            return err
++        if (request.voice or "").strip().casefold() != "default":
++            err = self.ctx.server._apply_uploaded_speaker(request)
++            if err:
++                return err
+         return self.ctx.server._validate_fish_tts_request(request)
+ 
+     async def build(

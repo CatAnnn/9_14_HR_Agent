@@ -1,0 +1,1 @@
+window.__HR_AGENT_RUNTIME_CONFIG__ = window.__HR_AGENT_RUNTIME_CONFIG__ || {};

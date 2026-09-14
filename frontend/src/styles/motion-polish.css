@@ -1,0 +1,865 @@
+/*
+ * Final interaction polish layer.
+ * Complements motion.css without changing layout, content, or business behavior.
+ */
+
+:root {
+  --apple-motion-page: 440ms;
+  --apple-motion-content: 360ms;
+  --apple-motion-item: 280ms;
+  --apple-motion-reveal: 480ms;
+}
+
+/* Low-specificity defaults cover native and ARIA controls that do not need a
+   component-specific transform. More specific component motion remains intact. */
+:where(
+  button,
+  [role="button"],
+  [role="tab"],
+  [role="option"],
+  [role="menuitem"],
+  summary,
+  a[href]
+) {
+  transition:
+    opacity var(--apple-motion-fast) var(--apple-motion-ease),
+    color var(--apple-motion-fast) var(--apple-motion-ease),
+    background-color var(--apple-motion-fast) var(--apple-motion-ease),
+    border-color var(--apple-motion-fast) var(--apple-motion-ease),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease);
+}
+
+:where(
+  button,
+  [role="button"],
+  [role="tab"],
+  [role="option"],
+  [role="menuitem"],
+  summary,
+  a[href]
+) svg {
+  transition:
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    opacity var(--apple-motion-fast) var(--apple-motion-ease);
+}
+
+:where(button):active:not(:disabled),
+:where(
+  [role="button"],
+  [role="tab"],
+  [role="option"],
+  [role="menuitem"],
+  summary,
+  a[href]
+):active:not([aria-disabled="true"]) {
+  opacity: .78;
+  transition-duration: var(--apple-motion-press);
+}
+
+:where(
+  .home-primary-action,
+  .landing-carousel-controls button,
+  .landing-resource-controls button,
+  .landing-resource-tab,
+  .landing-resource-link,
+  .password-field button,
+  .auth-switch a,
+  .segmented-control button,
+  .admin-test-intents button,
+  .admin-test-secondary-motives label,
+  .admin-test-speaker-control button,
+  .admin-test-add-turn,
+  .intent-back-button,
+  .report-export-button,
+  .speech-output-toggle
+) {
+  transition:
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    opacity var(--apple-motion-fast) var(--apple-motion-ease),
+    color var(--apple-motion-fast) var(--apple-motion-ease),
+    background-color var(--apple-motion-fast) var(--apple-motion-ease),
+    border-color var(--apple-motion-fast) var(--apple-motion-ease),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+:where(
+  .home-primary-action,
+  .landing-carousel-controls button,
+  .landing-resource-controls button,
+  .landing-resource-tab,
+  .landing-resource-link,
+  .password-field button,
+  .auth-switch a,
+  .segmented-control button,
+  .admin-test-intents button,
+  .admin-test-secondary-motives label,
+  .admin-test-speaker-control button,
+  .admin-test-add-turn,
+  .intent-back-button,
+  .report-export-button
+):focus-visible,
+.admin-test-secondary-motives label:has(input:focus-visible),
+.speech-output-toggle:has(input:focus-visible) {
+  outline: 3px solid var(--apple-motion-focus) !important;
+  outline-offset: 2px !important;
+}
+
+:where(
+  .home-primary-action,
+  .landing-carousel-controls button,
+  .landing-resource-controls button,
+  .landing-resource-tab,
+  .segmented-control button,
+  .admin-test-intents button,
+  .admin-test-speaker-control button,
+  .admin-test-add-turn,
+  .intent-back-button,
+  .report-export-button
+):active:not(:disabled),
+.admin-test-secondary-motives label:active:not(:has(input:disabled)) {
+  transform: translate3d(0, 0, 0) scale(.97) !important;
+  transition-duration: var(--apple-motion-press) !important;
+}
+
+:where(.landing-resource-link, .auth-switch a):active {
+  opacity: .62;
+  transform: translate3d(0, 1px, 0) !important;
+  transition-duration: var(--apple-motion-press) !important;
+}
+
+:where(.password-field button):active:not(:disabled) {
+  transform: translate3d(0, 0, 0) scale(.9) !important;
+  transition-duration: var(--apple-motion-press) !important;
+}
+
+:where(
+  .home-primary-action,
+  .landing-resource-link,
+  .admin-test-add-turn,
+  .intent-back-button,
+  .report-export-button
+) svg {
+  transition:
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    opacity var(--apple-motion-fast) var(--apple-motion-ease) !important;
+}
+
+:where(
+  .auth-form label,
+  .admin-provision-panel label,
+  .admin-reset-dialog label,
+  .admin-test-select-field
+) > span {
+  transition: color var(--apple-motion-fast) var(--apple-motion-ease);
+}
+
+:where(
+  .auth-form label,
+  .admin-provision-panel label,
+  .admin-reset-dialog label,
+  .admin-test-select-field
+):has(:focus-visible) > span {
+  color: var(--bosch-blue-dark);
+}
+
+:where(
+  .admin-test-intents button,
+  .admin-test-secondary-motives label,
+  .admin-test-speaker-control button,
+  .segmented-control button
+) {
+  transform: translate3d(0, 0, 0);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  transition:
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+input[type="range"]::-moz-range-thumb {
+  transition:
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.08);
+}
+
+input[type="range"]:active::-moz-range-thumb {
+  transform: scale(1.08);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(
+    .landing-carousel-controls button,
+    .landing-resource-controls button,
+    .landing-resource-tab,
+    .segmented-control button,
+    .admin-test-intents button,
+    .admin-test-speaker-control button,
+    .admin-test-add-turn,
+    .intent-back-button,
+    .report-export-button
+  ):hover:not(:disabled) {
+    transform: translate3d(0, -1px, 0) !important;
+  }
+
+  .admin-test-secondary-motives label:hover:not(:has(input:disabled)) {
+    transform: translate3d(0, -1px, 0) !important;
+  }
+
+  :where(.home-primary-action, .landing-resource-link):hover svg {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  :where(.password-field button):hover:not(:disabled) svg {
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-header,
+  .admin-header,
+  .admin-test-header,
+  .admin-test-runner-header {
+    animation: none !important;
+  }
+
+  .home-intro,
+  .auth-surface,
+  .admin-layout,
+  .admin-test-config,
+  .admin-test-runner-content {
+    animation: none !important;
+  }
+
+  .admin-test-turn:last-child,
+  .report-stream-block:last-child {
+    animation: applePolishItemIn var(--apple-motion-item) var(--apple-motion-enter) both;
+  }
+
+  :where(
+    .segmented-control button.active,
+    .admin-test-intents button.selected,
+    .admin-test-secondary-motives label.selected,
+    .admin-test-speaker-control button.active
+  ) {
+    animation: applePolishSelectionIn var(--apple-motion-item) var(--apple-motion-enter) both;
+  }
+}
+
+@keyframes applePolishItemIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(.995);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes applePolishSelectionIn {
+  0% { transform: scale(.97); }
+  62% { transform: scale(1.012); }
+  100% { transform: scale(1); }
+}
+
+@media (hover: none) {
+  :where(
+    .landing-carousel-controls button,
+    .landing-resource-controls button,
+    .landing-resource-tab,
+    .segmented-control button,
+    .admin-test-intents button,
+    .admin-test-secondary-motives label,
+    .admin-test-speaker-control button,
+    .admin-test-add-turn,
+    .intent-back-button,
+    .report-export-button
+  ):hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    .home-primary-action,
+    .landing-carousel-controls button,
+    .landing-resource-controls button,
+    .landing-resource-tab,
+    .landing-resource-link,
+    .password-field button,
+    .auth-switch a,
+    .segmented-control button,
+    .admin-test-intents button,
+    .admin-test-secondary-motives label,
+    .admin-test-speaker-control button,
+    .admin-test-add-turn,
+    .intent-back-button,
+    .report-export-button
+  ):hover,
+  :where(
+    .home-primary-action,
+    .landing-carousel-controls button,
+    .landing-resource-controls button,
+    .landing-resource-tab,
+    .landing-resource-link,
+    .password-field button,
+    .auth-switch a,
+    .segmented-control button,
+    .admin-test-intents button,
+    .admin-test-secondary-motives label,
+    .admin-test-speaker-control button,
+    .admin-test-add-turn,
+    .intent-back-button,
+    .report-export-button
+  ):active {
+    transform: none !important;
+  }
+}
+
+/* Keep one reliable page scroll owner and preserve scroll chaining at edges. */
+:root {
+  --usable-scroll-thumb: rgba(60, 60, 67, .34);
+  --usable-scroll-thumb-hover: rgba(60, 60, 67, .5);
+  --usable-scroll-thumb-active: rgba(60, 60, 67, .62);
+}
+
+html {
+  min-height: 100%;
+  overflow-x: clip !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: auto;
+  scroll-behavior: auto !important;
+  scrollbar-gutter: stable !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--usable-scroll-thumb) transparent !important;
+}
+
+/* Keep cold loads and redirects dimensionally stable without blank frames. */
+.route-loading,
+.step-loading {
+  --route-loading-ink: #051c2c;
+  --route-loading-muted: rgba(5, 28, 44, .58);
+  --route-loading-track: rgba(5, 28, 44, .1);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 16px;
+  color: var(--route-loading-muted);
+  background: #fff;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    "PingFang SC",
+    "Helvetica Neue",
+    sans-serif;
+  contain: layout paint;
+}
+
+.route-loading {
+  min-height: 100dvh;
+}
+
+.step-loading {
+  min-height: max(240px, calc(100dvh - 96px));
+  background: transparent;
+}
+
+.route-loading-label {
+  color: var(--route-loading-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: .01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.route-loading-track {
+  position: relative;
+  width: 64px;
+  height: 1px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--route-loading-track);
+}
+
+.route-loading-track::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--route-loading-ink);
+  content: "";
+  opacity: .22;
+  transform: scaleX(.26);
+  transform-origin: center;
+}
+
+.route-error {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  color: var(--text-primary, #1d2b34);
+  background: var(--bg-page, #f5f7f8);
+  text-align: center;
+}
+
+.route-error > div {
+  width: min(100%, 460px);
+}
+
+.route-error h1 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.route-error p {
+  margin: 10px 0 20px;
+  color: var(--text-secondary, #5f6f78);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .route-loading,
+  .step-loading {
+    animation: routeLoadingReveal var(--apple-motion-control) var(--apple-motion-enter) 120ms both;
+  }
+
+  .route-loading-track::after {
+    animation: routeLoadingBreathe 1.8s var(--apple-motion-ease) infinite;
+  }
+
+  .route-settling-indicator {
+    position: fixed;
+    z-index: 2147483646;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: #051c2c;
+    pointer-events: none;
+    transform-origin: center;
+    animation: routeContentSettle var(--apple-motion-fast) var(--apple-motion-enter) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loading-track::after {
+    opacity: .55;
+    transform: scaleX(.58);
+  }
+}
+
+@keyframes routeLoadingReveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes routeLoadingBreathe {
+  0%, 100% {
+    opacity: .22;
+    transform: scaleX(.26);
+  }
+  50% {
+    opacity: .82;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes routeContentSettle {
+  from {
+    opacity: .22;
+    transform: scaleX(.42);
+  }
+  to {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+.workflow-busy-guard {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: transparent;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: default;
+  animation: none !important;
+  transition: none !important;
+}
+
+body,
+#root {
+  min-height: 100%;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+}
+
+:where(*) {
+  scrollbar-gutter: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--usable-scroll-thumb) transparent !important;
+}
+
+:where(*)::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+  background: transparent !important;
+}
+
+html::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+:where(*)::-webkit-scrollbar-track,
+:where(*)::-webkit-scrollbar-corner {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:where(*)::-webkit-scrollbar-thumb {
+  min-height: 42px !important;
+  border: 2px solid transparent !important;
+  border-radius: 999px !important;
+  background-color: var(--usable-scroll-thumb) !important;
+  background-clip: padding-box !important;
+  box-shadow: none !important;
+}
+
+html::-webkit-scrollbar-thumb,
+html:hover::-webkit-scrollbar-thumb,
+html:focus-within::-webkit-scrollbar-thumb {
+  min-height: 48px !important;
+  background-color: var(--usable-scroll-thumb) !important;
+}
+
+html:hover,
+html:focus-within {
+  scrollbar-color: var(--usable-scroll-thumb) transparent !important;
+}
+
+:where(*)::-webkit-scrollbar-thumb:hover,
+html::-webkit-scrollbar-thumb:hover {
+  background-color: var(--usable-scroll-thumb-hover) !important;
+}
+
+:where(*)::-webkit-scrollbar-thumb:active,
+html::-webkit-scrollbar-thumb:active {
+  background-color: var(--usable-scroll-thumb-active) !important;
+}
+
+:where(*)::-webkit-scrollbar-button,
+:where(*)::-webkit-scrollbar-button:single-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.app-main,
+.app-sidebar,
+.employee-results,
+.chat-list,
+.rehearsal-context-panel,
+.motive-multiselect-menu,
+.sidebar-account-popover,
+.admin-table,
+.admin-account-panel,
+.stepper,
+textarea,
+select {
+  overscroll-behavior-y: auto !important;
+}
+
+@media (pointer: coarse) {
+  html,
+  body,
+  :where(*) {
+    scrollbar-width: none !important;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  :where(*)::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+  }
+}
+
+/* Employee sidebars: reveal a compact macOS-style thumb only while scrolling. */
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card:hover,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card:focus,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card:focus-within {
+  scrollbar-width: thin !important;
+  scrollbar-color: transparent transparent !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scrolling,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scrolling:hover,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scrolling:focus,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scrolling:focus-within {
+  scrollbar-color: rgba(60, 60, 67, .34) transparent !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scroll-fading,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scroll-fading:hover,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scroll-fading:focus,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scroll-fading:focus-within {
+  scrollbar-color: rgba(60, 60, 67, .12) transparent !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+  background: transparent !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-track,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-corner {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-thumb,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card:hover::-webkit-scrollbar-thumb,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card:focus::-webkit-scrollbar-thumb,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card:focus-within::-webkit-scrollbar-thumb {
+  min-height: 42px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: background-color 320ms cubic-bezier(.22, 1, .36, 1) !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scrolling::-webkit-scrollbar-thumb,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scrolling::-webkit-scrollbar-thumb:hover,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scrolling::-webkit-scrollbar-thumb:active {
+  border-radius: 999px !important;
+  background: rgba(60, 60, 67, .34) !important;
+  box-shadow: none !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scroll-fading::-webkit-scrollbar-thumb,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scroll-fading::-webkit-scrollbar-thumb:hover,
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card.is-scroll-fading::-webkit-scrollbar-thumb:active {
+  border-radius: 999px !important;
+  background-color: rgba(60, 60, 67, .12) !important;
+  box-shadow: none !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  inline-size: 0 !important;
+  block-size: 0 !important;
+  min-inline-size: 0 !important;
+  min-block-size: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  color: transparent !important;
+  background: transparent none !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  content: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-button:single-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  inline-size: 0 !important;
+  block-size: 0 !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-button:vertical:start:decrement {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  inline-size: 0 !important;
+  block-size: 0 !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-button:vertical:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  inline-size: 0 !important;
+  block-size: 0 !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-button:horizontal:start:decrement {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  inline-size: 0 !important;
+  block-size: 0 !important;
+}
+
+:is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-button:horizontal:end:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  inline-size: 0 !important;
+  block-size: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(#screen-profile, #screen-intent, #screen-simulation) .employee-profile-card::-webkit-scrollbar-thumb {
+    transition: none !important;
+  }
+}
+
+/* Desktop editorial pages: calm, once-only viewport entrances inspired by long-form consulting sites. */
+:is(
+  .home-page,
+  .resource-page,
+  .solutions-overview-page,
+  .toolkit-page
+) .is-viewport-reveal-resetting {
+  opacity: 1 !important;
+  translate: none !important;
+  scale: none !important;
+  transition: none !important;
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  :is(
+    .home-page,
+    .resource-page,
+    .solutions-overview-page,
+    .toolkit-page
+  ) .is-viewport-reveal-pending {
+    --viewport-reveal-delay: 0ms;
+    --viewport-reveal-distance: 22px;
+    --viewport-reveal-scale: 1;
+    opacity: .02;
+    translate: 0 var(--viewport-reveal-distance);
+    scale: var(--viewport-reveal-scale);
+    backface-visibility: hidden;
+    transition: none;
+  }
+
+  :is(
+    .home-page,
+    .resource-page,
+    .solutions-overview-page,
+    .toolkit-page
+  ) .is-viewport-reveal-pending.is-viewport-reveal-armed {
+    transition:
+      opacity 400ms var(--apple-motion-enter),
+      translate var(--apple-motion-reveal) var(--apple-motion-enter),
+      scale var(--apple-motion-reveal) var(--apple-motion-enter);
+    transition-delay: var(--viewport-reveal-delay);
+  }
+
+  :is(
+    .home-page,
+    .resource-page,
+    .solutions-overview-page,
+    .toolkit-page
+  ) :is(
+    [data-viewport-reveal="headline"],
+    [data-home-reveal="headline"]
+  ).is-viewport-reveal-pending {
+    --viewport-reveal-distance: 30px;
+  }
+
+  :is(
+    .home-page,
+    .resource-page,
+    .solutions-overview-page,
+    .toolkit-page
+  ) :is(
+    [data-viewport-reveal="media"],
+    [data-home-reveal="media"]
+  ).is-viewport-reveal-pending {
+    --viewport-reveal-distance: 16px;
+    --viewport-reveal-scale: .985;
+  }
+
+  :is(
+    .home-page,
+    .resource-page,
+    .solutions-overview-page,
+    .toolkit-page
+  ) :is(
+    [data-viewport-reveal="rise-delayed"],
+    [data-home-reveal="rise-delayed"]
+  ).is-viewport-reveal-pending {
+    --viewport-reveal-delay: 70ms;
+  }
+
+  :is(
+    .home-page,
+    .resource-page,
+    .solutions-overview-page,
+    .toolkit-page
+  ) :is(
+    [data-viewport-reveal="rise-late"],
+    [data-home-reveal="rise-late"]
+  ).is-viewport-reveal-pending {
+    --viewport-reveal-delay: 120ms;
+  }
+
+  :is(
+    .home-page,
+    .resource-page,
+    .solutions-overview-page,
+    .toolkit-page
+  ) .is-viewport-reveal-pending.is-viewport-reveal-armed.is-viewport-reveal-visible {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+/* This file is the final motion layer. Keep reduced-motion stronger than any
+   legacy component shorthand that also uses !important. */
+@media (prefers-reduced-motion: reduce) {
+  html:is(html) {
+    scroll-behavior: auto !important;
+  }
+
+  #root:is(#root),
+  #root:is(#root) *,
+  #root:is(#root) *::before,
+  #root:is(#root) *::after {
+    animation: none !important;
+    transition-duration: .001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}

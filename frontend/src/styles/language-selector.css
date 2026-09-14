@@ -1,0 +1,302 @@
+.language-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.language-selector > svg {
+  flex: 0 0 auto;
+}
+
+.language-selector > select {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 32px;
+  margin: 0;
+  padding: 0 24px 0 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.language-selector > select:focus {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* The global visual layer suppresses native outlines, so restore an explicit,
+   high-contrast keyboard focus ring for this borderless control. */
+.language-selector > select:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid #007bc0 !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .92) !important;
+}
+
+.language-selector.is-compact {
+  gap: 4px;
+}
+
+.language-selector.is-compact > svg {
+  width: 16px;
+  height: 16px;
+}
+
+.language-selector.is-compact > select {
+  min-height: 28px;
+  max-width: 7.5em;
+  font-size: 0.875rem;
+}
+
+.language-selector.is-popover {
+  position: relative;
+  isolation: isolate;
+}
+
+.language-selector.is-popover.is-open {
+  z-index: 190;
+}
+
+.language-selector-trigger {
+  width: 100%;
+  min-width: 0;
+  min-height: inherit;
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: inherit;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-weight: inherit;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.language-selector-leading-icon,
+.language-selector-chevron,
+.language-selector-check {
+  flex: 0 0 auto;
+}
+
+.language-selector-label {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.language-selector-chevron {
+  width: 13px !important;
+  height: 13px !important;
+  opacity: .7;
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+.language-selector.is-open .language-selector-chevron {
+  opacity: 1;
+  transform: rotate(180deg);
+}
+
+.language-selector-trigger:focus-visible {
+  outline: 3px solid #007bc0 !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .92) !important;
+}
+
+.language-selector-menu {
+  --language-option-text: rgba(255, 255, 255, .74);
+  --language-option-active: #fff;
+  --language-option-hover: rgba(255, 255, 255, .10);
+  --language-option-focus: rgba(255, 255, 255, .14);
+  --language-flag-ring: rgba(255, 255, 255, .20);
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  z-index: 190;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 12px;
+  color: #fff;
+  background: rgba(255, 255, 255, .10);
+  box-shadow:
+    0 18px 40px rgba(3, 21, 34, .18),
+    0 4px 12px rgba(3, 21, 34, .10),
+    inset 0 1px 0 rgba(255, 255, 255, .18);
+  backdrop-filter: blur(26px) saturate(145%);
+  -webkit-backdrop-filter: blur(26px) saturate(145%);
+  transform: translateX(-50%);
+  transform-origin: top center;
+  animation: language-selector-menu-in .16s ease-out both;
+}
+
+.language-selector-option {
+  width: 100%;
+  min-height: 36px;
+  margin: 0;
+  padding: 6px 7px;
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) 14px;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--language-option-text);
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  transition: color .16s ease, background .16s ease;
+}
+
+.language-selector-option[aria-selected="true"] {
+  color: var(--language-option-active);
+  background: transparent;
+  font-weight: 600;
+}
+
+.language-selector-option:hover,
+.language-selector-option:focus-visible {
+  outline: none;
+  color: var(--language-option-active);
+  background: var(--language-option-hover);
+}
+
+.language-selector-option:focus-visible {
+  background: var(--language-option-focus);
+  box-shadow: none !important;
+}
+
+.language-selector-option-flag {
+  width: 14px;
+  height: 14px;
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px var(--language-flag-ring);
+}
+
+.home-header.is-light .language-selector-menu,
+.home-header.is-transparent:not(.is-inverse) .language-selector-menu {
+  --language-option-text: rgba(5, 28, 44, .72);
+  --language-option-active: #051c2c;
+  --language-option-hover: rgba(5, 28, 44, .06);
+  --language-option-focus: rgba(5, 28, 44, .09);
+  --language-flag-ring: rgba(5, 28, 44, .18);
+  border-color: rgba(5, 28, 44, .13);
+  color: #051c2c;
+  background: rgba(255, 255, 255, .18);
+  box-shadow:
+    0 18px 40px rgba(3, 21, 34, .12),
+    0 4px 12px rgba(3, 21, 34, .07),
+    inset 0 1px 0 rgba(255, 255, 255, .44);
+}
+
+.language-selector-option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.language-selector-check {
+  width: 14px !important;
+  height: 14px !important;
+  color: currentColor;
+  opacity: 0;
+  transform: scale(.72);
+  transition: opacity .16s ease, transform .16s ease;
+}
+
+.language-selector-option[aria-selected="true"] .language-selector-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes language-selector-menu-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -5px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .language-selector-menu {
+    animation: none;
+  }
+
+  .language-selector-chevron,
+  .language-selector-option,
+  .language-selector-check {
+    transition: none;
+  }
+}
+
+.landing-account-popover > .language-selector {
+  width: 100%;
+  min-height: 36px;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 5px;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+}
+
+.landing-account-popover > .language-selector:hover,
+.landing-account-popover > .language-selector:focus-within {
+  background: #f2f4f4;
+}
+
+.landing-account-popover > .language-selector > svg {
+  width: 16px;
+  height: 16px;
+  color: #52656e;
+}
+
+.sidebar-account-menu-item.language-selector {
+  width: 100%;
+  min-height: 38px;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 8px;
+  color: #343541;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-account-menu-item.language-selector:hover,
+.sidebar-account-menu-item.language-selector:focus-within {
+  background: #f1f1f1;
+  outline: none;
+}

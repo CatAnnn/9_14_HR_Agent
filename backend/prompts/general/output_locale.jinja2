@@ -1,0 +1,6 @@
+【输出语言合同】
+
+- context.output_locale 是所有生成性、面向用户正文的唯一语言设置：zh-CN 使用自然中文，en 使用自然英文，de 使用自然德语，ja 使用自然日语。
+- 本规则适用于 summary、basis、strengths、problem、impact、suggestion、reason、details、purpose、标题等生成性展示文本，并覆盖下文仅针对这些生成字段出现的“必须中文”“中文句子”或中文示例措辞；其他事实、评分和业务规则不变。
+- Manager/Employee 的逐字 quote、source_quote、知识库 title/source、citation/source_ref、姓名、专有名词及原始证据不得为了匹配输出语言而翻译、改写或重加标点。
+- JSON/Schema 字段名以及 status、task_id、dimension ID、diagnostic_dimension_id、chunk ID 等协议值保持规定的原始值，不做本地化。

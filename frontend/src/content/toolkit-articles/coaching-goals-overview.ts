@@ -1,0 +1,225 @@
+export const coachingGoalsOverviewContent = {
+  introduction: {
+    eyebrow: '教练文化 × 目标管理',
+    title: '让目标不只被分配，而是在对话中被理解、选择与兑现',
+    lead: '真正有效的目标管理，不是把数字交给员工后等待结果，而是持续建立清晰目标、真实觉察、自主选择、行动承诺与复盘学习。教练式管理为这套循环提供了对话方式。',
+    paragraphs: [
+      '绩效与学习并非两条独立的管理线。员工在真实任务中辨认差距、尝试方案、观察结果并调整行动时，能力与绩效会在同一过程中发展；经理的职责，是让思考发生，并为标准、资源和跟进负责。',
+      '这也意味着教练文化不能只靠一次课程或一套提问清单建立。它需要被放进一对一、目标设定、绩效回顾和职业发展等日常场景，让每轮行动都产生新证据，再成为下一轮对话的起点。',
+    ],
+    origin: {
+      label: '方法脉络 · 20 世纪 80 年代末至 90 年代初',
+      title: 'GROW 从绩效教练实践中形成',
+      description: 'John Whitmore 与同伴在绩效心理、目标设定和人的潜能等实践基础上共同发展了 GROW，后来经《Coaching for Performance》广泛传播。它提供的是一条便于记忆的思考路径，而不是可以脱离教练能力独立运行的脚本。',
+      note: '框架决定谈话往哪里走；开放提问、专注倾听与非评判式探索，决定员工是否真的在思考。',
+    },
+    learningLoop: {
+      label: '绩效即学习场',
+      title: '工作结果提供证据，复盘把证据转化为能力',
+      description: '把发展嵌入真实任务，而不是等工作结束后再补一场培训。',
+      steps: ['真实任务', '觉察差距', '自主选择', '行动反馈'],
+    },
+  },
+  principles: {
+    eyebrow: '核心原则',
+    title: '觉察提高选择质量，责任让选择真正落地',
+    introduction: '教练式管理不是放松要求，而是同时提升员工对现实的辨识力和对行动的所有权。两项原则缺一不可。',
+    items: [
+      {
+        number: '01',
+        english: 'Awareness',
+        title: '觉察：看见正在发生什么',
+        description: '把注意力放在事实、行为、影响、情绪与假设上。经理通过追问和复述帮助员工形成更精确的现实画像，而不是先给出自己的解释。',
+        signal: '对话产出：员工能够说清目标与现实之间的关键差距。',
+      },
+      {
+        number: '02',
+        english: 'Responsibility',
+        title: '责任：选择愿意承担什么',
+        description: '让员工参与形成方案、权衡后果并明确承诺。经理仍负责标准、授权和资源，员工则对自己选择的下一步及其进度证据负责。',
+        signal: '对话产出：行动有负责人、时间点、衡量信号和复盘安排。',
+      },
+    ],
+    bridge: '只有觉察，没有责任，谈话容易停在洞察；只有责任，没有觉察，行动往往建立在错误判断上。',
+  },
+  growLoop: {
+    eyebrow: '对话闭环',
+    title: '从目标到行动，再让结果返回现实',
+    introduction: 'GROW 的四个阶段符合自然思考过程，但不必机械直线推进。新事实可能要求重新定义目标，选项也可能暴露尚未看见的约束。',
+    stages: [
+      {
+        letter: 'G',
+        english: 'Goal',
+        title: '明确目标',
+        description: '先界定这次对话或当前任务希望产生的结果，并确认成功为何重要、会以什么形式出现。',
+        question: '这次谈完后，你最希望哪件事变得更清楚？',
+        output: '共同理解的结果',
+      },
+      {
+        letter: 'R',
+        english: 'Reality',
+        title: '看清现实',
+        description: '检查行为、结果、已有进展、可用资源、障碍与假设，区分可以观察的事实和个人解释。',
+        question: '哪些事实支持你的判断，哪些仍然是假设？',
+        output: '有证据的起点',
+      },
+      {
+        letter: 'O',
+        english: 'Options',
+        title: '扩展选择',
+        description: '在评价之前先产生多条路径，再比较影响、成本、风险、支持条件与个人意愿。',
+        question: '除了当前方案，还有哪两条路径值得比较？',
+        output: '经过权衡的选项',
+      },
+      {
+        letter: 'W',
+        english: 'Will',
+        title: '形成承诺',
+        description: '由员工确认要采取的行动，约定第一步、时间、进度证据、所需支持和障碍应对。',
+        question: '你决定先做什么，何时用什么证据复盘？',
+        output: '可跟踪的下一步',
+      },
+    ],
+    loopNote: '复盘不是附加环节。行动结果会成为新的 Reality，团队据此校准目标、更新选择并进入下一轮承诺。',
+  },
+  managerShift: {
+    eyebrow: '经理行为',
+    title: '从答案提供者，转向思考促进者',
+    introduction: '教练式经理仍然明确方向并承担决策责任，但会减少替员工完成思考。判断标准是：谈话结束后，员工是否比开始时更清楚，也更愿意对下一步负责。',
+    columns: {
+      dimension: '管理时刻',
+      directive: '只靠指令时',
+      coaching: '教练式管理时',
+    },
+    rows: [
+      {
+        dimension: '对齐目标',
+        directive: '宣布任务和做法，确认员工是否记住要求。',
+        coaching: '说明结果与边界，邀请员工描述成功以及目标的意义。',
+      },
+      {
+        dimension: '理解现实',
+        directive: '依据经理视角判断原因，迅速指出问题。',
+        coaching: '先听员工陈述事实，再用追问、复述和沉默检查假设。',
+      },
+      {
+        dimension: '形成方案',
+        directive: '给出一个正确答案，并要求按步骤执行。',
+        coaching: '让员工先提出多个选项，再共同补充信息和评估风险。',
+      },
+      {
+        dimension: '落实责任',
+        directive: '经理布置动作，之后持续催办。',
+        coaching: '员工选择承诺，经理确认资源、节点和问责方式。',
+      },
+    ],
+    listening: {
+      title: '问题只是入口，倾听才让思考发生',
+      description: '一次只问一个真正开放的问题，给员工完整表达的时间；听内容，也听其中的判断、犹豫和未说出的限制。复述用于校验理解，建议则应在取得同意后清楚标明，避免把诱导包装成提问。',
+      prompts: [
+        { label: '澄清', question: '你真正想改变的结果是什么？' },
+        { label: '证据', question: '你看到了什么，又是怎样解释它的？' },
+        { label: '扩展', question: '还有什么可能性尚未被认真考虑？' },
+        { label: '承诺', question: '哪一步由你负责，怎样确认它已经发生？' },
+      ],
+    },
+  },
+  boundaries: {
+    eyebrow: '管理边界',
+    title: '有些时刻，经理必须明确管理',
+    introduction: '教练方式适合对方拥有思考空间、相关信息和一定决定权的议题。以下情境不能只靠开放提问，经理需要切换到指令、教学、反馈、决策或专业转介。',
+    items: [
+      {
+        title: '安全、合规与紧急处置',
+        description: '先给出明确动作并控制风险，事后再通过复盘建立理解和能力。',
+      },
+      {
+        title: '标准与后果不可协商',
+        description: '清楚说明绩效标准、行为要求和责任后果，再讨论员工如何达到要求。',
+      },
+      {
+        title: '缺少基础知识或技能',
+        description: '先示范、教学或提供资源，让员工具备可用于判断和选择的基本能力。',
+      },
+      {
+        title: '决定权属于经理或专业角色',
+        description: '直接说明谁负责决定；遇到医疗、法律等问题时，及时转给合适的专业支持。',
+      },
+    ],
+    note: '成熟的教练式经理会透明切换角色：现在是在探索、给反馈、教学，还是作出管理决定。',
+  },
+  culture: {
+    eyebrow: '组织实施',
+    title: '把教练文化建成一套可重复的工作机制',
+    introduction: '文化形成于领导者每天如何提问、倾听、授权和跟进，也形成于组织系统奖励什么。实施重点不是让所有对话使用同一套脚本，而是让高质量思考与行动责任成为共同习惯。',
+    steps: [
+      {
+        number: '01',
+        title: '先定义领导行为与边界',
+        description: '由高层示范好奇、倾听和承认未知，同时明确哪些业务要求、风险与决策不可协商，避免把教练误解为不管理。',
+        evidence: '可观察信号：领导者先询问事实与判断，再分享自己的观点。',
+      },
+      {
+        number: '02',
+        title: '在真实对话中练习',
+        description: '围绕一对一、目标讨论和绩效回顾进行短周期练习，通过观察、同伴反馈与复盘改进提问和倾听，而不是只完成课程。',
+        evidence: '可观察信号：经理能在教练、反馈、教学和指令之间清楚切换。',
+      },
+      {
+        number: '03',
+        title: '嵌入目标与人才节奏',
+        description: '在目标模板、发展计划和复盘机制中保留 Reality、Options、行动责任与支持条件，让对话结果进入日常工作。',
+        evidence: '可观察信号：每项承诺都有负责人、证据、时间点与下一次回看。',
+      },
+      {
+        number: '04',
+        title: '衡量、复盘并持续强化',
+        description: '同时观察对话质量、承诺完成、能力变化和业务结果；识别制度障碍，认可促进他人成长的领导行为，并用新证据调整做法。',
+        evidence: '可观察信号：复盘推动下一轮选择，而不是只汇报完成比例。',
+      },
+    ],
+  },
+  toolGuide: {
+    eyebrow: '方法导引',
+    title: '从当前问题进入合适的下一层方法',
+    introduction: '三种工具承担不同任务，可以在同一管理周期中组合使用。先判断当前最需要的是对话路径、目标质量，还是职业方向。',
+    items: [
+      {
+        number: '01',
+        title: 'GROW Model',
+        href: '/solutions/coaching-goals/grow-model',
+        question: '对话有议题，却缺少从思考到行动的路径',
+        description: '用 Goal、Reality、Options、Will 组织一次可往返的教练对话，并形成可复盘的行动责任。',
+        linkLabel: '阅读 GROW 方法',
+      },
+      {
+        number: '02',
+        title: 'SMART Goals',
+        href: '/solutions/coaching-goals/smart-goals',
+        question: '方向已经明确，却仍然无法判断是否完成',
+        description: '检查目标是否具体、可衡量、可实现、相关且有时限，把共同意图转化为清晰结果。',
+        linkLabel: '阅读 SMART 目标',
+      },
+      {
+        number: '03',
+        title: 'Career Coaching',
+        href: '/solutions/coaching-goals/career-coaching-tools',
+        question: '员工正在探索方向、能力与现实机会',
+        description: '连接职业诉求、优势证据、组织机会与发展实验，让长期方向通过真实行动逐步验证。',
+        linkLabel: '阅读职业教练',
+      },
+    ],
+  },
+  source: {
+    title: 'A Complete Guide to the GROW Coaching Model',
+    publisher: 'Performance Consultants',
+    url: 'https://www.performanceconsultants.com/resources/the-grow-model/',
+    accessedAt: '2026-08-11',
+    usedFor: [
+      'GROW 的形成时期、共同发展背景及传播脉络',
+      'Goal、Reality、Options、Will 四阶段及阶段之间可以往返的特征',
+      '开放提问、非评判式探索、行动承诺与问责的实践原则',
+      '避免过早给方案、机械套流程、诱导回答和忽略跟进等使用边界',
+    ],
+  },
+} as const;

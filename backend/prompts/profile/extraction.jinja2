@@ -1,0 +1,32 @@
+从员工资料文本中抽取 EmployeeProfile，必须只输出 JSON object，不要输出 Markdown。
+
+采集边界：
+- 只采集工作相关信息。
+- 敏感约束只允许输出 yes/no/unknown + 对本次谈话的业务影响摘要。
+- 不采集诊断、家庭、健康细节等敏感个人细节。
+
+JSON 字段：
+{
+  "employee_alias": string|null,
+  "role": string|null,
+  "department": string|null,
+  "level": string|null,
+  "reporting_line": string|null,
+  "performance_rating": string|null,
+  "tcl": string|null,
+  "review_cycle": string|null,
+  "conversation_topic": string|null,
+  "key_goals": [string],
+  "facts": [{"description": string, "impact": string|null, "evidence_source": string|null}],
+  "past_ratings": [string],
+  "historical_feedback": [string],
+  "previous_improvement_discussion": "yes"|"no"|"unknown",
+  "management_actions": [string],
+  "has_pip": "yes"|"no"|"unknown",
+  "involves_promotion_salary_transfer": "yes"|"no"|"unknown",
+  "employee_status_summary": string|null,
+  "sensitive_constraints": {"key": {"status": "yes"|"no"|"unknown", "business_impact_summary": string|null}}
+}
+
+员工资料文本：
+{{ document_text }}

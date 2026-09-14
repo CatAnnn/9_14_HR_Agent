@@ -1,0 +1,3 @@
+auth_audit_log_id_seq
+coach_report_versions_history_id_seq
+guidance_report_versions_history_id_seq

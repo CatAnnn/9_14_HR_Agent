@@ -1,0 +1,69 @@
+id: high_performance_culture
+version: "1.1.0"
+enabled: true
+priority: 80
+applies_to:
+  - guidance_start
+  - guidance_emotion
+  - guidance_requirement
+  - guidance_plan
+  - opening_evaluation
+  - emotion_evaluation
+  - output_expectations_evaluation
+  - development_plan_evaluation
+triggers:
+  - 高绩效文化
+  - 我们的中国区高绩效文化
+  - Our High Performance Culture in China
+  - Be LikeABosch
+  - 企业文化
+  - Collaboration to DELIVER
+  - 协同共进
+  - Innovation to SHAPE
+  - 创变未来
+  - Customer-centricity to GROW
+  - 聚力共赢
+  - Commitment to WIN
+  - 使命必达
+scopes:
+  - culture
+core_knowledge: |-
+  ## 我们的中国区高绩效文化
+
+  当前公司批准的高绩效文化仅包含以下四个维度：
+
+  ### 协同共进（Collaboration to DELIVER）
+  - 主动共享信息与资源，打破部门墙。
+  - 项目遇到瓶颈时，第一时间拉通相关方共同解决问题，而非推诿或等待。
+  - 对共同目标负责，完成个人任务时主动支援上下游。
+  - 促进并珍视共同成功，团队制胜。
+
+  ### 创变未来（Innovation to SHAPE）
+  - 不满足于现有流程和方案，主动探索更好的做法。
+  - 在项目早期引入新技术和跨领域思路。
+  - 容忍失败，同时要求快速验证、快速迭代，用结果证明创新价值。
+
+  ### 聚力共赢（Customer-centricity to GROW）
+  - 主动聆听客户或用户，站在其角度识别深层需求与痛点。
+  - 用一体化能力推动解决方案落地，为客户或用户创造价值。
+  - 推动组织能力与业务共同成长，与客户共赢。
+
+  ### 使命必达（Commitment to WIN）
+  - 在竞争性项目中主动承担困难任务，不退缩。
+  - 对质量、成本和交付承诺说到做到，遇到困难时主动寻找备选方案。
+  - 复盘失败时不找借口，输出改进计划并立即执行。
+  - 渴望与公司共同成长，到业务最需要的地方去。
+  - 以超越对手或达成挑战目标定义“赢”。
+
+usage_rules:
+  - 只从当前四个维度中选择与输入事实和沟通意图直接相关的一项，不机械覆盖全部口号。
+  - 文化知识用于解释行为期待和改进建议，不能单独证明当前对话中的事实。
+  - 优先使用情境、行为、影响和适用标准，不评价人格或动机。
+  - 中文输出优先使用中文维度名；英文名只用于对应公司原文，不使用已移除的旧价值观名称。
+retrieval_queries:
+  - Our High Performance Culture in China 中国区高绩效文化 Collaboration to DELIVER 协同共进 Innovation to SHAPE 创变未来 Customer-centricity to GROW 聚力共赢 Commitment to WIN 使命必达
+source_files:
+  - culture/Be LikeABosch.md
+reviewed_source_sha256:
+  culture/Be LikeABosch.md: 077df9b9cedd45b4933fb17c1089d43519f1dbaebf8673e62697f1322eb8bc82
+reviewed_at: "2026-08-25"

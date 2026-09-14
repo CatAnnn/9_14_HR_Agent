@@ -1,0 +1,135 @@
+.ui-accordion,
+.ui-accordion-item {
+  min-width: 0;
+}
+
+.ui-accordion-trigger {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 2px 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: start;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.ui-accordion-trigger-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-decoration-line: none;
+}
+
+.ui-accordion-trigger-control {
+  flex: 0 0 24px;
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  margin: -1px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.ui-accordion-trigger-icon {
+  flex: 0 0 16px;
+  color: currentColor;
+  transform: rotate(0deg);
+  transform-origin: center;
+  transition: transform 240ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.ui-accordion-trigger[data-state='open'] .ui-accordion-trigger-icon {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ui-accordion-trigger:hover > .ui-accordion-trigger-label {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+
+  .ui-accordion-trigger:hover > .ui-accordion-trigger-label .knowledge-reference-trigger {
+    text-decoration-line: underline !important;
+    text-decoration-color: currentColor !important;
+    text-decoration-thickness: 1px !important;
+    text-underline-offset: 4px;
+  }
+}
+
+.ui-accordion-trigger-control:focus-visible {
+  outline: 2px solid var(--bosch-blue, #007bc0);
+  outline-offset: 2px;
+}
+
+.ui-accordion-trigger:focus-within > .ui-accordion-trigger-label {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.ui-accordion-trigger:focus-within > .ui-accordion-trigger-label .knowledge-reference-trigger {
+  text-decoration-line: underline !important;
+  text-decoration-color: currentColor !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 4px;
+}
+
+.ui-accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  min-width: 0;
+  max-width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate3d(0, -4px, 0);
+  transition:
+    grid-template-rows 320ms cubic-bezier(.22, 1, .36, 1),
+    opacity 180ms ease,
+    transform 320ms cubic-bezier(.22, 1, .36, 1),
+    visibility 0s linear 320ms;
+}
+
+.ui-accordion-content[data-state='open'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+  transition:
+    grid-template-rows 320ms cubic-bezier(.22, 1, .36, 1),
+    opacity 180ms ease 35ms,
+    transform 320ms cubic-bezier(.22, 1, .36, 1),
+    visibility 0s linear 0s;
+}
+
+.ui-accordion-content-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-accordion-trigger-icon,
+  .ui-accordion-content,
+  .ui-accordion-content[data-state='open'] {
+    transition: none;
+  }
+}

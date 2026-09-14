@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.playwright-profile/
+.playwright-bgn-profile/
+.state/
+results/
+files/
+bosch_org_six_roots_v11/
+*.jsonl
+*.xlsx
+*.tmp

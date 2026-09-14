@@ -1,0 +1,1 @@
+"""Persistence-facing data models."""

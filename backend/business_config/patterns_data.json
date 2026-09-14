@@ -1,0 +1,1088 @@
+{
+  "active": {
+    "construct_name": "active",
+    "description": "在职场中，active 主要描述“活动水平与行动节奏”：个体倾向保持较高的身体或心理活动量，愿意让自己持续处于做事、移动、推进和参与的状态。它关注的是活动频率与节奏，不等同于 energetic 的耐力储备，也不等同于 outgoing / gregarious 的社交需求。",
+    "core_mechanisms": "其核心机制是较强的接近性活动倾向：个体更容易把可行动机会转化为实际动作，通常偏好较快节奏、较少长时间静止等待。高活动水平在自我调节不足时也可能带来过快切换或注意控制困难。这里重点是“倾向动起来”，而不是“能持续多久”。",
+    "real_world_manifestation": "工作中常表现为快速进入任务、同时维持较多行动、主动把事情往前推。高 active 员工可能不喜欢长时间纯等待或低刺激流程；低 active 员工则可能偏好更稳定节奏。评价时不要把活动量直接等同于产出质量、社交主动或工作投入。"
+  },
+  "thorough": {
+    "construct_name": "thorough",
+    "description": "thorough 专门描述“覆盖完整、检查充分和不轻易遗漏重要部分”。其焦点是任务完成的深度与完整性，不等同于 careful 的风险回避，也不等同于 organized 的秩序。",
+    "core_mechanisms": "核心机制是对遗漏和不完整具有较低容忍度，倾向检查多个组成部分、验证依赖并确保需要覆盖的内容真正处理完。",
+    "real_world_manifestation": "在报告、分析、审计和复杂交付中常表现为覆盖全面、少遗漏。过高 thoroughness 可能增加时间成本，因此应根据任务重要性决定检查深度。"
+  },
+  "organized": {
+    "construct_name": "organized",
+    "description": "organized 专门描述“结构、秩序和安排”：偏好把任务、文件、时间和流程放入清晰系统。它不直接代表交付可靠性（dependable）、细节完整性（thorough）或风险谨慎（careful）。",
+    "core_mechanisms": "核心机制是通过分类、顺序、计划和可预测流程降低认知混乱。个体习惯建立清单、日程、文件结构和明确步骤。",
+    "real_world_manifestation": "多任务环境中通常更容易保持优先级与资料有序；面对频繁临时变化时可能希望重新建立结构。评价 organized 时应看结构化行为，而不是仅看最终是否按时交付。"
+  },
+  "reserved": {
+    "construct_name": "reserved",
+    "description": "在职场中，reserved 主要描述“人际表达风格较克制”：员工不会立即把全部想法、情绪和个人信息外显，通常先观察和思考，再选择性表达。它比 introverted 更聚焦表达方式，而不是社会刺激偏好；也不等于 quiet 的纯发言量。",
+    "core_mechanisms": "其核心机制是更高的表达筛选门槛和较低的自我展示倾向。个体会先判断信息是否必要、合适和有价值，再决定是否说出，因此可能外显得稳、含蓄、有限。",
+    "real_world_manifestation": "绩效面谈中可能少主动扩展背景，但对于关键事实和立场仍能明确回应。reserved 不应被生成成“只有好/可以/没问题”的封闭回答；少表达意味着选择性表达，而不是不给对话可承接的信息。"
+  },
+  "placid": {
+    "construct_name": "placid",
+    "description": "placid 主要描述“稳定、低负性情绪的基线气质”：日常不容易持续处于焦虑、愤怒或烦躁之中，情绪波动幅度通常较小。它与 relaxed 的低紧张/低唤醒不同，也与 composed 的压力下行为自控不同。",
+    "core_mechanisms": "其核心机制是较低的威胁敏感性和较低的负性情绪基线。模糊事件不容易自动被解释为危险或冒犯，负面体验通常强度较低、持续较短。",
+    "real_world_manifestation": "绩效反馈中，高 placid 员工可以不同意甚至失望，但通常不会让负面评价长期占据全部注意力。不要因为其平静就推断其接受了 Manager 的判断；placid 控制情绪占用，不决定认知立场。"
+  },
+  "trusting": {
+    "construct_name": "trusting",
+    "description": "trusting 主要描述“默认如何判断他人意图和可靠性”：在缺少反证时，更倾向先假设对方诚实、善意且会履约。它不等于 cooperative 的合作行为，也不等于 warm 的友好表达。",
+    "core_mechanisms": "核心机制是较低的初始怀疑阈值，使员工更愿意接受信息、授权和他人承诺；明确失信事件会更新这一判断。",
+    "real_world_manifestation": "Manager 解释绩效原因时，高 Trust 员工可能更快给予善意解释；低 Trust 员工则更需要证据和可验证安排。Trust 影响说服门槛，不决定最终立场。"
+  },
+  "relaxed": {
+    "construct_name": "relaxed",
+    "description": "relaxed 主要描述“低紧张、低身体/心理绷紧和较从容的节奏”。它更偏向唤醒与紧张水平，不等同于 placid 的长期低负性情绪，也不等同于 composed 的有意识保持控制。",
+    "core_mechanisms": "其核心机制是较低的紧张激活和较少的急迫感。个体更容易以从容速度处理任务与互动，不会因为轻度不确定就立即进入高警戒。",
+    "real_world_manifestation": "在压力尚可控的工作场景中，relaxed 员工通常节奏稳定、不急于反应。过低的急迫感在真正紧急任务中也可能需要通过明确优先级和截止要求进行校准。"
+  },
+    "withdrawn": {
+        "construct_name": "withdrawn",
+        "description": "撤退反应是指个体相较于自身先前状态，在压力、威胁、冲突或心理资源不足时减少表达、接触或参与。它是一种情境相关的反应，不等同于内向，也不能根据一次沉默或简短回答确定。",
+        "core_mechanisms": "可能涉及威胁规避、认知或情绪过载、对表达后果的担忧，以及暂时保存心理资源；触发情境、相对个人基线的变化和持续时间，比“话少”本身更有解释力。",
+        "real_world_manifestation": "绩效对话中可能表现为回答逐渐变短、停止澄清、回避争议或暂时退出讨论。仅当当前互动相对 Employee 先前参与明显收缩且存在相关压力线索时，才可提高这一反应的权重；不得把沉默直接解释为接受、敌意或稳定人格。"
+  },
+  "cold": {
+    "construct_name": "cold",
+    "description": "该条目仅描述互动中较少使用亲近、安抚或情绪性表达的沟通风格，不等于缺乏同理心、敌意、不合作或不关心他人。",
+    "core_mechanisms": "这种表达可能与任务导向、沟通习惯、文化背景、关系边界或当前压力有关，不能从语气直接推断内在感受、价值观或动机。",
+    "real_world_manifestation": "绩效对话中可能更简短、事实导向且少寒暄。Employee Agent 可以调整表达温度，但不得据此生成攻击、拒绝合作或缺乏关心的结论。"
+  },
+  "careful": {
+    "construct_name": "careful",
+    "description": "careful 专门描述“在错误、风险和不可逆后果面前保持谨慎”。其焦点是避免做错和评估后果，而不是 thorough 的全面覆盖，也不是 deliberate 的广泛决策思考。",
+    "core_mechanisms": "核心机制是风险显著性较高，行动前更倾向核实关键事实、检查潜在错误并控制暴露。它通常在高风险或敏感事项中最明显。",
+    "real_world_manifestation": "敏感数据、承诺、合规和高影响决策中常表现为先确认再行动。过度 careful 可能降低速度，因此需要根据风险等级调整检查强度。"
+  },
+  "kind": {
+    "construct_name": "kind",
+    "description": "kind 主要描述“对他人福祉持有善意和关心”的总体亲社会取向。它回答的是是否愿意别人过得好，不等同于 helpful 的实际帮助行为、sympathetic 的情感共鸣、warm 的关系表达或 cooperative 的协作方式。",
+    "core_mechanisms": "核心机制是他人利益在自身判断中具有正向价值，因此更愿意避免无必要伤害并考虑对方处境。善意可以通过不同方式表达，不要求高情绪表达。",
+    "real_world_manifestation": "职场中可能表现为尊重、善意解释和愿意照顾合理需要。kind 员工仍可以严格指出绩效问题；善意影响处理方式，不自动改变事实标准。"
+  },
+  "egocentric bias": {
+    "construct_name": "egocentric bias",
+    "description": "自我中心偏差是把自己的知识、感受、偏好和视角作为理解他人的默认起点，并且对人与人差异调整不足。它是一个广义的自我锚定机制；curse of knowledge、projection bias 和 illusion of transparency 可以视为其中不同表现，但各自有更具体对象。",
+    "core_mechanisms": "核心机制是自己的内部状态最可及，因此社会判断先从‘我’开始，再进行通常不足的修正。偏差不要求自私，也不意味着故意忽视别人。",
+    "real_world_manifestation": "管理沟通中，经理可能默认员工和自己一样理解优先级，员工也可能默认经理能理解其工作背景。改善方式是显式核对对方拥有的信息、目标与约束，而不是仅靠换位思考口号。"
+  },
+  "introspective": {
+    "construct_name": "introspective",
+    "description": "在职场中，该特质表现为较多反思自己的想法、感受、动机和决策过程。",
+    "core_mechanisms": "反思可以是建设性的分析，也可能转为反复纠结；前者有助于理解经验和调整行为，后者可能消耗注意力。",
+    "real_world_manifestation": "在绩效复盘和失败后更可能主动分析原因与经验；若反思过度，可能出现犹豫、反复验证或对单一问题停留过久。"
+  },
+  "psychological reactance theory": {
+    "construct_name": "psychological reactance theory",
+    "description": "在职场中，心理抗拒表现为当个人感到选择自由或自主权被限制时，产生恢复控制感的动机。",
+    "core_mechanisms": "其核心是自主受到威胁后出现的愤怒和反驳性认知，强度会受到自由重要性、限制程度和个体差异影响。",
+    "real_world_manifestation": "在绩效沟通和管理指令中，过度命令式、控制式语言可能引发反驳或消极执行；提供合理解释、选择空间和参与感通常更利于合作。"
+  },
+  "creative": {
+    "construct_name": "creative",
+    "description": "在职场中，该特质表现为偏好新方法、新视角和非传统解决方案，并愿意探索复杂问题。",
+    "core_mechanisms": "通常通过重新定义问题、发散思考、类比和试验形成新方案，同时依赖较强的内在兴趣和对不确定性的容忍。",
+    "real_world_manifestation": "在创新、产品、流程改进和复杂问题解决中较容易提出新思路；面对阻力时可能继续推动，但也需要兼顾落地与组织接受度。"
+  },
+  "self-serving bias": {
+    "construct_name": "self-serving bias",
+    "description": "自利性偏差专门描述“因结果与自身利益/自我形象有关而产生有利于自己的解释”。典型表现是更容易为成功取得内部归因，为失败寻找外部解释；其核心是自我利益和自我保护，不只是观察视角差异。",
+    "core_mechanisms": "核心机制是选择性加工有利于自我评价的信息，并把公平、责任和原因向较有利自己的方向解释。它可以是真诚的主观判断，而非故意撒谎。",
+    "real_world_manifestation": "绩效反馈中 Employee 与 Manager 都可能存在自利性解释。应要求双方给出可验证事实，并把结果、原因、责任和评价分开，而不是用‘他在找借口’替代分析。"
+  },
+  "confirmation bias": {
+    "construct_name": "confirmation bias",
+    "description": "在职场中，确认偏差表现为更愿意寻找、解释和保留支持既有判断的信息，而弱化反例。",
+    "core_mechanisms": "其核心是认知效率和有限注意力使人更容易围绕一个既有假设继续收集信息，而不是持续比较替代解释。",
+    "real_world_manifestation": "在招聘、绩效评价、诊断和项目决策中可能造成过早结论；结构化证据、主动寻找反例和比较替代假设有助于降低影响。"
+  },
+  "social desirability bias": {
+    "construct_name": "social desirability bias",
+    "description": "在职场中，社会期许偏差表现为为了呈现更正面的职业形象而调整自我报告，而非完全按真实状态回答。",
+    "core_mechanisms": "其机制包括有意识的印象管理，以及较稳定的正向自我认知；在高评价、高可见性场景中印象管理更容易增强。",
+    "real_world_manifestation": "在绩效自评、360反馈、人才评估和问卷中可能导致优势被放大、问题被弱化，因此需要结合具体行为和多来源证据。"
+  },
+  "outgoing": {
+    "construct_name": "outgoing",
+    "description": "在职场中，outgoing 主要描述“主动进入社会互动”的倾向：更愿意接触他人、发起交流、建立联系并在多人环境中参与互动。它与 talkative 的单纯发言量不同，也与 gregarious 的“喜欢待在人群中”不同。",
+    "core_mechanisms": "核心机制是较高的社会接近动机。个体预期社交互动具有奖励价值，因此更容易主动创造接触机会、开启对话并扩大外部连接。是否在互动中持续主导，则还受到 assertiveness 等特质影响。",
+    "real_world_manifestation": "在跨部门协作、客户沟通和团队网络中，outgoing 常体现为主动建立联系和开启互动。高 outgoing 不代表一定话很多、一定强势或一定擅长深度关系；低 outgoing 也不等于回避必要沟通。"
+  },
+  "gregarious": {
+    "construct_name": "gregarious",
+    "description": "在职场中，gregarious 主要描述“对群体陪伴和多人互动本身的偏好”。高分者通常更喜欢置身团队、群体活动和频繁社会接触；它不同于 outgoing 的主动发起联系，也不同于 talkative 的语言输出量。",
+    "core_mechanisms": "其核心机制是群体环境本身具有较高奖励价值。个体更容易从共同活动、多人交流和社交密度中获得激活感，并较少把频繁互动视为消耗。",
+    "real_world_manifestation": "在团队办公、工作坊、社群和频繁协作环境中通常更舒适。低 gregarious 员工可能更偏好一对一或独立工作，但这不自动意味着低合作、低 Warmth 或低沟通能力。"
+  },
+  "practical": {
+    "construct_name": "practical",
+    "description": "在职场中，该特质表现为关注实际结果、可执行性、效率和“什么真正有效”。",
+    "core_mechanisms": "其核心是面向未来目标进行计划和行动，并优先考虑具体约束、资源和现实效果。",
+    "real_world_manifestation": "在项目推进中倾向快速把讨论转成行动、责任和结果；面对过于抽象的讨论时，往往会要求落到具体做法。"
+  },
+    "actor observer asymmetry": {
+        "construct_name": "actor observer asymmetry",
+        "description": "行动者—观察者差异是一项情境依赖的归因假设：人在解释自身与他人行为时，有时会对情境因素和个人因素赋予不同权重。研究并不支持它是普遍、固定且总按同一方向出现的规律，因此只能作为待检验的替代解释。",
+        "core_mechanisms": "信息可得性、观察视角、事件显著性、既往经历和自我保护动机都可能影响归因；不同条件下可能出现经典方向、反向差异或没有差异，不能从行动者或观察者身份直接推导结论。",
+        "real_world_manifestation": "绩效争议中，Employee 可能强调资源和流程，Manager 可能强调个人可控行为，但这种差异必须依据双方实际表述确认。对话应同时检查事实、个人可控行为和真实情境约束，不给任何一方贴上“存在偏差”的标签。"
+  },
+  "critical": {
+    "construct_name": "critical",
+    "description": "在职场中，该特质表现为较强的评价倾向，容易发现问题、漏洞、不一致和不足。",
+    "core_mechanisms": "通常会以较高标准审视信息和方案，并把注意力更多放在风险、错误和需要修正的部分。",
+    "real_world_manifestation": "在评审、质量控制和风险识别中可能有价值；在人际反馈中如果缺少关系缓冲，容易被感受到挑剔、否定或过度聚焦问题。"
+  },
+  "attribution theory": {
+    "construct_name": "attribution theory",
+    "description": "归因理论是解释人们如何判断行为、成功与失败原因的上位理论框架，覆盖内部/外部、稳定/不稳定、可控/不可控等不同因果解释。它不是某一种具体偏差。",
+    "core_mechanisms": "核心机制是人需要为结果建立因果模型，以预测未来并决定行动。不同归因会改变责任、情绪和后续努力，例如把失败归因于可改变策略与归因于固定能力，会产生不同动机。",
+    "real_world_manifestation": "绩效反馈可用归因框架检查 Manager 是否区分了行为、能力、努力、资源和情境。具体偏差如 fundamental attribution error、actor-observer asymmetry、self-serving bias 应在有相应证据时单独使用。"
+  },
+  "bias blind spot": {
+    "construct_name": "bias blind spot",
+    "description": "在职场中，偏差盲点表现为更容易发现他人的偏差，却认为自己的判断相对客观。",
+    "core_mechanisms": "其核心是人们用自己的意图和主观体验判断自己，却用可观察行为判断别人，同时受到“我更理性”的自我增强影响。",
+    "real_world_manifestation": "在管理、招聘和绩效校准中可能导致过度相信直觉，因此需要用结构化标准、多人校准和可追溯证据约束主观判断。"
+  },
+  "dependable": {
+    "construct_name": "dependable",
+    "description": "dependable 专门描述“别人能否稳定依赖其兑现承诺”。它关注跨时间的一致交付与可预测性，不等同于 responsible 的责任意识，也不等同于 organized 的结构化。",
+    "core_mechanisms": "核心机制是把承诺视为需要履行的约定，并通过持续跟进、时间管理和稳定执行减少失约。",
+    "real_world_manifestation": "主要证据包括按约定交付、重要节点无需反复提醒、遇到障碍会提前说明并继续跟进。员工可以很负责但偶尔执行不稳定，因此 responsible 与 dependable 应分开评价。"
+  },
+  "halo effect": {
+    "construct_name": "halo effect",
+    "description": "在职场中，光环效应表现为某一个突出的正面或负面特征影响对一个人的其他维度评价。",
+    "core_mechanisms": "其核心是整体印象作为认知捷径，导致人们把局部信息泛化到能力、态度或潜力等其他领域。",
+    "real_world_manifestation": "在绩效评价、招聘和人才盘点中，单一成功、失败或个人风格可能影响整体评级，因此需要逐维证据和行为事实。"
+  },
+  "intellectual": {
+    "construct_name": "intellectual",
+    "description": "在职场中，该特质表现为喜欢分析复杂问题、探索概念、理解原理和处理抽象信息。",
+    "core_mechanisms": "通常对新知识、理论和复杂关系具有较高兴趣，并愿意投入认知资源比较不同解释。",
+    "real_world_manifestation": "在战略、研究、分析和复杂问题解决中可能表现突出；在需要快速执行时，也需要避免讨论过度抽象化。"
+  },
+  "assertive": {
+    "construct_name": "assertive",
+    "description": "assertive 主要描述“公开表达并维护自己的观点、需求、边界和请求”的倾向。它关注社会影响和立场外显，不等于 bold 的风险接受，也不等于 quarrelsome 的持续争论。",
+    "core_mechanisms": "核心机制是较高的自我表达正当感和社会影响倾向，重要判断不容易长期留在内部。高 assertive 可以使用冷静、合作甚至温和语言。",
+    "real_world_manifestation": "会议和绩效反馈中更可能直接说明不同意见、提出要求或划定责任边界。Assertiveness 决定是否把重要立场说出来，不决定说话有多长、多激烈或是否拒绝合作。"
+  },
+  "composed": {
+    "construct_name": "composed",
+    "description": "composed 主要描述“在压力下仍能维持行为和表达控制”的能力与风格。与 calm 的低反应性相比，composed 更强调即使内部存在压力，个体仍能有意识地组织回应、保持判断和控制外显行为。",
+    "core_mechanisms": "核心机制包括情绪调节、认知重评、延迟反应和问题导向处理。个体可以感到不舒服，但不会立刻让情绪决定语言和行动。",
+    "real_world_manifestation": "高压汇报、冲突和负面绩效反馈中，composed 员工更可能先整理信息、再表达不同意见，并避免冲动升级。它不意味着低 Neuroticism，也不能用外在稳定反推内部没有压力。"
+  },
+  "status quo bias": {
+    "construct_name": "status quo bias",
+    "description": "现状偏差专门描述“在存在替代方案时，额外偏好当前选项/默认状态”。它可能受到损失厌恶、熟悉感、转换成本和不确定性共同推动，但其行为特征是维持现状。",
+    "core_mechanisms": "核心机制是改变被视为需要承担新增损失、责任和认知成本，而现状被错误地当作较中性的基准。",
+    "real_world_manifestation": "流程改造、岗位变化和工具迁移中，需要同时评价改变成本与不改变成本。仅仅‘我们一直这么做’不能作为方案价值证据。"
+  },
+  "responsible": {
+    "construct_name": "responsible",
+    "description": "responsible 专门描述“是否把属于自己的职责、影响和后果视为自己需要承担的部分”。它聚焦责任归属和 accountability，不等同于 dependable 的稳定兑现，也不等同于 conscientious 的整体自律。",
+    "core_mechanisms": "核心机制是较强的职责内化：面对结果时更愿意区分自己可控与不可控部分，并对可控部分承担解释、纠正和后续行动。",
+    "real_world_manifestation": "绩效复盘中常表现为能够明确自己应负责什么、哪里需要修正，而不是自动把所有问题推向外部。责任感不要求替别人背责，成熟 responsible 同样会清楚划定真实责任边界。"
+  },
+  "unassertive": {
+    "construct_name": "unassertive",
+    "description": "在职场中，该特质表现为较少主动争取话语权、较少公开坚持立场，并更容易让他人主导互动。",
+    "core_mechanisms": "其核心是较低的公开影响和对抗倾向，不代表没有判断或没有不同意见。",
+    "real_world_manifestation": "在会议和反馈中可能使用较委婉的表达、减少争论或在表达一次后停止推动；重要边界仍可能通过保留、条件或简短说明体现。"
+  },
+  "authority bias": {
+    "construct_name": "authority bias",
+    "description": "在职场中，权威偏差表现为因为观点来自高职位、专家或权威来源而给予其过高权重。",
+    "core_mechanisms": "其核心是把权威身份作为判断正确性的认知捷径，从而减少对证据本身的独立评估。",
+    "real_world_manifestation": "在层级组织中可能导致员工不愿挑战错误方向或经理意见；重要决策应区分职位权威与证据质量。"
+  },
+  "careless": {
+    "construct_name": "careless",
+    "description": "该条目仅描述任务中反复缺少必要核对、记录或检查步骤的可观察行为，不代表员工天生粗心、不重视工作或存在品格问题；速度快或一次错误也不等同于该 Pattern。",
+    "core_mechanisms": "应观察既定的检查、计划和风险确认是否实际完成，以及相同遗漏是否在可比任务中重复出现；还需检查工作负荷、标准清晰度、经验和流程条件。",
+    "real_world_manifestation": "可能表现为字段漏填、版本用错、检查项未完成、交付后返工或跟进遗漏。应结合任务复杂度、时间压力和既定流程判断，不得把普通失误扩写成持续人格缺陷。"
+  },
+  "anchoring": {
+    "construct_name": "anchoring",
+    "description": "在职场中，锚定效应表现为后续判断受到最初信息、数字、目标或第一印象的过度影响。",
+    "core_mechanisms": "其核心是人们先以一个起始值或初始判断作为参照，再进行通常不足的调整。",
+    "real_world_manifestation": "在预算、薪酬、目标、评级和谈判中，第一个数字或早期印象可能持续影响结果，因此需要独立估计和多源证据。"
+  },
+  "talkative": {
+    "construct_name": "talkative",
+    "description": "在职场中，talkative 只聚焦“可观察的语言输出量”：说得是否多、是否经常补充、是否容易用说话完成思考。它不等同于 outgoing 的社交接近、不等同于 assertive 的立场表达，也不等同于 Warmth。",
+    "core_mechanisms": "其核心机制是较低的言语启动门槛与较强的外部语言加工倾向。高分者更容易把背景、联想和即时想法说出来；低分者则更倾向先在内部组织后再表达。",
+    "real_world_manifestation": "会议中，高 talkative 可能贡献更多口头信息，也可能带来冗长或抢占表达空间；低 talkative 可能只说关键内容。绩效对话中不要用发言量推断员工是否有观点、是否同意或是否投入。"
+  },
+  "calm": {
+    "construct_name": "calm",
+    "description": "calm 主要描述“面对当前刺激时的低即时情绪反应性”：遇到批评、意外或冲突时，短时间内不容易明显升级。它比 placid 更聚焦当下事件反应，比 composed 更少强调主动自我控制技巧。",
+    "core_mechanisms": "核心机制是即时威胁反应较弱，情绪峰值较低，因此个体可以较快继续处理事实。calm 不代表没有情绪，而是外部事件不容易迅速把情绪推到高强度。",
+    "real_world_manifestation": "在绩效面谈中，calm 常体现为语气稳定、较少即时激烈反驳和较快回到具体问题。不能把平静外表理解成没有不同意见或没有心理影响。"
+  },
+    "decision fatigue": {
+        "construct_name": "decision fatigue",
+        "description": "决策疲劳是对连续、复杂或高压力决策后出现的主观疲惫、决策回避、简化选择或注意下降等现象的描述。其定义和机制仍存在研究争议，不应将它视为必然发生的认知偏差，也不能仅根据决策顺序作出判断。",
+        "core_mechanisms": "这些表现可能与认知负荷、选择复杂度、时间压力、情绪压力、动机变化和休息不足共同有关；“有限自我调节资源被耗尽”只是可能解释之一，不应作为确定事实。",
+        "real_world_manifestation": "长时间评审或连续选择后，Employee 可能请求延后决定、倾向默认选项、减少比较维度或缩短推理。只有上下文同时出现持续决策负荷与疲惫线索时才考虑该 Pattern；Manager 可减少同时选项、明确标准或安排恢复时间，但不能把不同意见定性为判断能力下降。"
+  },
+    "groupthink": {
+        "construct_name": "groupthink",
+        "description": "群体思维是特定群体决策条件下，一致性压力、自我审查或异议成本削弱替代方案与风险检验的过程。它属于群体层面的失效模式，不是个人固定偏差，也不能仅凭团队达成一致来判定。",
+        "core_mechanisms": "可能相关的条件包括强指向性领导、群体隔离、高压力、信息同质、对异议的惩罚预期和成员自我审查；判断依据应是信息搜索、反方检验和异议表达是否实际受限，而不是共识本身。",
+        "real_world_manifestation": "团队讨论中可能出现成员有保留却不表达、替代方案未经检验、风险被快速合理化或领导意见过早成为结论。Employee Agent 只有在历史对话明确提供群体讨论和一致性压力时才可采用该 Pattern，不能从经理与员工的一对一分歧中推断群体思维。"
+  },
+  "efficient": {
+    "construct_name": "efficient",
+    "description": "efficient 专门描述“用较少时间、资源和无效步骤获得所需结果”。它关注投入—产出关系，不等同于 conscientious 的责任心、active 的忙碌程度或 dependable 的可靠性。",
+    "core_mechanisms": "核心机制是优先级、流程简化、资源配置和减少重复。高效率通常要求识别哪些动作真正影响结果，并停止低价值工作。",
+    "real_world_manifestation": "评价时应看相同质量下是否减少时间或资源，而不是看员工是否总在忙。过度追求效率可能牺牲探索、关系或质量，因此必须与任务要求共同判断。"
+  },
+  "helpful": {
+    "construct_name": "helpful",
+    "description": "helpful 主要描述“把支持转化为实际行为”的倾向，例如提供信息、资源、建议、补位或解决具体问题。它是行为层，不等同于 kind 的善意或 sympathetic 的感受。",
+    "core_mechanisms": "核心机制是发现他人存在可解决需要后，倾向投入实际资源来改善对方处境。帮助是否发生还受自身负荷、能力和边界影响。",
+    "real_world_manifestation": "团队中可以观察其是否真正共享信息、解决障碍和提供有效支持。高 helpful 不意味着无限承担别人任务，成熟帮助应避免制造依赖和长期不公平负荷。"
+  },
+  "overconfidence effect": {
+    "construct_name": "overconfidence effect",
+    "description": "过度自信效应专门描述“主观确定度高于判断的实际准确性”，包括对知识、预测或自身判断可靠性的高估。它不同于 optimism bias 的结果方向偏正，也不同于 illusion of validity 的故事连贯造成的确定感。",
+    "core_mechanisms": "核心机制包括校准不足、自我增强和对未知信息的低估，使人给自己的估计区间设得过窄。",
+    "real_world_manifestation": "预测、招聘和项目判断中，应记录置信度并与实际结果校准。高自信不是错误本身，关键在主观把握与真实准确率是否匹配。"
+  },
+  "warm": {
+    "construct_name": "warm",
+    "description": "warm 主要描述“关系温度和亲和表达”：员工是否容易通过友好语气、积极回应、关系缓冲和可接近感让互动显得温暖。它不等于 kind 的善意、trusting 的信任或 cooperative 的合作。",
+    "core_mechanisms": "核心机制是较高的人际连接表达倾向，使积极关系信号更容易外显。Warmth 主要改变互动体验，而不直接决定意见是否一致。",
+    "real_world_manifestation": "高 Warmth 员工可能在不同意时仍保持友好并回应对方意图；低 Warmth 员工也可以礼貌、合作且公平，只是减少感谢、寒暄和情绪性缓冲。"
+  },
+  "moody": {
+    "construct_name": "moody",
+    "description": "moody 主要描述“情绪状态在时间上较易波动”，即不同时间点的情绪基线可能出现较明显变化。它关注跨时间变化，而不是某一种具体情绪或某一类触发。",
+    "core_mechanisms": "核心机制是情绪反应和恢复的稳定性较低，日常事件可能更明显影响后续一段时间的表达与互动。它不等于 touchy 的批评敏感，也不等于 anxious 的持续担忧。",
+    "real_world_manifestation": "同一员工不同轮次或不同天的关系温度、积极性和耐心可能差异较大。Agent 生成时应允许 emotion_state 改变当前表现，但不能把短期 mood 直接重写固定人格。"
+  },
+  "bold": {
+    "construct_name": "bold",
+    "description": "bold 主要描述“面对社会压力、不确定性或潜在失败时较少退缩、愿意采取行动”。它关注敢不敢进入风险/陌生场景，不等同于 assertive 的语言表达。",
+    "core_mechanisms": "核心机制是较低的行为抑制和较高的行动信心，使个体更愿意尝试、承担挑战或进入尚未完全确定的场景。",
+    "real_world_manifestation": "可能更愿意接手困难任务、试新方法或面对高曝光场景。一个 bold 员工可以话不多；一个 assertive 员工也可以明确表达但对高风险行动非常谨慎。"
+  },
+  "quarrelsome": {
+    "construct_name": "quarrelsome",
+    "description": "该条目仅描述同一分歧被多次以反驳、挑战或重复论证延续的互动行为，关注频率、持续时间和是否出现新信息，不评价员工性格好坏。",
+    "core_mechanisms": "应观察继续讨论是否带来新事实、新理由或可执行条件，以及问题已回应后是否仍反复回到同一点；不推断员工喜欢争吵或有意制造冲突。",
+    "real_world_manifestation": "可能表现为连续打断、重复反驳、重开已回应议题或把多个问题拉回同一争议；基于新证据的持续质询不属于无效争吵。"
+  },
+  "quiet": {
+    "construct_name": "quiet",
+    "description": "在职场中，quiet 主要描述“实际发言频率和语言长度较低”。它是可观察输出特征，不直接说明员工是否喜欢社交、是否紧张、是否有主见或是否愿意合作。",
+    "core_mechanisms": "核心机制是较高的言语经济性：个体更倾向只输出认为必要的信息，并允许停顿和内部加工。quiet 可以与高 assertiveness 同时存在，形成“话少但立场清楚”；也可以与高 Warmth 同时存在，形成“话少但友善”。",
+    "real_world_manifestation": "在会议和反馈中通常回答更短、较少重复背景。只要议题未结束，quiet 员工仍应给出足以继续当前讨论的事实、判断、条件或下一步，而不是为了简短主动把话题说死。"
+  },
+  "reactive devaluation": {
+    "construct_name": "reactive devaluation",
+    "description": "在职场中，反应性贬值表现为因为建议来自对立方或被视为有利益冲突的人，而自动降低对建议本身的评价。",
+    "core_mechanisms": "其核心是对来源动机的怀疑影响了对内容价值的判断。",
+    "real_world_manifestation": "在谈判、跨部门冲突和绩效分歧中，即使方案本身合理，也可能因“是谁提出的”而被拒绝，因此需要把方案内容与来源评价分开。"
+  },
+  "outcome bias": {
+    "construct_name": "outcome bias",
+    "description": "在职场中，结果偏差表现为已知最终结果后，用结果好坏反向评价当时决策质量。",
+    "core_mechanisms": "其核心是人们在事后难以完全还原决策当时的信息、概率和不确定性。",
+    "real_world_manifestation": "在项目复盘和绩效评价中，坏结果不一定代表当时决策错误，好结果也不一定证明过程优秀，应评价当时可获得的信息和决策过程。"
+  },
+  "planning fallacy": {
+    "construct_name": "planning fallacy",
+    "description": "计划谬误专门描述“预测任务时间、成本和资源时系统性偏乐观”，即使过去类似任务经常超期也会重复低估。它是面向计划估计的特定偏差。",
+    "core_mechanisms": "核心机制是采用内部视角，只模拟理想执行路径，而没有充分使用类似项目的实际分布、干扰和返工数据。",
+    "real_world_manifestation": "项目管理应使用参考类别预测、历史工期和风险缓冲，而不是只让项目成员重新做一遍更详细的理想计划。"
+  },
+  "self-determination theory": {
+    "construct_name": "self-determination theory",
+    "description": "在职场中，自我决定理论强调自主、胜任和关系感对持续动机与高质量投入的重要性。",
+    "core_mechanisms": "当员工感到有选择、有能力完成任务并与他人保持有意义连接时，更容易形成内化和自主的动机；过度控制可能削弱这种动机。",
+    "real_world_manifestation": "在目标设定和发展沟通中，提供合理选择、清晰反馈、能力支持和参与感通常比单纯命令更有利于长期投入。"
+  },
+  "self-handicapping paradox": {
+    "construct_name": "self-handicapping paradox",
+    "description": "在职场中，自我设障表现为提前制造或强调阻碍，为可能的失败保留外部解释，从而保护能力和自我形象。",
+    "core_mechanisms": "其核心是自我保护：如果结果不好，可以把失败归因于障碍；如果结果好，则可进一步增强能力评价。",
+    "real_world_manifestation": "在绩效和高难度任务中可能表现为拖延、降低准备、强调不利条件或提前降低预期，需要区分真实约束与防御性解释。"
+  },
+  "energetic": {
+    "construct_name": "energetic",
+    "description": "在职场中，energetic 主要描述“可投入的精力、活力与持续性”，即员工是否呈现出有能量、有精神并能够维持一定强度工作的状态。它与 active 的“活动频率/节奏”不同：一个人可以精力充足但并不不断切换任务，也可以非常忙碌却很快耗竭。",
+    "core_mechanisms": "核心机制是较高的激活水平与可持续投入能力。高 energetic 个体更容易在较长任务周期中保持可见活力和行动强度；其表现会受到睡眠、工作负荷、恢复和情境刺激影响，因此不应把短期精力状态完全视为固定人格。",
+    "real_world_manifestation": "在项目高峰、持续协作和高工作量阶段，energetic 更体现在能否较长时间维持有效投入。它不能替代 efficient：高精力不代表资源利用更好；也不能替代 enthusiastic：高精力不要求明显兴奋或积极情绪。"
+  },
+  "enthusiastic": {
+    "construct_name": "enthusiastic",
+    "description": "在职场中，enthusiastic 主要描述“对工作、想法或积极事件的外显积极情绪与投入感”。它关注兴趣、兴奋、期待和正向表达，不等同于 energetic 的精力储备，也不等同于 outgoing 的社交主动。",
+    "core_mechanisms": "其核心机制是对正向奖励和有吸引力目标更敏感，因而更容易产生兴趣、期待并把积极情绪表达出来。高 enthusiasm 可以放大行动动力和感染力，但本身不证明判断质量或任务能力。",
+    "real_world_manifestation": "在新项目、团队动员、成功与认可场景中，员工可能更明显表达“想做、期待、觉得有意思”。低 enthusiastic 员工即使表现平静，也可能持续投入并认真执行，因此不得把低外显兴奋误判为低动机。"
+  },
+  "spontaneous": {
+    "construct_name": "spontaneous",
+    "description": "spontaneous 主要描述“较少预先脚本、能够根据现场信息即时反应”的行为风格。它可以是灵活与自然，不等同于 rash 的在高后果情境中缺乏必要评估。",
+    "core_mechanisms": "核心机制是较低的预规划依赖与较高的即时适应倾向。个体愿意使用当前信息快速调整，而不是坚持预先设计的完整步骤。",
+    "real_world_manifestation": "快速变化和低风险环境中可能表现灵活；在高风险事项中仍可以暂停检查。如果一个行为只是即时但合理，不应标记为 rash。"
+  },
+  "timid": {
+    "construct_name": "timid",
+    "description": "该条目仅描述在陌生、权威或高风险互动中，公开表达、提问或提出异议明显减少或延后的行为模式；它不表示缺乏能力、勇气或观点。",
+    "core_mechanisms": "应观察发言时机、表达直接程度、是否需要明确邀请，以及意见是否更多在会后或书面渠道提出；不推断员工对评价或安全的内在感受。",
+    "real_world_manifestation": "可能表现为会议中少主动发言、被点名后才补充、以保留措辞提出异议，或先在小范围确认再公开表达。"
+  },
+  "introverted": {
+    "construct_name": "introverted",
+    "description": "在职场中，introverted 是“较低外向性/较低社会刺激需求”的上位倾向：个体通常更偏好较低刺激环境、独立加工和有限而有目的的互动。它不等同于 quiet 的少说话、reserved 的表达克制，也不等同于 withdrawn 的压力性撤退。",
+    "core_mechanisms": "核心机制是社会刺激的主观奖励和能量需求较低，因而更愿意通过内部思考、独立任务或小范围互动工作。低社交刺激需求本身不包含害怕评价、缺乏自信或拒绝合作。",
+    "real_world_manifestation": "在会议中可能减少无必要发言，在复杂任务中可能偏好先独立形成判断。一个 introverted 员工仍可能非常 assertive、合作且能清楚表达重要不同意见；因此不得把内向自动生成成封闭、怯懦或对话终止。"
+  },
+  "sympathetic": {
+    "construct_name": "sympathetic",
+    "description": "sympathetic 主要描述“对他人的困难、痛苦或失落产生关切和情感响应”。它关注感受他人的处境，不等同于 helpful 的行动，也不等同于 warm 的日常友好表达。",
+    "core_mechanisms": "核心机制是他人的负面状态能够进入自身注意和价值判断，从而提高体谅和支持动机。情感响应强弱与是否采取行动是两个不同层次。",
+    "real_world_manifestation": "绩效谈话中，sympathetic Manager/Employee 更容易注意失望或压力，但仍可保持绩效标准。不能因为表达体谅就推断已经同意对方的事实判断。"
+  },
+  "cooperative": {
+    "construct_name": "cooperative",
+    "description": "cooperative 主要描述“愿意为了共同任务协调行动、交换信息并寻找可共同执行方案”的倾向。它聚焦协作行为，不等于 Warmth、Trust 或真实意见一致。",
+    "core_mechanisms": "核心机制是较低的零和倾向和较高的共同目标权重。个体愿意调整自己的行动以形成可执行协作，但仍可以保留不同判断。",
+    "real_world_manifestation": "绩效反馈中，高 cooperative 员工可能接受共同制定行动计划，却不代表认可 Manager 对原因或责任的全部解释。Agent 应严格区分‘行动合作’和‘认知接受’。"
+  },
+  "antagonistic": {
+    "construct_name": "antagonistic",
+    "description": "该条目仅描述分歧中反复采用直接反驳、否定、竞争性表达或较少让步的互动模式；不得据此推断员工自私、敌意、低信任或低合作。",
+    "core_mechanisms": "应观察 Employee 如何提出异议、回应证据、说明可接受条件和结束分歧，只根据实际言行判断对立程度，不推断其内在利益权重或善意程度。",
+    "real_world_manifestation": "可能表现为频繁否定方案、使用强硬措辞、在问题已回应后继续挑战，或很少说明可接受条件；坚定且基于事实的异议不属于该 Pattern。"
+  },
+  "deliberate": {
+    "construct_name": "deliberate",
+    "description": "deliberate 专门描述“在重要判断和承诺前先思考、比较并评估后果”。它聚焦决策前的审慎加工，不等同于 careful 的风险检查，也不等同于 slow。",
+    "core_mechanisms": "核心机制是较高的行为抑制与后果模拟：个体愿意暂缓即时反应，先比较替代方案、信息质量和可能结果。",
+    "real_world_manifestation": "重要决策、承诺和冲突回应中通常不会立即拍板。高 deliberate 在紧急任务中需要清楚的决策时限，否则可能演变为过度分析。"
+  },
+  "conscientious": {
+    "construct_name": "conscientious",
+    "description": "conscientious 是责任心维度的上位人格倾向，概括员工在目标导向、自律、可靠、计划、审慎和持续执行上的总体倾向。它不应与 organized、thorough、careful、dependable、responsible、efficient 或 deliberate 任一子表现完全等同。",
+    "core_mechanisms": "核心机制是对长期目标、责任与行为控制赋予较高权重，使个体更愿意抑制即时冲动、保持计划并把任务推进到完成。不同员工可以同样高 Conscientiousness，却分别通过秩序、细致、可靠或审慎等不同方式表现。",
+    "real_world_manifestation": "绩效 Agent 中应先使用 conscientious 决定总体执行姿态，再由更具体构念决定表现形式；避免同时把多个同义条目重复叠加成‘极度认真负责’。"
+  },
+  "disorganized": {
+    "construct_name": "disorganized",
+    "description": "在职场中，该特质表现为结构化程度较低，任务、信息或时间安排容易出现混乱。",
+    "core_mechanisms": "通常较少依赖稳定计划、清单和流程，更多根据当前情况处理事务。",
+    "real_world_manifestation": "在多任务、长期项目或复杂协作中可能增加遗漏、优先级混乱和跟进断点，需要更明确的外部结构支持。"
+  },
+  "irresponsible": {
+    "construct_name": "irresponsible",
+    "description": "该条目仅描述承诺、规则遵循和结果跟进中反复出现的不一致行为。只有多个可比情境中存在记录时才可提高权重，不得据此判断员工的责任感、诚信或道德品质。",
+    "core_mechanisms": "应观察责任是否明确确认、承诺是否按约完成、偏差是否主动报告以及问题是否闭环；不推断内在责任意识、逃避意图或归因动机。",
+    "real_world_manifestation": "可能表现为承诺多次未按期兑现、偏差未及时说明、问题未闭环，或责任接口反复需要确认。单次遗漏、需求变化、依赖阻塞或资源不足不构成该 Pattern。"
+  },
+  "undependable": {
+    "construct_name": "undependable",
+    "description": "该条目仅描述承诺兑现、交付时间或后续跟进在多个可比任务中持续不稳定的表现；它是行为记录，不是对员工总体可信度或品格的判断。",
+    "core_mechanisms": "应观察承诺是否清楚、进度是否按约更新、变化是否提前沟通，以及交付是否在约定条件下完成；不从结果反推个人意愿或责任感。",
+    "real_world_manifestation": "可能表现为多次错过节点、需要重复提醒、安排变更未及时通知，或行动项长期未关闭；应先排除需求变化、依赖阻塞和资源不足。"
+  },
+  "rash": {
+    "construct_name": "rash",
+    "description": "该条目仅描述在高后果事项中，尚未完成既定核对、授权或风险评估便采取行动的重复行为；反应迅速本身不等于该 Pattern。",
+    "core_mechanisms": "应比较行动前实际完成的证据检查、替代方案评估、审批和风险控制步骤，不推断员工偏好即时收益、忽视未来或缺少判断能力。",
+    "real_world_manifestation": "可能表现为未核实数据即承诺、未完成审批即执行，或敏感沟通前未确认关键信息；低风险试验和授权范围内的快速决定不属于该 Pattern。"
+  },
+  "anxious": {
+    "construct_name": "anxious",
+    "description": "anxious 主要描述“面向未来的不确定性和潜在威胁产生持续担忧”的倾向。它的核心是预期性 worry：反复考虑‘如果出问题怎么办’。与 nervous 的当下紧张不同，与 touchy 的社会冒犯敏感也不同。",
+    "core_mechanisms": "核心机制是威胁概率和后果被赋予较高注意权重，个体更容易扫描潜在问题、形成 what-if 思考并延长对未知结果的心理占用。",
+    "real_world_manifestation": "在绩效反馈和关键交付中可能反复确认标准、后果和风险，也可能更早识别问题。Manager 应提供清楚事实和边界，但不需要通过无止境保证来满足所有担忧。"
+  },
+  "touchy": {
+    "construct_name": "touchy",
+    "description": "该条目仅描述员工收到批评、否定、比较或强烈语气后，防御性表达明显且反应阈值较低的重复模式；不得据此推断员工总把信息理解为针对自己。",
+    "core_mechanisms": "只观察触发语句与随后可见反应，例如立即纠正措辞、追问依据、提高语气强度或暂停交流，不推断不可观察的冒犯感或敌意归因。",
+    "real_world_manifestation": "可能对标签化、绝对化或比较性表达迅速回应，并要求澄清事实与评价边界；对真实不公、错误事实或越界表达的合理异议不属于该 Pattern。"
+  },
+  "nervous": {
+    "construct_name": "nervous",
+    "description": "nervous 主要描述“处于被评价、陌生或高压情境时出现的即时紧张与不安”。它比 anxious 更靠近当前场景中的激活，例如说话犹豫、担心出错或需要更多准备。",
+    "core_mechanisms": "核心机制是当前评价威胁或不确定性提高生理和心理唤醒，短期占用注意资源。情境结束后 nervous 可以较快下降，因此不应自动解释为持续高焦虑人格。",
+    "real_world_manifestation": "重要汇报、面试或绩效谈话开始阶段可能出现语速变化、犹豫和重复确认。清楚议程、标准和准备空间有助于降低这种即时紧张。"
+  },
+  "mental accounting": {
+    "construct_name": "mental accounting",
+    "description": "心理账户描述人们如何把金钱、时间和资源分入不同心理类别，并分别管理这些账户。它是资源分类机制，不等同于损失厌恶或沉没成本。",
+    "core_mechanisms": "核心机制是通过分类降低复杂资源决策的认知负担，同时形成预算式自我控制。问题在于账户边界可以被重新解释，从而出现局部最优或自我合理化。",
+    "real_world_manifestation": "部门预算、培训费用和项目资源常被分别看待，即使整体目标需要重新配置。Manager 应保留分类管理，同时定期从组织整体价值重新检查资源配置。"
+  },
+  "loss aversion": {
+    "construct_name": "loss aversion",
+    "description": "损失厌恶是一个上位价值机制：相同规模的损失通常比收益具有更强心理影响。它解释为什么失去已有评级、预算、权限或机会可能比获得同等增量更强烈；它本身不等同于 status quo bias、omission bias 或 sunk cost fallacy。",
+    "core_mechanisms": "核心机制是参照点依赖：结果相对于‘当前拥有/预期应有’被编码为收益或损失，损失区域的主观价值变化通常更陡。",
+    "real_world_manifestation": "绩效和变革沟通中，Manager 需要识别员工实际感知到的损失，并区分已经失去、可能失去和仍保留的部分。损失厌恶是其他多种保守决策偏差的基础之一，但不能作为它们的替代标签。"
+  },
+  "hindsight bias": {
+    "construct_name": "hindsight bias",
+    "description": "后见之明偏差是指结果已经发生以后，人们倾向认为该结果“本来就很明显”“早就可以预见”，并高估自己事前预测结果的能力。在职场中，这会使项目复盘、事故调查、绩效评价和管理判断受到结果信息污染。",
+    "core_mechanisms": "核心机制包括事后意义建构、记忆重建与对原始判断的可及性下降。结果出现后，大脑会主动寻找能够解释结果的线索，把原本不确定的信息重新组织成一条看似连贯的因果链；如果无法准确回忆当时的原始判断，就容易用现在已经知道的结果重新构造过去的判断。",
+    "real_world_manifestation": "在项目失败后，经理可能说“这个风险其实一开始就很明显”，但当时团队可能拥有的是高度不确定的信息。高质量复盘应回到当时可获得的数据、备选方案、概率和决策理由，而不是只根据最终结果判断当时的人是否“应该知道”。保留决策日志、预测值和阶段性假设，可以显著降低这种偏差。"
+  },
+  "curse of knowledge": {
+    "construct_name": "curse of knowledge",
+    "description": "知识诅咒专门描述“已知信息污染对未知者视角的判断”：一个人掌握某项知识后，难以准确模拟不知道这项知识的人。它与广义 egocentric bias 相比，明确要求存在知识不对称。",
+    "core_mechanisms": "核心机制是已有知识难以从工作记忆和解释框架中抑制，导致专家把前置知识、术语和推理步骤误认为显而易见。",
+    "real_world_manifestation": "经理、专家和资深员工在下达任务或教学时，容易高估新员工已经掌握的上下文。有效做法是显式列出前置条件并让接收者复述理解，而不是只问‘明白了吗’。"
+  },
+  "reciprocity principle": {
+    "construct_name": "reciprocity principle",
+    "description": "互惠原则是指人们倾向于回报他人给予自己的帮助、让步、信任、尊重或资源。在职场中，互惠不仅表现为直接交换，也可以跨时间、跨情境发生，例如经理给予自主空间后，员工以更高投入和责任感回应。",
+    "core_mechanisms": "核心机制包含公平感、社会规范和长期关系中的声誉计算。人会记录他人的善意或不善意，并形成未来回应倾向；正向互惠促进合作，负向互惠则可能形成报复、僵局和持续的不信任。互惠并不等于机械的“你帮我一次我就帮你一次”，而是对关系中投入与回应是否平衡的持续判断。",
+    "real_world_manifestation": "在管理中，先给予合理信任、信息透明和支持，往往比单纯要求员工“多投入”更容易形成自发回报。但经理也要避免用隐性人情债替代正式职责，因为这会让员工产生被操纵感。发生冲突后，如果双方持续用负向互惠回应彼此，可能形成“你不配合我，我也不配合你”的恶性循环。"
+  },
+  "social facilitation": {
+    "construct_name": "social facilitation",
+    "description": "社会促进是指他人在场会改变个体任务表现：对于熟练、简单或高度掌握的任务，他人在场可能提升表现；对于复杂、新颖或尚未掌握的任务，他人在场可能增加压力并降低表现。",
+    "core_mechanisms": "核心机制是他人在场提高唤醒水平和评价意识，使最占优势、最自动化的反应更容易出现。熟练任务中的优势反应通常是正确反应，因此表现提高；新任务中的优势反应可能是错误或不成熟反应，因此表现反而下降。",
+    "real_world_manifestation": "在会议演示、公开汇报、实时编码、竞赛和高关注项目中，这一点尤其重要。经理不应把“有人盯着就会做得更好”作为普遍规则。对于新技能学习，先提供低压力练习环境往往更有利；对于已经熟练的任务，公开展示、适度竞争和团队在场则可能提高激活度。"
+  },
+  "ambiguity bias": {
+    "construct_name": "ambiguity bias",
+    "description": "模糊厌恶/模糊偏差是指在结果概率或信息不明确时，人们往往更偏好概率已知、边界更清楚的选项，即使模糊选项的真实期望价值可能并不更差。在职场中，它常体现为对新项目、新技术、陌生岗位或不确定职业路径的保守反应。",
+    "core_mechanisms": "核心机制是对未知概率和不可解释结果的不适感。相较于“风险已知”，模糊意味着人连自己是否掌握完整信息都不确定，这会降低可控感并提高主观风险。人因此更倾向选择已有流程、成熟供应商、熟悉岗位或已有经验的方案。",
+    "real_world_manifestation": "在创新和人才发展中，经理如果只要求员工“勇敢尝试”，往往不足以降低模糊带来的不安。更有效的是把未知拆成可验证假设、阶段性实验和退出条件。对决策者而言，也需要区分“确实风险高”与“只是信息不完整”，避免因为模糊本身而放弃高潜力方案。"
+  },
+  "context effect": {
+    "construct_name": "context effect",
+    "description": "情境效应是一个上位概念：同一信息、对象或表现因为周围环境、呈现顺序和参照框架不同而获得不同评价。contrast effect 是其中一种具体形式。",
+    "core_mechanisms": "核心机制是人类判断高度依赖参照而非绝对尺度，周围刺激会改变当前信息被解释的意义和基准。",
+    "real_world_manifestation": "绩效校准、招聘和方案评价中，应尽可能固定标准和比较口径。只有当评价明确由前一个对象‘拉高/拉低’时，才使用 contrast effect 这一更具体标签。"
+  },
+  "empathy gap": {
+    "construct_name": "empathy gap",
+    "description": "同理心差距是指人在一种情绪或生理状态下，往往低估自己或他人在另一种状态下的感受、动机和行为变化。例如冷静时很难准确预测人在愤怒、焦虑、疲惫或强压力状态下会怎样反应。",
+    "core_mechanisms": "核心机制是当前状态对预测的锚定。人容易把当前平静、理性或安全的感受当成默认状态，低估“热状态”下注意、冲动、威胁感和自我控制的改变；反过来，处于强情绪中时，也容易认为这种状态会持续很久。",
+    "real_world_manifestation": "在绩效沟通中，经理可能低估员工听到低评级后的即时冲击，并过快进入行动计划；员工也可能在压力中高估当前挫败的长期影响。更合理的做法是在强情绪阶段先确认理解和关键事实，待情绪强度下降后再处理复杂决策、承诺或长期规划。"
+  },
+  "projection bias": {
+    "construct_name": "projection bias",
+    "description": "投射偏差专门描述“把自己当前的偏好、情绪或需要投射给未来自己或其他人”，误以为这些状态会保持稳定或被他人共享。它不要求存在知识差距。",
+    "core_mechanisms": "核心机制是当前状态高度可及，而未来状态和他人偏好需要额外模拟，因此人会从‘我现在想要什么’出发并调整不足。",
+    "real_world_manifestation": "Career 对话中，Manager 容易把自己的职业成功定义投射给 Employee，例如默认所有高绩效员工都想管理。应直接确认员工目标，而不是用自身路径替代。"
+  },
+  "naive realism": {
+    "construct_name": "naive realism",
+    "description": "朴素现实主义是相信自己的理解基本等同于客观现实，因此把持不同观点的人更容易解释为缺信息、没能力或有偏见。它不同于 egocentric bias 的视角锚定，更强调‘我的解释就是事实本身’。",
+    "core_mechanisms": "核心机制是自身解释过程不可见：人只能体验最终结论，难以感知经验、价值和框架如何参与构建这个结论，因此低估主观解释的作用。",
+    "real_world_manifestation": "绩效分歧中双方都可能说‘事实已经很清楚’。有效对齐应拆分客观事实、因果解释、责任判断、严重程度和绩效含义，而不是反复重复各自结论。"
+  },
+  "illusion of transparency": {
+    "construct_name": "illusion of transparency",
+    "description": "透明度错觉专门描述“高估自己的内在状态已经被别人看见”。它不是认为别人知道同样知识，而是认为自己的意图、紧张、不满或真实含义对他人比实际更明显。",
+    "core_mechanisms": "核心机制是自身内在体验非常突出，个体难以充分意识到对方只能接触有限的语言、语气和行为线索。",
+    "real_world_manifestation": "员工可能认为‘我已经表现得很明显了，经理应该知道’，经理也可能认为暗示已经足够。重要事实、立场、需求和承诺应显性表达并确认。"
+  },
+  "expectation bias": {
+    "construct_name": "expectation bias",
+    "description": "期望偏差描述评价者已有预期如何影响其注意、解释和评分：更容易看到与原预期一致的线索。它不要求评价者的行为真的改变被评价者；后者属于 observer-expectancy effect。",
+    "core_mechanisms": "核心机制是自上而下的信息加工。既有标签会影响注意选择和模糊证据解释，从而让后续观察越来越支持原判断。",
+    "real_world_manifestation": "绩效评价中，早期‘高潜/一般’标签可能污染后续证据解释。应使用周期内具体行为和预定义标准持续更新，而不是让初始印象主导全年。"
+  },
+  "fundamental attribution error": {
+    "construct_name": "fundamental attribution error",
+    "description": "基本归因错误专门描述“观察他人时过度使用人格/能力解释，低估情境约束”。它是归因理论中的一种具体偏差，不描述对自己行为的解释。",
+    "core_mechanisms": "核心机制是行为者本身具有较高知觉显著性，而修正情境因素需要额外注意与信息，因此快速判断容易停留在‘他就是这样的人’。",
+    "real_world_manifestation": "绩效中把一次延期直接解释为‘责任心不足’，却没有检查目标变化、依赖和资源，就是典型风险。需要先核对情境，再判断是否存在稳定行为模式。"
+  },
+  "availability heuristic": {
+    "construct_name": "availability heuristic",
+    "description": "可得性启发是指人们用某类事件在记忆中有多容易被想起来，来判断它发生的频率、概率或重要性。近期、鲜明、情绪强烈和容易叙述的事件会被赋予过高权重。",
+    "core_mechanisms": "核心机制是记忆检索流畅性替代了真实统计频率。大脑并不总是重新计算完整数据，而是用“我能想到多少例子”作为快速估计，因此一个近期重大失败可能遮盖此前大量稳定表现。",
+    "real_world_manifestation": "在绩效评价中，这会产生明显的近期事件偏重。经理应按整个周期收集事实，而不是依赖年末最容易回忆的事件。风险管理中，也要避免因为刚发生一次事故就过度估计某风险，或因为长期没发生事故就低估其基础概率。"
+  },
+  "sunk cost fallacy": {
+    "construct_name": "sunk cost fallacy",
+    "description": "沉没成本谬误专门描述“已经无法收回的过去投入继续影响未来选择”。它不同于现状偏差：即使当前方案不是默认方案，只要过去投入很大，也可能导致继续加码。",
+    "core_mechanisms": "核心机制包括损失承认困难、努力合理化和自我一致性。退出意味着承认过去投入可能没有带来预期价值，因此继续投入能够暂时避免这种心理成本。",
+    "real_world_manifestation": "项目治理中应问‘如果今天从零开始，基于当前信息还会选择这个方案吗’，把未来收益与过去不可回收成本分开。"
+  },
+  "contrast effect": {
+    "construct_name": "contrast effect",
+    "description": "对比效应专门描述当前对象的评价被刚刚出现或邻近的强弱对象向相反方向推移：前一个特别强，会让普通表现显得更弱；前一个特别弱，则可能让普通表现显得更好。",
+    "core_mechanisms": "核心机制是局部参照点被最近或最显著对象重置，导致当前对象按相对差异而不是绝对标准被编码。",
+    "real_world_manifestation": "连续面试和绩效校准中尤其常见。应让每个对象先独立按固定标准评分，再进行横向比较，减少顺序造成的评价漂移。"
+  },
+  "cognitive dissonance theory": {
+    "construct_name": "cognitive dissonance theory",
+    "description": "认知失调理论描述了当一个人的行为、信念、价值观或自我形象彼此矛盾时产生的心理不适，以及人为了恢复一致性而改变解释、态度或后续行为的过程。",
+    "core_mechanisms": "其核心机制是对一致性的需求。人可以通过改变行为、改变信念、降低冲突信息的重要性或增加合理化理由来减少不适。当问题触及“我是一个有能力/负责任的人”等核心自我概念时，失调尤其强烈。",
+    "real_world_manifestation": "绩效负面反馈常直接触发认知失调。员工可能接受事实，却拒绝“这说明我能力不足”的含义；经理如果直接挑战身份标签，更容易促发防御。更有效的是围绕具体行为、标准和可改变事项展开，使反馈更容易被整合，而不是迫使员工先否定自己的整体自我评价。"
+  },
+  "conformity": {
+    "construct_name": "conformity",
+    "description": "从众描述个人在真实或感知的群体压力下，使公开行为或私人判断更接近群体规范。它是个体层面的顺应机制，不等同于 bandwagon effect 的‘因为很多人选择所以更有吸引力’，也不等同于 groupthink 的团队决策失效。",
+    "core_mechanisms": "核心机制包括规范性影响（避免排斥/冲突）和信息性影响（把他人判断当成信息）。外显一致可以发生在内部并未真正同意的情况下。",
+    "real_world_manifestation": "会议中员工跟随多数意见不等于真实接受。重要决策可先独立形成观点、再公开讨论，以减少群体压力污染初始判断。"
+  },
+  "bandwagon effect": {
+    "construct_name": "bandwagon effect",
+    "description": "跟风效应专门描述“某个选择因为采用人数增加而变得更有吸引力或被认为更正确”。它以受欢迎程度作为质量线索，是社会证明型选择偏差。",
+    "core_mechanisms": "核心机制是在信息不足时把‘别人都选了’当作低成本判断依据。随着可见采用者增加，选择本身又进一步吸引新采用者。",
+    "real_world_manifestation": "工具选型、管理潮流和组织项目中，应区分广泛采用与适合当前业务。流行程度可以作为信息，但不应替代独立价值评估。"
+  },
+  "survivorship bias": {
+    "construct_name": "survivorship bias",
+    "description": "幸存者偏差是指分析成功案例时，只看到留下来、被观察到或成功的样本，而忽略失败、退出或没有被记录的样本，导致对成功原因产生系统性误判。",
+    "core_mechanisms": "核心机制是样本选择不可见。成功案例更容易被传播、复盘和模仿，而失败者往往退出视野，因此观察到的数据本身已经经过筛选。",
+    "real_world_manifestation": "在人才发展中，只研究成功高管的共同特征，可能把很多失败者同样具备的特征误认为成功原因。项目复盘、供应商选择、创业和创新分析都应主动寻找“没成功的相似案例”，以避免从幸存样本推出过度确定的结论。"
+  },
+  "ostrich effect": {
+    "construct_name": "ostrich effect",
+    "description": "鸵鸟效应是指当信息可能带来不舒服的结果时，人们主动回避、推迟或减少接触这些信息，例如不看亏损数据、不打开负面反馈、不检查风险指标。",
+    "core_mechanisms": "核心机制是短期情绪调节。获取坏消息会立即带来焦虑、失望或自我威胁，因此回避信息可以快速降低不适，但代价是延迟纠正和决策。",
+    "real_world_manifestation": "在管理中，它常表现为问题已经出现但团队不愿上报、经理避开低绩效谈话、项目成员迟迟不更新真实风险。建立定期透明指标、无惩罚的早期风险上报和固定复盘机制，可以降低“只在坏消息严重后才面对”的倾向。"
+  },
+  "base rate fallacy": {
+    "construct_name": "base rate fallacy",
+    "description": "基础率忽视是指在判断某事件或个体时，过度依赖鲜明的个案信息，而低估整体群体中该事件本来的基础发生率。",
+    "core_mechanisms": "核心机制是具体故事比抽象统计更容易理解和记忆。一个生动案例会让人感觉更有诊断价值，即使从统计上看，基础率信息对结果预测更重要。",
+    "real_world_manifestation": "招聘和绩效判断中，经理可能因为一次“很像优秀人才”的行为就高估成功概率，却忽略历史岗位数据；风险判断也可能因为一个极端案例而忽略长期统计。结构化决策应同时呈现个体证据与基础率。"
+  },
+  "omission bias": {
+    "construct_name": "omission bias",
+    "description": "不作为偏差专门描述“相同负面后果下，主动造成的结果被认为比不行动造成的结果更应负责或更糟”，因此个体倾向不采取行动。它与 status quo bias 相近，但核心是行动责任的不对称。",
+    "core_mechanisms": "核心机制是主动行为更容易产生责任、后悔和反事实想象，而不行动心理上更容易被解释为没有直接造成后果。",
+    "real_world_manifestation": "经理可能因为担心改变后失败而长期不处理明显问题。决策时应显式比较‘采取行动的风险’与‘维持不行动本身的后果’。"
+  },
+  "choice overload": {
+    "construct_name": "choice overload",
+    "description": "选择过载是指当可选方案过多、差异复杂或比较成本很高时，更多选择不一定提高满意度，反而可能增加认知负荷、拖延和后悔。",
+    "core_mechanisms": "核心机制是有限注意力与比较成本。选项增加意味着需要处理更多属性、权衡和潜在机会成本，同时也提高了“是否错过更好方案”的心理负担。",
+    "real_world_manifestation": "在员工发展计划、福利方案、培训路径和系统设计中，给出几十个“你都可以选”的选项可能比提供少量经过筛选的方案更难行动。经理可以先明确目标和约束，再提供2—4个真正相关的可选路径。"
+  },
+  "moral licensing effect": {
+    "construct_name": "moral licensing effect",
+    "description": "道德许可效应是指人在做出一项被自己视为积极、道德或高价值的行为后，可能认为自己已经积累了足够“道德资本”，从而在后续行为中放松标准。",
+    "core_mechanisms": "核心机制是动态自我评价。人希望维持“我是一个好人/负责任的人”的整体形象，当一次正向行为强化了这种形象后，对下一次行为的自我约束可能降低。",
+    "real_world_manifestation": "在职场中，团队可能因为过去一次重大贡献而合理化后续的流程违规，经理也可能因为员工总体表现好而忽略具体不当行为。评价应尽量逐项基于当前行为和标准，而不是让过去功劳自动抵消无关问题。"
+  },
+  "post-traumatic growth": {
+    "construct_name": "post-traumatic growth",
+    "description": "创伤后成长是部分人在经历真正具有创伤性的重大事件后，主观报告或实际呈现出的关系、价值、能力或人生方向变化。它不是一般项目失败、普通职业挫折的通用标签，也不表示创伤有益或所有人都会成长。",
+    "core_mechanisms": "可能涉及对被打破的核心信念进行重新理解、意义重建、社会支持和后续行动；自我报告的“感到成长”与客观前后变化并不相同，不能仅凭积极叙述确认。",
+    "real_world_manifestation": "除非上下文明确存在符合创伤性质的重大事件，否则 Employee Agent 不应激活该 Pattern。面对项目失败或组织调整，应使用学习、适应或意义重建等更中性的构念，并允许员工保留痛苦、损失和不确定性。"
+  },
+  "gratitude mechanism": {
+    "construct_name": "gratitude mechanism",
+    "description": "感恩机制是指个体识别自己获得的积极结果，并意识到其中包含他人的投入、帮助或善意，从而产生感谢和更强的亲社会回应。",
+    "core_mechanisms": "核心机制包括对他人贡献的注意、社会价值确认与正向互惠。感受到他人的帮助后，人更容易产生连接感和回报意愿；表达感谢也会提高被感谢者的社会价值感，增强后续帮助和投入。",
+    "real_world_manifestation": "在管理中，具体而真实的认可比泛化“谢谢大家”更有价值。经理可以明确指出员工做了什么、产生了什么影响以及为什么重要。感谢不应替代绩效标准，但可以强化协作关系、帮助行为和持续投入。"
+  },
+  "flow principle": {
+    "construct_name": "flow principle",
+    "description": "更常见的学术表述是“心流状态/心流体验”：人在高度投入的活动中可能出现专注、行动与意识融合及时间感改变等主观体验。挑战—技能匹配、目标清晰和及时反馈是常见相关条件，不是进入心流的充分保证。",
+    "core_mechanisms": "心流可能受挑战与技能的相对匹配、目标清晰度、反馈速度、注意控制、任务自主性和干扰水平共同影响；不同个体和任务中的权重可能不同，不能把单一条件写成确定因果。",
+    "real_world_manifestation": "工作中可通过明确目标、缩短反馈周期、减少无必要打断并逐步调整挑战来增加深度投入机会，但不得承诺一定形成心流，也不能把未进入心流解释为能力或动机不足。"
+  },
+  "social comparison theory": {
+    "construct_name": "social comparison theory",
+    "description": "社会比较理论认为，人有持续评估自己能力、观点和表现的需求；当缺少明确客观标准时，会使用他人的表现作为参照。职场中的“我做得怎么样”往往不仅来自绝对结果，也来自“我相对团队处于什么位置”。",
+    "core_mechanisms": "核心机制包括不确定性降低、自我评价、自我增强和向上提升动机。人倾向选择与自己相似的人进行比较，因为这样的参照更有解释力。能力领域中的向上比较可能激发改善，也可能在差距过大且不可改变时造成挫败、防御或贬低他人。",
+    "real_world_manifestation": "绩效反馈应优先锚定岗位标准和个人目标，再谨慎使用同岗比较。仅说“你比团队平均好/差”会强化相对排名，但未必告诉员工具体该改善什么。职业发展中，可以使用适度的榜样比较帮助理解下一层级要求，但要避免把比较变成人格价值判断。"
+  },
+  "information bias": {
+    "construct_name": "information bias",
+    "description": "信息偏差是指即使新增信息不会改变最优决策，人们仍倾向继续收集数据，因为“知道更多”本身会带来安全感和完成感。在复杂工作中，它常被误认为严谨。",
+    "core_mechanisms": "核心机制是对不确定性的厌恶、控制感需求和过程正当化。继续查数据可以缓解“我是不是遗漏了什么”的焦虑，同时为未来解释决策提供更多材料。但当信息对选项排序没有实际影响时，继续收集只会消耗时间并增加噪声。",
+    "real_world_manifestation": "在招聘、项目分析和绩效调查中，可以在开始前定义“哪些信息会改变决定”。如果某项信息无论结果如何都不会改变行动，就应重新评估其必要性。经理也要警惕用“再看看数据”拖延必须做出的困难决定。"
+  },
+  "illusory correlation": {
+    "construct_name": "illusory correlation",
+    "description": "错觉相关是指人们在两个事件之间感知到并不存在或被高估的联系，尤其当两个事件都比较少见、醒目或情绪显著时。",
+    "core_mechanisms": "核心机制是共同独特性：两个稀少事件同时发生时更容易被注意和记住，随后人会高估它们共同出现的频率。长期重复后，这种错误联系还可能变成刻板印象。",
+    "real_world_manifestation": "在人才评价中，经理可能把某种沟通风格与高绩效错误绑定，或者因为少数失败案例把某背景与低能力联系起来。需要使用系统数据验证相关性，而不是依赖几个最容易想起来的组合案例。"
+  },
+  "source confusion": {
+    "construct_name": "source confusion",
+    "description": "来源混淆是指人能够记住某条信息或想法，却无法准确记住它来自谁、什么时候、什么情境，从而把别人的想法当成自己的、把传闻当成事实或把过去版本当成当前结论。",
+    "core_mechanisms": "核心机制是来源监控需要额外注意资源。人在高认知负荷下更容易只编码“内容是什么”，而没有充分编码“谁说的、依据是什么”。之后内容仍然熟悉，但来源标签变弱。",
+    "real_world_manifestation": "在会议、绩效校准和方案共创中，来源混淆会影响责任、知识产权和事实追溯。建议记录关键结论、提出者、证据来源和决策状态，区分“有人提出”“双方确认”“最终决定”三个层次。"
+  },
+  "observer-expectancy effect": {
+    "construct_name": "observer-expectancy effect",
+    "description": "观察者期望效应专门描述评价者的预期不仅影响其判断，还通过提问、机会、反馈、关注和互动方式实际改变被观察者的行为，形成自我实现过程。",
+    "core_mechanisms": "核心机制是期待改变评价者行为，而评价者行为再改变员工得到的机会、信息和心理反应，最终使结果更接近原始期待。",
+    "real_world_manifestation": "经理可能无意识给‘看好的人’更多挑战和耐心，从而进一步拉开表现。结构化机会分配和一致评价流程有助于降低这种自我实现偏差。"
+  },
+  "illusion of validity": {
+    "construct_name": "illusion of validity",
+    "description": "效度错觉专门描述“因为信息形成了连贯、可信的故事，就过度相信预测或判断准确”。它不要求主观 confidence 在所有领域都高，而是由当前叙事的内部一致性制造确定感。",
+    "core_mechanisms": "核心机制是大脑把故事连贯性误当成预测效度，忽略样本量、环境可预测性和证据质量。",
+    "real_world_manifestation": "人才盘点中‘这个人看起来非常像未来领导者’可能形成强故事，却不一定具有高预测效度。需要把叙事与可验证证据、历史预测准确率和不确定性分开。"
+  },
+  "social identity theory": {
+    "construct_name": "social identity theory",
+    "description": "社会认同理论认为，人会把自己的一部分自我概念建立在所属群体上，并通过“我们”和“他们”的分类理解组织世界。团队、职能、地区、专业背景和层级都可能成为重要身份来源。",
+    "core_mechanisms": "核心机制是社会分类、群体认同和积极区分。加入群体能够提供归属和自尊，但也会提高内群体偏好、群体边界和对外群体的刻板化。群体目标和身份如果被设计得更高阶，也能把原本分裂的团队重新纳入共同身份。",
+    "real_world_manifestation": "在跨部门合作中，研发、销售、HR、总部和地区团队可能因身份差异产生“他们不懂我们”的解释。经理可以强化共同业务目标和跨团队成功指标，同时保留专业身份，减少零和式部门对立。"
+  },
+  "focusing effect": {
+    "construct_name": "focusing effect",
+    "description": "聚焦效应是指当某一个因素被刻意提醒或放在问题中心时，人们会高估它对整体结果的重要性，而低估其他同时存在的因素。",
+    "core_mechanisms": "核心机制是注意即权重。被问到的因素更容易进入工作记忆，因此在后续判断中占据更大比例，即使现实结果由多个因素共同决定。",
+    "real_world_manifestation": "在绩效面谈中，如果整场讨论都围绕一次延期，员工全年其他表现可能被压缩；如果只问“晋升对你有多重要”，也可能高估晋升在职业满意度中的权重。经理应在聚焦重点问题的同时，保留整体表现和多因素背景。"
+  },
+  "framing effect": {
+    "construct_name": "framing effect",
+    "description": "框架效应是指逻辑上等价的信息，因为使用收益、损失、成功率、失败率等不同表述方式，会导致不同选择。在组织沟通中，数据怎么说会影响员工和经理如何理解风险。",
+    "core_mechanisms": "核心机制包括信息不对称、语言暗示和“gist”式简化加工。人往往不是逐字逐数计算，而是提取一个简单意义，例如“保住一部分”或“可能全部失去”，再基于这个意义做选择。",
+    "real_world_manifestation": "在变革、风险和绩效沟通中，应尽量同时呈现正反两面，例如“80%按期完成”也同时说明“20%延期”，避免用单一框架操纵判断。重要决策可主动进行“去框架化”，把不同选项改写成同一口径后再比较。"
+  },
+  "optimism bias": {
+    "construct_name": "optimism bias",
+    "description": "乐观偏差专门描述“系统性高估积极结果、低估负面结果发生在自己或自己项目上的概率”。它关注结果方向，而不是一般 confidence。",
+    "core_mechanisms": "核心机制包括对好消息更新更多、对坏消息更新不足，以及积极预期带来的动机收益。",
+    "real_world_manifestation": "项目计划中要区分‘我们希望发生什么’和‘历史基础率显示最可能发生什么’。适度乐观可以促进投入，但需要外部数据和风险预演校准。"
+  },
+  "fading affect bias": {
+    "construct_name": "fading affect bias",
+    "description": "情绪消退偏差是指随着时间推移，负面自传性记忆的情绪强度通常比正面记忆消退得更快。事实内容可能保留，但当时的不适感逐渐减弱。",
+    "core_mechanisms": "核心机制可以理解为一种长期情绪调节：记忆仍用于学习，但负面情绪负担减轻。这有助于恢复和保持积极自我叙事，但也可能让人低估过去错误或困难的真实成本。",
+    "real_world_manifestation": "在项目和职业决策中，团队多年后可能只记得“最终做成了”，淡化当时严重的加班、冲突和风险，进而重复同样做法。复盘应保存当时的数据、成本和过程证据，而不是只依赖多年后的主观记忆。"
+  },
+  "observer effect": {
+    "construct_name": "observer effect",
+    "description": "观察者效应指当人知道自己正在被观察、测量或评价时，会改变原本的行为，使观察到的表现不完全代表日常状态。",
+    "core_mechanisms": "核心机制是评价意识和印象管理。被观察会提高自我监控，个体可能更加规范、认真或谨慎，也可能因为压力而表现失常。因此观察本身改变了被观察对象。",
+    "real_world_manifestation": "在绩效观察、现场审核、领导走访和试点项目中，短时间观察到的高规范行为不能直接等同于长期稳定行为。更可靠的方法是结合长期数据、多场景观察和自然工作证据。"
+  },
+  "risk compensation": {
+    "construct_name": "risk compensation",
+    "description": "风险补偿是指当人感觉环境更安全、保护措施更多或风险下降时，可能相应增加冒险行为，从而抵消部分安全措施带来的收益。",
+    "core_mechanisms": "核心机制是主观风险水平调节。个体往往不是把新增安全措施全部转化为更低风险，而是把其中一部分“安全余量”用于追求速度、便利或更高目标。",
+    "real_world_manifestation": "在组织中，新审批工具、自动检查或AI辅助并不意味着可以降低人工监督到零。安全系统上线后，应继续观察行为是否变得更激进，例如更快上线、更少复核或更愿意承担边界风险。"
+  },
+  "psychological safety": {
+    "construct_name": "psychological safety",
+    "description": "心理安全感是团队成员共享的一种信念：在团队中提出问题、承认错误、表达不同意见、请求帮助或提出新想法等人际风险行为，不会因此受到羞辱、排斥或惩罚。它不是“大家关系好”或“没有冲突”，而是成员相信可以在保持专业标准的同时坦率表达真实信息。",
+    "core_mechanisms": "其核心机制是降低人际风险成本。当成员担心说错话会影响声誉、关系或职业机会时，会选择沉默；当团队形成尊重、可信和允许试错的互动规范时，成员更愿意暴露不确定性、提出问题和分享坏消息。领导者的开放回应、承认自身不确定性、邀请异议和对错误进行学习导向处理，会影响这种共享信念。",
+    "real_world_manifestation": "心理安全感对绩效反馈尤其重要：Employee 必须能够说出不同理解、未解决风险和资源限制，而不是只给出表面认同。经理应避免把不同意见自动解释为不合作。研究依据：Edmondson（1999）将其定义为团队对“可以承担人际风险”的共享信念，并发现其与团队学习行为相关。"
+  },
+  "goal-setting theory": {
+    "construct_name": "goal-setting theory",
+    "description": "目标设定理论关注目标特征如何影响工作动机和绩效。大量研究表明，在具备必要能力、承诺和反馈的条件下，明确且具有挑战性的目标通常比模糊的“尽力而为”更能提高表现。",
+    "core_mechanisms": "目标主要通过四条路径发挥作用：聚焦注意力、提高努力强度、延长坚持时间、促使个体寻找任务策略。目标效果还受到任务复杂度、目标承诺、反馈和能力等条件影响；对新颖复杂任务，如果过早强调高绩效结果目标，可能妨碍探索和策略学习。",
+    "real_world_manifestation": "在绩效管理中，好的行动计划不能只写“加强沟通”“提升能力”，而应明确对象、行为、结果和检查节点。对于尚在学习的新任务，可先使用学习目标，再逐步转为结果目标。研究依据：Locke & Latham（2002）总结了约35年的目标设定研究。"
+  },
+  "feedback intervention theory": {
+    "construct_name": "feedback intervention theory",
+    "description": "反馈干预理论解释为什么反馈有时提升绩效、有时反而降低绩效。反馈本身并非天然有效；它改变的是接收者注意力所聚焦的层级。",
+    "core_mechanisms": "理论区分任务学习、任务动机和更高层的自我相关过程。当反馈把注意力引向“具体任务差距和如何改进”时，更容易帮助表现；当反馈把注意力拉向“我是不是一个失败的人”“别人怎么看我”等自我层面时，绩效改善效果会下降。Kluger 与 DeNisi 的元分析发现，反馈平均有效，但超过三分之一的反馈干预降低了表现。",
+    "real_world_manifestation": "经理在绩效反馈中应尽量把语言放在可观察行为、任务标准、差距和下一步，而不是用整体人格标签。负面反馈后，如果员工持续自我防御，可以把讨论重新拉回“当前任务发生了什么、下次具体做什么”。"
+  },
+  "job demands-resources model": {
+    "construct_name": "job demands-resources model",
+    "description": "工作要求—资源模型（JD-R）把工作特征分为两大类：工作要求是持续消耗身体或心理努力的因素；工作资源则帮助达成目标、降低要求成本或促进学习成长。模型用于解释倦怠、投入和员工福祉。",
+    "core_mechanisms": "其核心包含两条过程：高要求长期消耗能量，容易形成压力和倦怠；充分资源则支持目标实现、自主、学习和投入。资源包括自主权、反馈、支持、工具、清晰角色等。需求并非一定有害，关键在于强度、持续时间以及是否有足够资源匹配。",
+    "real_world_manifestation": "在绩效反馈中，不能只问员工“为什么没做到”，还应区分能力/行为问题与资源/要求失衡。经理可以检查任务量、优先级冲突、权限、系统支持和跨部门依赖，再决定是能力改进还是工作设计问题。研究依据：Bakker & Demerouti 的 JD-R 模型综述。"
+  },
+  "organizational justice": {
+    "construct_name": "organizational justice",
+    "description": "组织公平描述员工对工作场所决策和待遇是否公平的判断。经典研究通常区分分配公平、程序公平、人际公平和信息公平四个维度。",
+    "core_mechanisms": "分配公平关注结果是否合理；程序公平关注决策过程是否一致、可申诉和基于准确资料；人际公平关注是否被尊重；信息公平关注解释是否充分、真实和及时。这四个维度相互关联但并不相同，因此“结果对员工有利”不能替代公平过程。",
+    "real_world_manifestation": "绩效评价中，即使最终评分不会改变，经理仍可以通过清晰标准、事实证据、充分解释和尊重沟通提高程序与信息公平感。反过来，即使结果不错，若员工认为过程不透明，也可能降低信任。研究依据：Colquitt（2001）验证了四维组织公平结构。"
+  },
+    "employee voice": {
+        "construct_name": "employee voice",
+        "description": "员工建言是员工主动表达与工作改进、风险、问题或异议有关的信息和建议的行为。它可以在单次情境中出现，长期是否愿意建言则会受到环境与互动经验影响；没有表达不等于没有意见或已经接受。",
+        "core_mechanisms": "是否建言通常取决于员工对“表达是否可能产生作用”和“表达是否安全”的判断，并受到权力差距、经理回应、心理安全、议题重要性及过去经验影响；这些因素不能由一次发言反向推断为稳定人格或既定关系状态。",
+        "real_world_manifestation": "绩效对话中可能表现为补充遗漏事实、指出流程风险、提出不同解释或建议替代方案。Employee Agent 只能依据当前实际表达和已知经历调整建言倾向，不得虚构长期信任；Employee 没有反驳时也不得自动生成“完全接受”的结论。"
+  },
+    "job crafting": {
+        "construct_name": "job crafting",
+        "description": "工作塑造是员工在实际边界允许的范围内，主动调整任务做法、互动关系或对工作意义的理解，以改善人与工作的匹配。它描述的是员工行为，不是岗位本身的结构特征，也不意味着员工天然拥有改变职责或权限的权力。",
+        "core_mechanisms": "它可能由提升控制感、发挥优势、建立有意义的关系或增强工作意义等动机推动，同时受到岗位自主性、资源、协作依赖和组织边界约束；同一行为也可能有其他原因，不能仅凭结果推断动机。",
+        "real_world_manifestation": "员工可能建议调整任务方法、主动建立新的协作关系、承担更匹配优势的工作，或重新理解任务价值。绩效沟通中应区分获准的主动调整、正常探索与回避核心职责；Employee Agent 不得虚构授权、岗位变更或经理承诺。"
+  },
+  "leader-member exchange": {
+    "construct_name": "leader-member exchange",
+    "description": "领导—成员交换（LMX）把领导力视为经理与每位员工之间形成的关系质量，而不是只看领导者的统一风格。不同上下级关系可能具有不同程度的信任、支持、信息交换和责任互惠。",
+    "core_mechanisms": "核心机制是关系通过一系列工作交换逐渐形成。高质量关系通常包含更充分的信息、信任和双向投入；低质量关系更依赖正式角色和合同要求。关系质量既受双方行为影响，也受到公平感和一致管理边界约束。",
+    "real_world_manifestation": "绩效反馈是 LMX 关系的重要节点。经理既要提供真实评价，也要避免让高关系质量变成偏袒。对低绩效员工仍需保持信息透明和尊重；对高潜员工也应以事实标准为基础。研究依据：Graen & Uhl-Bien（1995）的关系型领导综述。"
+  },
+  "self-efficacy": {
+    "construct_name": "self-efficacy",
+    "description": "自我效能是对“我能否成功完成某个具体任务/行动”的能力信念，是一个跨任务但必须情境化的动机构念。它不等同于 professional efficacy：后者是对整体职业工作有效性的持续体验。",
+    "core_mechanisms": "核心机制是能力预期影响目标选择、努力、坚持和失败后的恢复。掌握经验、相似榜样、可信反馈和对压力的解释都会改变自我效能。",
+    "real_world_manifestation": "在发展计划中应明确‘对什么任务的效能感’，例如是否有信心独立主持跨部门评审，而不是泛泛写‘自信不足’。"
+  },
+  "proactive personality": {
+    "construct_name": "proactive personality",
+    "description": "主动性人格是“稳定倾向”：个体更习惯识别机会、主动改变环境并坚持推动变化。它是人格层变量，不等同于 taking charge 或 personal initiative 这些具体工作行为。",
+    "core_mechanisms": "核心机制是相对稳定的能动性和环境改变取向，使个体跨情境更容易采取前瞻行动；但实际行为仍受权限、心理安全和工作设计限制。",
+    "real_world_manifestation": "人才画像中可用于描述稳定主动倾向；评价实际绩效时仍应寻找 taking charge、personal initiative 等具体行为证据，不能用人格倾向替代事实。"
+  },
+  "work goal orientation": {
+    "construct_name": "work goal orientation",
+    "description": "工作目标取向描述员工在成就情境中如何理解能力和成功。经典工作领域量表通常区分学习取向、证明取向和回避取向：前者关注发展能力，后两者分别关注证明自己有能力或避免显得没有能力。",
+    "core_mechanisms": "学习取向使员工更愿意把困难和反馈当成提升能力的信息；证明取向更关注别人如何评价能力；回避取向则更容易在可能暴露不足时减少挑战、回避反馈或采取防御策略。这些取向会影响员工面对绩效反馈、困难任务和学习机会的反应。",
+    "real_world_manifestation": "经理在发展沟通中可以把反馈从“证明你够不够好”转向“接下来要学会什么、在哪个场景验证”。对防御较强的员工，减少人格化评价、提供可控的学习目标通常更利于进入改进行动。研究依据：VandeWalle（1997）工作目标取向三维模型。"
+  },
+  "role ambiguity": {
+    "construct_name": "role ambiguity",
+    "description": "角色模糊是指员工对职责范围、优先级、权责边界、绩效标准或如何完成工作缺乏足够清晰的信息。它与“工作很难”不同：难度高可以很清晰，角色模糊则意味着不知道究竟应该做什么或怎样算做好。",
+    "core_mechanisms": "核心机制是目标与行为之间的映射不清。员工无法稳定判断该把注意力和资源投入哪里，也无法预测哪些行为会被评价为成功，从而增加认知负荷、焦虑和试错成本。",
+    "real_world_manifestation": "绩效反馈前应先检查目标和职责是否清楚。研究元分析显示，角色模糊与工作绩效存在负向关系。若经理此前没有明确标准，就不应把所有结果差距简单解释为员工能力问题；改进计划应先补清角色、优先级、决策权和验证标准。"
+  },
+  "work engagement": {
+    "construct_name": "work engagement",
+    "description": "工作投入是一种积极、相对持久的工作心理状态，通常表现为活力、奉献和专注吸收。它不同于短期兴奋，也不是简单的“工作时间长”。",
+    "core_mechanisms": "其核心机制与工作资源密切相关。自主、反馈、支持、发展机会和有效工具等资源能够帮助员工实现目标、维持动力并促进成长，从而增强投入。高投入与倦怠并非完全同一条连续轴的两端，但二者通常负相关。",
+    "real_world_manifestation": "经理在发展员工时，除了设定更高目标，也要看是否提供了足以支撑挑战的资源。持续高要求而缺乏资源更可能导向消耗；适度挑战加上自主、反馈和支持更容易形成长期投入。研究依据：Schaufeli & Bakker 等工作投入/JD-R研究。"
+  },
+  "job characteristics model": {
+    "construct_name": "job characteristics model",
+    "description": "工作特征模型是一个“父级工作设计框架”，用于组织技能多样性、任务完整性、任务重要性、自主性和工作反馈等核心岗位特征，并解释它们如何影响意义感、责任感、结果知识和工作动机。它不应作为这些子维度的同义词。",
+    "core_mechanisms": "核心机制是不同工作特征通过不同心理状态影响结果：意义来源、自主责任和反馈知识是分开的路径。使用该条目时应优先回答‘整体岗位设计如何影响员工’，若问题只涉及自主性或反馈，应检索具体子条目。",
+    "real_world_manifestation": "适合用于诊断‘这个岗位整体设计是否支持高质量表现与发展’。RAG 中如果已命中具体子维度，可降低父级条目的重复权重，避免同一证据被多次解释。"
+  },
+  "job autonomy": {
+    "construct_name": "job autonomy",
+    "description": "工作自主性是岗位允许员工在时间安排、决策和工作方法上拥有多少自由、独立与裁量权。它不是缺少管理，而是在明确目标和责任边界下，让员工拥有真实选择。",
+    "core_mechanisms": "自主性通过增强控制感、所有权和结果责任支持内在动机与主动解决问题。自主权必须与能力、信息和明确边界匹配；如果目标模糊却高度放权，员工可能体验到的是不确定而不是赋能。",
+    "real_world_manifestation": "当经理要求员工“更主动”时，应检查员工是否真的拥有行动空间。对于更高层级的发展，可明确哪些事项可以独立决定、哪些需要咨询、哪些必须升级，使自主性成为可观察的发展要求。"
+  },
+  "skill variety": {
+    "construct_name": "skill variety",
+    "description": "技能多样性指一项工作需要调用多少种不同的技能、知识和能力。高技能多样性岗位可能同时要求专业分析、沟通、协调、判断、创新和执行，而不是长期重复单一动作。",
+    "core_mechanisms": "多样性能够提高工作丰富度并提供更广的学习场景，但也提高认知切换和能力要求。只有当新增技能与工作目标相关且员工有学习资源时，多样性才更可能成为发展机会，而不是无序加负荷。",
+    "real_world_manifestation": "职业发展计划可以有目的地扩展员工的技能场景，例如从单一专业交付扩展到方案设计、跨部门协调或复盘。关键不是“什么都做一点”，而是与下一层级要求形成明确连接。"
+  },
+  "task identity": {
+    "construct_name": "task identity",
+    "description": "任务完整性是员工是否能够完成一个相对完整、可辨识、有明确起点和终点的成果，而不是只负责无法看到最终结果的小片段。",
+    "core_mechanisms": "能够看到完整工作链条时，员工更容易理解自己的贡献、形成责任感并从结果中学习。过度碎片化会让员工只优化局部步骤，却难以理解业务最终价值。",
+    "real_world_manifestation": "对高阶员工的发展，可以从“完成被分配的一环”逐步转向“对完整结果负责”。绩效评价也应区分完成局部任务与真正形成端到端 ownership 的差异。"
+  },
+  "task significance": {
+    "construct_name": "task significance",
+    "description": "任务重要性是工作在多大程度上会影响客户、同事、团队结果或组织目标。它反映员工是否能够清楚回答“我做的事情影响了谁、为什么重要”。",
+    "core_mechanisms": "任务影响越具体可见，越容易形成工作意义和社会价值感。单纯的使命口号通常不足以产生任务重要性，员工需要看到自己的输出如何改变真实结果。",
+    "real_world_manifestation": "经理可以把日常任务连接到实际业务后果，例如说明某项分析如何影响资源配置或客户决策。对于高阶岗位，还可以观察员工的影响范围是否从个人交付逐步扩大到团队和跨部门。"
+  },
+  "job feedback": {
+    "construct_name": "job feedback",
+    "description": "工作反馈是工作过程和结果本身能够多清楚地告诉员工其表现是否有效，例如客户反应、质量数据、周期、错误率或业务指标。它不同于一年一次的经理评价。",
+    "core_mechanisms": "工作反馈缩短行动与结果之间的信息距离，使员工能够及时修正策略并建立学习闭环。反馈过度延迟或模糊时，员工很难判断自身行为与结果之间的关系。",
+    "real_world_manifestation": "经理应尽量让员工能够自主看到关键结果，而不是所有判断都依赖经理。绩效面谈则可以进一步解释数据背后的标准、原因与发展含义。"
+  },
+  "task interdependence": {
+    "construct_name": "task interdependence",
+    "description": "任务互依性描述员工完成工作时对其他人的输入依赖程度，以及自己的输出对其他人的影响程度。高互依工作中，个人结果通常与团队流程紧密连接。",
+    "core_mechanisms": "互依性提高协调、信息共享和接口管理的重要性，也使责任归因更复杂。最终结果不好可能同时包含个人行为、上游输入、下游执行和系统机制的问题。",
+    "real_world_manifestation": "绩效沟通中，高互依任务不能只用最终结果简单判定个人。经理应观察员工是否提前识别依赖、主动拉通、管理接口并及时升级风险，这些都是高阶协作能力的重要证据。"
+  },
+  "work complexity": {
+    "construct_name": "work complexity",
+    "description": "工作复杂性是任务需要处理多少信息、相互依赖、不确定性、判断和非标准问题。复杂工作通常不存在唯一答案，需要持续整合信息并根据反馈调整。",
+    "core_mechanisms": "复杂性提高认知负荷并要求更强的学习和判断能力。对于新颖复杂任务，过早只强调结果目标可能压缩探索；阶段性学习目标、及时反馈和资源支持往往更重要。",
+    "real_world_manifestation": "评价员工速度或稳定性时，应区分执行效率与任务复杂度。人才发展可以逐步让员工承担更模糊、多利益相关方和需要权衡的任务，而不是简单增加任务数量。"
+  },
+  "perceived organizational support": {
+    "construct_name": "perceived organizational support",
+    "description": "感知组织支持是员工对“组织是否重视我的贡献、是否关心我的福祉”的总体信念。它来自奖励、公平、资源、制度和管理行为的长期累积，而不是一次福利或一句认可。",
+    "core_mechanisms": "其核心基于社会交换。员工认为组织主动给予支持时，更容易形成情感依附、信任和回报组织目标的意愿。支持是否被理解为自愿、真实和一致，会影响其心理意义。",
+    "real_world_manifestation": "同一句绩效建议，在高支持关系中更容易被理解为帮助，在低支持关系中可能被理解为控制或淘汰信号。经理无法靠一句“公司很重视你”替代长期一致的支持行为。"
+  },
+  "perceived supervisor support": {
+    "construct_name": "perceived supervisor support",
+    "description": "感知主管支持是员工对直属经理是否重视其贡献、关心其工作需要和发展状态的总体判断。它与感知组织支持相关，但更聚焦直接上下级关系。",
+    "core_mechanisms": "经理控制任务分配、信息、认可、反馈和部分资源，因此其行为会被员工视为重要关系信号。支持能够提高员工表达问题、寻求帮助和接受反馈的安全感，但支持不等于降低绩效标准。",
+    "real_world_manifestation": "有效绩效沟通同时包含要求和支持：清楚指出差距，同时讨论真实资源与辅导需要。只安慰不讲标准会失去管理价值，只讲差距却长期不给必要支持也会削弱关系。"
+  },
+  "psychological contract": {
+    "construct_name": "psychological contract",
+    "description": "心理契约是员工关于自己与组织之间“彼此承诺了什么、彼此应该承担什么”的主观信念。它不一定写进正式合同，可能涉及发展机会、稳定性、努力、忠诚、认可、灵活性或晋升可能性。",
+    "core_mechanisms": "心理契约由招聘信息、经理表达、制度与长期互动共同形成。关键不只是组织法律上是否承诺，而是员工是否合理地形成了“对方答应过”的认知。",
+    "real_world_manifestation": "职业发展沟通中要区分可能性和承诺。例如“未来可以探索更大职责”与“下一周期一定晋升”会形成完全不同的心理预期。Manager 应避免使用自己无法保证的确定性语言。"
+  },
+  "psychological contract breach": {
+    "construct_name": "psychological contract breach",
+    "description": "心理契约违背是员工认为组织没有履行自己原本相信已经承诺的义务。它首先是一种认知比较，随后可能带来失望、愤怒、背叛感或信任下降。",
+    "core_mechanisms": "员工会比较“我认为组织承诺了什么”与“实际发生了什么”。承诺越明确、员工自认为履行义务越充分，而组织兑现越不足，违背感通常越强。",
+    "real_world_manifestation": "晋升、薪酬、发展机会和岗位安排很容易触发心理契约问题。经理应核查之前是否给出了容易被理解为承诺的表达，并清楚说明当前已确认、尚未确认和发生变化的部分。"
+  },
+  "organizational commitment": {
+    "construct_name": "organizational commitment",
+    "description": "组织承诺是一个“父级关系构念”，概括员工维持组织成员身份的心理联系。经典三成分为 affective commitment、continuance commitment 和 normative commitment，三者原因不同，因此父级条目不应替代具体子维度。",
+    "core_mechanisms": "核心机制是员工可能因为想留下、需要留下或觉得应该留下而持续成员身份。相同的‘没有离职’行为可以来自完全不同心理基础。",
+    "real_world_manifestation": "只有当讨论总体组织联系时使用父级概念；若证据明确涉及认同喜爱、退出成本或义务，应优先使用对应子构念。"
+  },
+  "affective commitment": {
+    "construct_name": "affective commitment",
+    "description": "情感承诺是员工因为认同、喜欢并对组织产生情感依附而愿意留下，体现的是“我想继续在这里工作”。",
+    "core_mechanisms": "积极工作体验、公平、支持、价值一致和有意义的工作更容易形成情感承诺。员工把组织目标部分内化为个人目标后，也更可能愿意进行额外投入。",
+    "real_world_manifestation": "对高潜员工，薪酬和职位并不是唯一留才工具。经理还需要理解员工真正认同的工作内容、成长方向和影响价值。"
+  },
+  "continuance commitment": {
+    "construct_name": "continuance commitment",
+    "description": "持续承诺是员工因为离开组织的成本较高或替代机会有限而选择留下，体现的是“目前离开的代价太大”。",
+    "core_mechanisms": "员工会考虑资历、福利、关系网络、地域、家庭安排、已有投入和外部机会等成本。它可以降低短期离职，但并不自动带来高认同或高投入。",
+    "real_world_manifestation": "组织不应把“员工没走”误判为“员工很投入”。如果员工主要因为高转换成本留下，仍可能出现低主动性和犬儒，需要从工作体验和发展本身改善。"
+  },
+  "normative commitment": {
+    "construct_name": "normative commitment",
+    "description": "规范承诺是员工因为责任、忠诚或道德义务感而认为自己应该继续留在组织。它常来自长期关系、组织培养或互惠规范。",
+    "core_mechanisms": "员工可能因为组织曾给予重要支持而产生回报义务，也可能因为团队、客户或项目责任而不愿在关键阶段离开。",
+    "real_world_manifestation": "经理应避免通过负罪感强迫留任，例如“公司培养你这么久，你不能走”。健康的规范承诺应建立在真实责任和自愿互惠上，而不是道德绑架。"
+  },
+  "job satisfaction": {
+    "construct_name": "job satisfaction",
+    "description": "工作满意度是员工对工作整体或工作不同方面形成的积极或消极评价，包括工作内容、经理、同事、发展、回报和环境等。",
+    "core_mechanisms": "满意度来自实际体验与需要、期望和价值之间的比较。不同员工可能拥有相同总体满意度，但背后的原因完全不同。高满意与积极态度相关，却不等同于高绩效。",
+    "real_world_manifestation": "绩效面谈可以了解员工在哪些工作要素上满意或不满意，但不能把满意度直接当成绩效证据。出现不满时应找到具体来源，而不是统一归因于“态度”。"
+  },
+  "job embeddedness": {
+    "construct_name": "job embeddedness",
+    "description": "工作嵌入度解释员工为什么留在一个工作和生活网络中。经典结构包括与人和活动的连接、与岗位/组织/社区的匹配，以及离开时需要牺牲的东西。",
+    "core_mechanisms": "员工离职并不只由满意度和组织承诺决定。团队关系、职业网络、社区、家庭和长期积累都会形成嵌入。嵌入越高，离开需要切断的连接通常越多。",
+    "real_world_manifestation": "留才不应只增加“退出成本”。更健康的做法是提高真实匹配、工作价值和关系质量，让员工愿意留下，而不是觉得自己无法离开。"
+  },
+  "job insecurity": {
+    "construct_name": "job insecurity",
+    "description": "工作不安全感是员工对未来能否继续保持当前工作或重要工作条件产生的不确定和威胁感。即使没有正式裁员，只要员工长期担心未来可能失去角色、收入或重要条件，也可能存在。",
+    "core_mechanisms": "其核心是未来威胁与不可控性。长期悬而未决会迫使员工持续监控风险，消耗认知和情绪资源，并可能降低信任与投入。",
+    "real_world_manifestation": "组织调整时，经理不能承诺自己无法保证的工作安全，但应清楚区分已经决定、尚未决定和当前未知的事项，减少由信息真空产生的额外焦虑。"
+  },
+  "person-job fit": {
+    "construct_name": "person-job fit",
+    "description": "人—岗匹配是一个“父级匹配构念”，主要包含 demands-abilities fit 与 needs-supplies fit 两类不同关系：一类问员工是否能满足岗位，一类问岗位是否能满足员工。",
+    "core_mechanisms": "核心机制是能力要求与个人能力、个人需要与岗位供给分别进行匹配。两条路径的结果和干预方式不同，不能合并成一个模糊的‘适不适合’。",
+    "real_world_manifestation": "绩效差距优先检查 demands-abilities fit；满意、发展和留任问题则可进一步检查 needs-supplies fit。只有讨论总体匹配时才使用父级条目。"
+  },
+  "person-organization fit": {
+    "construct_name": "person-organization fit",
+    "description": "人—组织匹配是员工与组织在价值、目标、文化和重要需要上的相容程度。它不应被简化为“性格像不像我们”。",
+    "core_mechanisms": "价值一致可以减少解释成本并增强归属，但过度追求相似也可能降低观点多样性。组织匹配更适合聚焦与工作有关的核心价值和行为规范，而不是背景与表达方式。",
+    "real_world_manifestation": "招聘和绩效管理中，应避免把“和经理风格不同”当成文化不匹配。真正需要关注的是员工是否能够在关键价值和业务行为上与组织要求一致。"
+  },
+  "demands-abilities fit": {
+    "construct_name": "demands-abilities fit",
+    "description": "要求—能力匹配是员工的知识、技能和能力与岗位实际要求之间的匹配程度，是人—岗匹配中最接近绩效能力的部分。",
+    "core_mechanisms": "岗位要求高于当前能力时，员工需要学习、支持或任务调整；能力长期高于要求则可能出现能力闲置和发展不足。合理匹配允许适度挑战，但不应长期处于不可完成状态。",
+    "real_world_manifestation": "绩效改进中，应把能力不足与资源不足、目标不清和执行不稳定分开。只有确认是能力差距，培训和辅导才是主要解决方案。"
+  },
+  "needs-supplies fit": {
+    "construct_name": "needs-supplies fit",
+    "description": "需要—供给匹配是岗位和组织在多大程度上满足员工重要的需要和偏好，例如自主、成就、发展、安全、认可、关系或生活平衡。",
+    "core_mechanisms": "员工会持续比较“我需要什么”和“工作提供什么”。长期缺口会降低满意和承诺，而超出员工需要的供给也未必产生额外价值。",
+    "real_world_manifestation": "职业发展不能默认所有高绩效员工都想走管理路线。经理应先确认员工真正看重的是专业深度、影响范围、管理责任、稳定还是其他发展体验，再设计路径。"
+  },
+  "burnout": {
+    "construct_name": "burnout",
+    "description": "职业倦怠是一个“父级工作健康构念”，通常由 emotional exhaustion、cynicism at work 和 professional efficacy 相关体验共同描述。它不是 emotional exhaustion 的同义词，也不能只凭疲劳一个表现下结论。",
+    "core_mechanisms": "核心机制是长期工作要求与可恢复资源持续失衡，逐步形成能量耗竭、心理疏离和效能体验变化。不同员工可能先突出其中一个维度。",
+    "real_world_manifestation": "理解这一职业现象时应分别寻找持续耗竭、心理疏离/犬儒和专业效能变化的证据，并结合持续时间、工作要求和恢复条件。短期疲劳或单一表现不足以支持 burnout；知识库不用于医学诊断。"
+  },
+  "emotional exhaustion": {
+    "construct_name": "emotional exhaustion",
+    "description": "情绪耗竭是倦怠的核心维度，表现为员工感觉心理与情绪资源持续被消耗，面对工作要求时越来越难调动同等精力。",
+    "core_mechanisms": "长期过载、冲突、情绪劳动与恢复不足会累积耗竭。耗竭后员工可能减少额外努力、降低情绪投入或进行心理撤退。",
+    "real_world_manifestation": "绩效下降同时伴随明显耗竭时，经理应先核对工作量、优先级和可用资源，再判断能力与动机问题。继续简单加压可能进一步恶化表现。"
+  },
+  "cynicism at work": {
+    "construct_name": "cynicism at work",
+    "description": "工作犬儒是员工对工作、客户、组织或任务逐渐形成冷漠、负面和疏离态度的状态，也是倦怠的重要表现之一。",
+    "core_mechanisms": "犬儒可以被理解为长期耗竭后的保护策略：减少情绪投入可以短期降低消耗，但长期会损害意义感、合作和服务质量。",
+    "real_world_manifestation": "经理应区分员工一贯的低关系温度与近期显著出现的“反正都没意义”。后者可能反映持续压力、公平问题或长期挫败，不能只贴“态度差”标签。"
+  },
+  "professional efficacy": {
+    "construct_name": "professional efficacy",
+    "description": "职业效能感描述员工对“自己作为当前职业/岗位从业者是否持续有效并能产生价值”的总体体验，常作为倦怠框架中的工作结果维度。它比 self-efficacy 更宽、更长期。",
+    "core_mechanisms": "核心机制是长期成功/失败经验、工作反馈、资源和可控性共同形成整体职业有效感。一个员工可以对某个新任务 self-efficacy 较低，但总体 professional efficacy 仍然很高。",
+    "real_world_manifestation": "如果 Employee 只是第一次做某项任务缺乏信心，不应据此判定职业效能低；只有持续感到自己无法有效工作、贡献或达成要求时，才更接近 professional efficacy 问题。"
+  },
+  "emotional labor": {
+    "construct_name": "emotional labor",
+    "description": "情绪劳动是“父级工作要求构念”，描述员工为了符合岗位表达规则而调节情绪。surface acting 和 deep acting 是不同调节方式，因此 emotional labor 不等于其中任何一种。",
+    "core_mechanisms": "核心机制是岗位要求形成‘应该表达什么情绪’，员工再通过控制外表或调整内在感受达到要求。两种方式的资源成本和真实性体验不同。",
+    "real_world_manifestation": "客服、管理和绩效沟通等工作都可能包含情绪劳动。若证据明确是‘内心不变只控制表情’，优先使用 surface acting；若是重新理解情境以改变真实感受，则使用 deep acting。"
+  },
+  "surface acting": {
+    "construct_name": "surface acting",
+    "description": "表层扮演是员工不改变真实内在情绪，只控制外在表情、语气和行为，让自己看起来符合工作所要求的情绪。",
+    "core_mechanisms": "其核心是表达抑制和印象管理。因为内外状态不一致，持续表层扮演通常需要额外自我控制，并可能增强不真实感与耗竭。",
+    "real_world_manifestation": "短期困难沟通中控制表达是必要的，但如果岗位长期要求员工“无论怎样都装作没事”，经理应关注恢复、支持和工作负荷，而不是把持续压抑当成高职业素养。"
+  },
+  "deep acting": {
+    "construct_name": "deep acting",
+    "description": "深层调节是员工通过重新理解情境、调整注意或主动改变内在感受，使真实情绪更接近岗位需要表达的状态。",
+    "core_mechanisms": "核心机制是认知重评和情绪生成过程调整。内外差距缩小时，表达通常更自然，但深层调节同样需要心理努力。",
+    "real_world_manifestation": "在绩效沟通培训中，可以教经理把“我要装得温和”转成“我需要理解对方为什么这样反应，同时保持标准”，从而减少单纯表演式的沟通。"
+  },
+    "meaningful work": {
+        "construct_name": "meaningful work",
+        "description": "有意义的工作是员工主观感到工作重要、有价值，并与个人身份、价值或对他人的贡献形成连接的体验。它不等于工作始终有趣，也不属于耗竭或健康状态，不能从努力程度或一次情绪反应直接推断。",
+        "core_mechanisms": "意义感可能来自任务影响、成果完整性、价值一致、专业身份、成长、归属或对他人的贡献；不同员工的来源不同，并会随任务和情境变化。低意义感不等于懒惰、低责任或心理健康问题。",
+        "real_world_manifestation": "Employee 可能说明某项工作为何值得投入，也可能追问任务与客户、团队或自身发展之间的联系。对话模拟应优先使用 Employee 明确表达过的价值来源；未知时可以自然追问，但不得替员工编造使命感，也不得把新岗位或发展机会描述成已获承诺。"
+  },
+  "feedback-seeking behavior": {
+    "construct_name": "feedback-seeking behavior",
+    "description": "反馈寻求行为是员工主动获取关于自身表现、角色、能力或社会评价信息的行为，可以直接询问，也可以观察经理和同事的反应。",
+    "core_mechanisms": "员工是否寻求反馈通常同时受工具性、自我保护和形象管理动机影响。反馈价值越高、寻求成本越低，主动寻求越可能发生。",
+    "real_world_manifestation": "经理可以通过正常化提问、及时回应和不因员工提问而贬低其能力，降低反馈寻求成本。同时应区分真正想学习与只想获得肯定的寻求。"
+  },
+  "feedback orientation": {
+    "construct_name": "feedback orientation",
+    "description": "反馈取向是员工总体上对反馈的接受、重视、处理和使用倾向，包括是否认为反馈有用、是否愿意承担责任以及是否相信自己能够利用反馈改善表现。",
+    "core_mechanisms": "高反馈取向员工更容易把反馈看作工作信息；低反馈取向员工可能回避、贬低来源或只接受正面信息。组织反馈环境会进一步塑造这种倾向。",
+    "real_world_manifestation": "Manager 应通过具体、可信和可行动的反馈建立“反馈真的有用”的经验，而不是只增加反馈频率。"
+  },
+  "team reflexivity": {
+    "construct_name": "team reflexivity",
+    "description": "团队反思是团队共同审视目标、策略、工作过程和外部变化，并据此调整行动的程度。它比项目结束后的单次复盘更强调持续调整。",
+    "core_mechanisms": "团队通过比较目标与实际结果、发现失效假设和共享不同信息形成适应。反思只有转化为行动才有价值，否则容易形成分析而不改变。",
+    "real_world_manifestation": "复杂项目可设置阶段性反思：什么假设已经变化、哪些做法应停止、继续或调整。每次反思都应形成新的行动和验证点。"
+  },
+  "transactive memory system": {
+    "construct_name": "transactive memory system",
+    "description": "交互记忆系统是团队对“谁知道什么、什么问题该找谁、谁在哪一领域最可靠”的共享认知。团队不需要每个人掌握全部知识，但需要准确掌握知识分布。",
+    "core_mechanisms": "系统依靠专业化、可信度和协调形成。成员分别积累不同专业知识，同时相信彼此并能够在需要时高效调用。",
+    "real_world_manifestation": "跨职能团队可建立知识地图、专家清单和清晰角色接口。高阶员工的能力也可体现在是否善于调用团队知识，而不只是自己掌握多少。"
+  },
+  "shared mental models": {
+    "construct_name": "shared mental models",
+    "description": "共享心智模型是团队成员对目标、任务、角色、流程、风险和彼此能力形成的相对一致理解，使团队能够在少量沟通下协调行动。",
+    "core_mechanisms": "当成员对“目标是什么、谁负责什么、异常时怎么处理”理解一致时，协作成本降低；理解不一致则可能导致每个人局部合理但整体冲突。",
+    "real_world_manifestation": "项目启动时应对齐目标、责任、关键依赖和升级机制。如果绩效问题源于双方对职责理解不同，首先应修复共享模型，而不是只要求“加强沟通”。"
+  },
+  "task conflict": {
+    "construct_name": "task conflict",
+    "description": "任务冲突是成员围绕工作内容、判断、方案和优先级产生的分歧。它聚焦“事情怎么做”，与关系敌意不同。",
+    "core_mechanisms": "任务分歧可能带来更多信息，但也增加协调成本，并可能升级为关系冲突。研究并不支持“任务冲突越多绩效越高”的简单结论。",
+    "real_world_manifestation": "经理应允许必要的方案挑战，同时要求讨论围绕证据、假设和业务结果，不把分歧人格化。目标不是制造冲突，而是提高决策质量。"
+  },
+  "relationship conflict": {
+    "construct_name": "relationship conflict",
+    "description": "关系冲突是成员之间基于个人摩擦、敌意、恼怒或关系紧张形成的冲突。它通常不直接围绕任务内容，却会显著占用任务资源。",
+    "core_mechanisms": "关系冲突提高威胁感和负面情绪，使成员把资源用于自我保护和归因，减少用于问题解决的认知资源。",
+    "real_world_manifestation": "出现“你这个人就是……”等人格化语言时，经理应把讨论拉回具体行为、影响和边界。长期关系冲突不能只靠“互相理解”解决，还需要明确合作规则。"
+  },
+  "process conflict": {
+    "construct_name": "process conflict",
+    "description": "过程冲突是团队围绕谁负责什么、资源怎样分、任务如何组织以及优先级怎样排序产生的分歧。",
+    "core_mechanisms": "角色和流程不清会增加过程冲突。由于它直接涉及责任、负担和公平，很容易进一步演变为关系冲突。",
+    "real_world_manifestation": "团队频繁出现互相等待、重复劳动或“这不是我的责任”时，应检查角色与流程。明确接口、决策权和升级机制往往比泛化要求沟通更有效。"
+  },
+    "organizational citizenship behavior": {
+        "construct_name": "organizational citizenship behavior",
+        "description": "组织公民行为是员工自愿实施、能够支持同事或工作环境有效运行的行为，例如帮助、分享信息、礼貌协调或提出改进建议。它是具体行为而非“性格好”，也不要求每次都由完整团队系统才能观察。其是否属于正式职责会因岗位和组织情境而异。",
+        "core_mechanisms": "这类行为可能与互惠、公平感、组织支持、角色认同、亲社会动机或印象管理等多种因素有关，通常不能从行为本身确定单一动机；团队规范、工作量和资源也会影响其出现。",
+        "real_world_manifestation": "可依据帮助同事、共享关键知识、预防协作问题或支持改进等可观察事实讨论贡献。不得把长期额外付出变成默认义务，也不能把未实施额外行为视为失职；Employee Agent 仅根据已提供的具体行为调整回应。"
+  },
+    "counterproductive work behavior": {
+        "construct_name": "counterproductive work behavior",
+        "description": "反生产工作行为通常指员工主动实施、违反重要组织规范并可能损害组织或成员的行为。它不是低绩效、普通失误、能力不足、合理异议或受保护的风险报告；在证据不足时不得使用这一严重定性。",
+        "core_mechanisms": "相关行为可能与压力源、负面情绪、不公平感、自控、机会条件或个体差异相关，但这些只是风险因素，不能证明行为存在或确定其动机。判断应以可核实行为、发生条件和员工可控范围为基础。",
+        "real_world_manifestation": "可能表现为有证据支持的故意拖延、资源滥用、破坏或人际伤害，但必须与误解、流程缺陷、工作过载和正常冲突区分。Employee Agent 不得根据一次失误或经理评价自行承认、指控或解释此类行为。"
+  },
+  "taking charge": {
+    "construct_name": "taking charge",
+    "description": "taking charge 是一种具体的“改变导向自愿行为”：员工主动试图修改流程、方法或组织运行方式，使现状更有效。它比 proactive personality 更行为化，比 personal initiative 更聚焦‘改变现有系统’。",
+    "core_mechanisms": "核心机制是员工认为改变有必要、自己有能力，并相信环境允许其提出和推动改变。",
+    "real_world_manifestation": "证据应是提出并推动实际改进，而不仅是做事积极。只提前完成自己任务通常更接近 personal initiative，不一定属于 taking charge。"
+  },
+  "personal initiative": {
+    "construct_name": "personal initiative",
+    "description": "personal initiative 是一种具体工作行为模式，强调自我启动、前瞻、长期导向以及遇到障碍仍持续推进。它不要求一定改变制度，因此范围比 taking charge 更广。",
+    "core_mechanisms": "核心机制是个体主动形成目标、提前行动并在障碍出现后继续寻找可控路径，而不是等待上级逐步指令。",
+    "real_world_manifestation": "可观察证据包括提前识别风险、主动准备、持续跟进和寻找替代方案。只有当行为意在改变流程/系统时，再进一步标记 taking charge。"
+  },
+  "employee silence": {
+    "construct_name": "employee silence",
+    "description": "员工沉默是员工掌握与工作相关的信息、问题或建议，却选择不表达。它不是没有想法，也不是 voice 的简单反面。",
+    "core_mechanisms": "沉默可能来自“说了也没有用”的顺从、害怕后果的防御，也可能出于保护机密或他人的亲社会动机。外表都是没说，但原因不同。",
+    "real_world_manifestation": "绩效面谈中 Employee 没有反驳不能自动视为完全接受。经理应具体邀请不同理解，例如询问“有没有你认为我理解不准确的事实或原因”。"
+  },
+  "organizational silence": {
+    "construct_name": "organizational silence",
+    "description": "组织沉默是大量员工形成共同认知：对问题、风险和不同意见保持沉默更安全或更没有成本，导致关键信息长期无法向上传递。",
+    "core_mechanisms": "它可能来自领导对坏消息的负面反应、集中决策和惩罚异议。员工相互观察后会形成“说了没用/说了有风险”的共享解释，新员工也会学习这种规范。",
+    "real_world_manifestation": "打破沉默不能只靠开意见箱。真正需要改变经理对坏消息的响应、让反馈产生可见后续，并持续保护基于事实的异议表达。"
+  },
+  "career adaptability": {
+    "construct_name": "career adaptability",
+    "description": "职业适应力是一个“父级职业资源框架”，由 career concern、career control、career curiosity 和 career confidence 四类资源构成。它不与任何单一子维度同义。",
+    "core_mechanisms": "四类资源分别回答：是否为未来做准备、是否承担职业选择责任、是否探索可能路径、是否相信自己能完成职业任务。不同员工的短板组合可以完全不同。",
+    "real_world_manifestation": "Career Coach 应先用父级框架检查整体适应力，再根据证据进入具体子维度。不要因为某一项职业好奇不足就直接把整个 career adaptability 判为低。"
+  },
+  "career concern": {
+    "construct_name": "career concern",
+    "description": "职业关切是职业适应力中的未来取向，表示员工是否能够关注和准备自己的职业未来，而不是只处理眼前任务。",
+    "core_mechanisms": "员工把当前经验与未来目标连接起来时，更容易提前积累能力、网络和实践证据。缺少关切时，职业变化常在最后时刻才被动处理。",
+    "real_world_manifestation": "经理可以通过问题帮助员工建立时间连接，例如“两年后你希望承担什么类型的责任，现在需要积累哪些经验”，而不是替员工直接决定方向。"
+  },
+  "career control": {
+    "construct_name": "career control",
+    "description": "职业控制是员工认为自己能够并愿意对职业方向和发展行动承担责任的程度，强调个人参与塑造职业，而不是完全等待组织安排。",
+    "core_mechanisms": "控制感通过选择、责任和行动形成。过低时容易被动等待，过高而忽视岗位和市场现实时又可能产生不现实期待。",
+    "real_world_manifestation": "Manager 应提供信息、反馈和真实边界，让员工参与选择并承担行动。发展计划最好明确双方责任，而不是经理单方面“安排成长”。"
+  },
+  "career curiosity": {
+    "construct_name": "career curiosity",
+    "description": "职业好奇是员工探索不同角色、职业环境、能力需求和自我特点的倾向，使其在做长期决定前形成更丰富的信息基础。",
+    "core_mechanisms": "好奇通过探索“我还能做什么、不同路径是什么、我是否适合”扩大选择空间，也减少过早锁定某一路径的风险。",
+    "real_world_manifestation": "可以用跨部门项目、shadowing、访谈不同岗位或小范围实践验证职业假设。探索不等于组织已经承诺转岗。"
+  },
+  "career confidence": {
+    "construct_name": "career confidence",
+    "description": "职业信心是员工相信自己能够完成职业发展任务、解决问题、克服障碍并采取必要行动的程度。",
+    "core_mechanisms": "其稳定来源是实际掌握经验、问题解决和可信反馈，而不是泛化鼓励。阶段性成功会逐渐形成更可靠的职业信心。",
+    "real_world_manifestation": "经理可以把远期职业目标拆成小范围可验证任务，让员工通过真实实践形成“我已经做过”的证据。"
+  },
+  "protean career orientation": {
+    "construct_name": "protean career orientation",
+    "description": "易变型职业取向强调由个人而非单一组织主导职业发展，并以个人价值和主观职业成功作为重要判断标准。",
+    "core_mechanisms": "它主要包含自我导向和价值驱动。个人主动管理技能、机会与职业身份，不把组织职位阶梯视为唯一成功路径。",
+    "real_world_manifestation": "高阶员工职业对话可以讨论专家、管理、跨职能或更广影响等不同成功定义。经理应理解员工真正的成功标准，而不是默认所有人都以晋升为核心。"
+  },
+  "boundaryless career mindset": {
+    "construct_name": "boundaryless career mindset",
+    "description": "无边界职业心态是个人愿意跨组织、职能、专业或社会网络边界学习和工作的倾向。它强调心理开放，不等于必须频繁跳槽。",
+    "core_mechanisms": "个人把职业资源建立在更广泛的技能、关系和经验上，而不是只依赖单一组织内部路径。这能够增加适应性，但仍需要与当前责任保持平衡。",
+    "real_world_manifestation": "对高潜员工，可以通过跨部门项目、国际合作或专业社区扩展边界。关键是与真实发展目标相关，而不是追求表面的“曝光度”。"
+  },
+  "career plateau": {
+    "construct_name": "career plateau",
+    "description": "职业高原是员工感到未来在层级晋升、工作内容成长或责任扩展方面机会有限的状态，可以分为结构性高原和内容性高原。",
+    "core_mechanisms": "当员工认为未来路径缺乏变化与学习，成长感和投入可能下降。但发展不必只依赖职位晋升，专业深度、影响范围和横向复杂度也能形成成长。",
+    "real_world_manifestation": "对成熟员工，经理可以讨论专家影响力、跨领域项目、辅导他人和更复杂业务，而不是长期用模糊晋升承诺维持期待。"
+  },
+  "employability": {
+    "construct_name": "employability",
+    "description": "可雇佣性是个人在变化劳动力市场中识别机会、获得工作并持续适应职业要求的能力与心理资源，涉及技能、职业身份、适应性和社会网络。",
+    "core_mechanisms": "持续学习、可迁移能力、清晰职业身份和有效网络都会提高可雇佣性。它关注的是个人长期职业能力，而不只是在当前公司是否表现良好。",
+    "real_world_manifestation": "高质量人才发展不应依赖降低员工外部选择来留人。组织可以帮助员工提升可迁移能力，同时通过有价值的工作、关系和发展机会提高自愿留任。"
+  },
+    "learning agility": {
+        "construct_name": "learning agility",
+        "description": "学习敏捷性描述个体从经验中提取有用信息、根据反馈调整做法，并把所学迁移到新情境的倾向与能力。该构念的边界和测量方式并不完全统一；它不是职业规划本身，也不能由一次任务表现直接推出高潜、晋升或人才池结论。",
+        "core_mechanisms": "可能涉及主动获取反馈、反思经验、试验新方法、修正假设、放弃失效做法和迁移学习；机会、既有经验、任务熟悉度、资源和心理安全都会影响这些行为能否表现出来。",
+        "real_world_manifestation": "在陌生任务中可观察 Employee 是否形成假设、获取信息、根据反馈修正方法，并在后续任务中复用有效经验。Employee Agent 仅在历史提供这些行为证据时调节学习回应，不能据此宣称员工“高潜”、适合晋升或一定能快速适应。"
+  },
+  "growth mindset at work": {
+    "construct_name": "growth mindset at work",
+    "description": "职场成长型思维是相信部分能力可以通过学习、练习、反馈和有效策略发展，而不是把当前表现完全视为固定结果。它是一种信念取向，不等于员工必然努力、快速进步或最终达标。",
+    "core_mechanisms": "这种信念可能影响员工如何解释差距和是否尝试新策略，但行为还受到目标、资源、能力基础、反馈质量和心理安全影响；现有干预效果较小且差异较大，不能把信念当作确定因果。",
+    "real_world_manifestation": "绩效反馈可以把差距落到当前行为、可学习技能和验证场景，同时提供实际练习与反馈。不得用“你要有成长型思维”替代资源支持，也不能因员工质疑评价就判断其缺乏成长型思维。"
+  }
+}

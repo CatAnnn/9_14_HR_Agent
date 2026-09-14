@@ -1,0 +1,1663 @@
+{
+  "schema_version": "1.1",
+  "benchmark_id": "real-task-retrieval-v1",
+  "description": "Six complete performance-conversation scenarios crossed with the eight production guidance and coach retrieval tasks. The 48 derived cases are deterministic and exercise job level, Career Elements, Bosch culture and ASR evidence together.",
+  "case_count": 48,
+  "top_k": 8,
+  "coverage_contract": {
+    "scenario_count": 6,
+    "task_count": 8,
+    "levels": [
+      "G8",
+      "G9",
+      "SL1"
+    ],
+    "culture_terms": [
+      "协同共进",
+      "创变未来",
+      "聚力共赢",
+      "使命必达"
+    ],
+    "asr_combinations": [
+      "what_met_how_strong",
+      "what_mixed_how_met",
+      "what_strong_how_gap",
+      "what_strong_how_strong",
+      "what_gap_how_gap",
+      "what_persistent_gap_how_risk"
+    ],
+    "career_states": [
+      "not_applicable",
+      "unknown",
+      "known_partial",
+      "known_all_five"
+    ]
+  },
+  "evaluation_boundaries": {
+    "retrieval": "Top-3 gates verify only the evidence domains intentionally assigned to the generation prefix; Top-8 gates verify the complete applicable multi-domain contract and configured source quotas. A Career-scope hit is never itself a business violation.",
+    "asr": "The six WHAT/HOW combinations are distinct production contexts, while retrieval is expected to return the shared WHAT/HOW framework. Whether guidance interprets each combination correctly is a manual end-to-end judgment.",
+    "career": "Retrieving the formal five-element framework is useful evidence. Unknown-state confirmation, held-element exclusion and all-five no-new-element behavior are manual end-to-end judgments, not term-match failures."
+  },
+  "release_gates": {
+    "automatic": {
+      "mean_term_coverage_at_3": {
+        "operator": ">=",
+        "threshold": 0.9,
+        "reason": "Across all 48 real-task cases, the first three results should cover nearly all task-specific prefix evidence concepts; complete multi-domain evidence remains a rank-eight contract."
+      },
+      "mean_term_coverage_at_8": {
+        "operator": ">=",
+        "threshold": 0.98,
+        "reason": "The full production result window should leave almost no required evidence uncovered."
+      },
+      "full_term_coverage_at_8_rate": {
+        "operator": ">=",
+        "threshold": 0.95,
+        "reason": "At least 46 of 48 cases should retrieve every required concept by rank eight."
+      },
+      "mean_scope_domain_coverage_at_3": {
+        "operator": ">=",
+        "threshold": 0.9,
+        "reason": "The first three results should represent the required evidence domains, not only repeat one domain; final per-scope counts are checked at rank eight."
+      },
+      "full_scope_quota_coverage_at_8_rate": {
+        "operator": ">=",
+        "threshold": 0.98,
+        "reason": "No more than one case may miss any configured per-scope result quota in the full result window."
+      },
+      "critical_evidence_failure_count": {
+        "operator": "<=",
+        "threshold": 0,
+        "reason": "Every evidence profile declared critical for the task must have its required terms and source scope present by rank eight; semantic business use is reviewed separately."
+      },
+      "prompt_critical_evidence_failure_count": {
+        "operator": "<=",
+        "threshold": 0,
+        "reason": "No critical evidence may disappear between retrieval and the actual generation payload."
+      },
+      "structured_bundle_failure_count": {
+        "operator": "<=",
+        "threshold": 0,
+        "reason": "Each critical structured framework must remain complete in at least one prompt-visible passage."
+      },
+      "prompt_anchor_loss_count": {
+        "operator": "<=",
+        "threshold": 0,
+        "reason": "Prompt budgeting must retain every retrievable child anchor that was present before budgeting."
+      },
+      "inapplicable_career_prompt_chars_total": {
+        "operator": "<=",
+        "threshold": 0,
+        "reason": "Career Elements passages must not enter generation prompts when the scenario marks them inapplicable."
+      }
+    },
+    "manual": {
+      "top1_usable_rate": {
+        "operator": ">=",
+        "threshold": 0.9167,
+        "reason": "At least 44 of 48 Top-1 passages must be directly usable in the production task."
+      },
+      "top1_direct_complete_rate": {
+        "operator": ">=",
+        "threshold": 0.75,
+        "reason": "At least 36 of 48 Top-1 passages should directly and substantially support the task."
+      },
+      "top1_grade_zero_count": {
+        "operator": "<=",
+        "threshold": 0,
+        "reason": "A completely irrelevant Top-1 result is a release blocker."
+      },
+      "normalized_dcg_at_3": {
+        "operator": ">=",
+        "threshold": 0.9,
+        "reason": "Human grades for ranks one to three must remain concentrated on directly supporting passages."
+      },
+      "critical_business_violation_count": {
+        "operator": "<=",
+        "threshold": 0,
+        "reason": "No result may invert Career applicability, recommend a held element as new, mis-map a culture term or invent an ASR rule."
+      }
+    },
+    "comparison": {
+      "mean_term_coverage_at_3_regression": {
+        "operator": "<=",
+        "threshold": 0.02,
+        "reason": "A candidate retrieval policy may lose no more than two percentage points against the accepted baseline."
+      },
+      "critical_full_coverage_at_8_rate_regression": {
+        "operator": "<=",
+        "threshold": 0.05,
+        "reason": "Critical-case full coverage may lose no more than five percentage points against baseline."
+      },
+      "top1_usable_rate_regression": {
+        "operator": "<=",
+        "threshold": 0.02,
+        "reason": "Human Top-1 usability may lose no more than two percentage points against baseline."
+      }
+    }
+  },
+  "manual_grading": {
+    "relevance_scale": {
+      "0": "Irrelevant or misleading for the task.",
+      "1": "Topically related but too generic or incomplete to use.",
+      "2": "Useful and directly supportive, but another passage is needed for completeness.",
+      "3": "Direct, applicable and substantially complete evidence for the task."
+    },
+    "judgment_format": {
+      "cases": {
+        "scenario_id::task_id": {
+          "results": [
+            {
+              "rank": 1,
+              "chunk_id": "current-top1-chunk-id",
+              "source_id": "current-top1-source-id",
+              "content_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+              "grade": 3
+            },
+            {
+              "rank": 2,
+              "chunk_id": "current-top2-chunk-id",
+              "source_id": "current-top2-source-id",
+              "content_hash": "123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0",
+              "grade": 2
+            },
+            {
+              "rank": 3,
+              "chunk_id": "current-top3-chunk-id",
+              "source_id": "current-top3-source-id",
+              "content_hash": "23456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01",
+              "grade": 2
+            }
+          ],
+          "critical_business_violation": false,
+          "notes": "Copy rank, chunk_id, source_id and content_hash from the current benchmark report before grading. content_hash covers the complete prompt-visible passage body, not only its displayed excerpt. Review the excerpts together with career_state, held elements, culture term and ASR combination in manual_review_context."
+        }
+      }
+    }
+  },
+  "tasks": [
+    {
+      "task_id": "guidance_start",
+      "phase": "guidance",
+      "dimension": "opening",
+      "evidence_profiles": [
+        "asr"
+      ],
+      "top3_evidence_profiles": [
+        "asr"
+      ],
+      "required_term_groups": [
+        [
+          "绩效面谈",
+          "performance review",
+          "绩效反馈"
+        ],
+        [
+          "绩效结果",
+          "rating",
+          "评级"
+        ],
+        [
+          "事实",
+          "证据",
+          "evidence"
+        ],
+        [
+          "理解确认",
+          "确认理解",
+          "check understanding",
+          "确保员工知晓",
+          "确保员工了解"
+        ]
+      ],
+      "required_scope_groups": [
+        [
+          "performance"
+        ],
+        [
+          "feedback",
+          "development_dialog",
+          "general"
+        ]
+      ],
+      "required_scope_minimums": {
+        "performance": 1,
+        "feedback": 1
+      }
+    },
+    {
+      "task_id": "guidance_emotion",
+      "phase": "guidance",
+      "dimension": "emotion",
+      "evidence_profiles": [
+        "culture"
+      ],
+      "top3_evidence_profiles": [
+        "culture"
+      ],
+      "required_term_groups": [
+        [
+          "倾听",
+          "listening"
+        ],
+      [
+        "共情",
+        "同理心",
+        "战术同理心",
+        "empathy",
+        "tactical empathy"
+      ],
+      [
+        "共同探索",
+        "共同澄清",
+        "共同解决问题",
+        "开放问题",
+        "校准问题",
+        "joint exploration"
+      ]
+      ],
+      "required_scope_groups": [
+        [
+          "emotion",
+          "feedback",
+          "general"
+        ],
+        [
+          "culture"
+        ]
+      ],
+    "required_scope_minimums": {
+      "culture": 1,
+      "emotion": 2
+    }
+    },
+    {
+      "task_id": "guidance_requirement",
+      "phase": "guidance",
+      "dimension": "output_expectations",
+      "job_level_mode": "current",
+      "evidence_profiles": [
+        "job_level",
+        "culture",
+        "asr"
+      ],
+      "top3_evidence_profiles": [
+        "job_level",
+        "culture",
+        "asr"
+      ],
+      "top3_required_term_groups": [],
+      "required_term_groups": [
+        [
+          "产出要求",
+          "输出期望",
+          "output expectations",
+          "绩效标准",
+          "目标与结果对齐",
+          "实际结果"
+        ],
+        [
+          "绩效差距",
+          "表现差距",
+          "gap",
+          "差距 / 偏差",
+          "差距/偏差"
+        ],
+        [
+          "事实证据",
+          "事实",
+          "evidence"
+        ]
+      ],
+      "required_scope_groups": [
+        [
+          "job_level"
+        ],
+        [
+          "performance",
+          "feedback",
+          "general"
+        ],
+        [
+          "culture"
+        ]
+      ],
+      "required_scope_minimums": {
+        "job_level": 1,
+        "performance": 1,
+        "culture": 1,
+        "feedback": 2
+      }
+    },
+    {
+      "task_id": "guidance_plan",
+      "phase": "guidance",
+      "dimension": "development_plan",
+      "job_level_mode": "intent_plan",
+      "evidence_profiles": [
+        "job_level",
+        "career",
+        "culture"
+      ],
+      "top3_evidence_profiles": [
+        "job_level",
+        "career"
+      ],
+      "required_term_groups": [
+        [
+          "行动计划",
+          "发展计划",
+          "改进计划",
+          "下一步明确动作",
+          "下一步动作"
+        ],
+        [
+          "验证标准",
+          "验证方式",
+          "可观察结果"
+        ],
+        [
+          "跟进安排",
+          "复盘",
+          "检查节点"
+        ]
+      ],
+      "top3_required_scope_groups": [
+        [
+          "development_dialog",
+          "general",
+          "feedback"
+        ]
+      ],
+      "required_scope_groups": [
+        [
+          "development_dialog",
+          "general",
+          "feedback"
+        ],
+        [
+          "job_level"
+        ],
+        [
+          "career"
+        ],
+        [
+          "culture"
+        ]
+      ],
+      "required_scope_minimums": {
+        "development_dialog": 1,
+        "feedback": 1,
+        "job_level": 1,
+        "career": 2,
+        "culture": 1
+      }
+    },
+    {
+      "task_id": "opening_evaluation",
+      "phase": "coach",
+      "dimension": "opening",
+      "evidence_profiles": [
+        "asr"
+      ],
+      "top3_evidence_profiles": [
+        "asr"
+      ],
+      "required_term_groups": [
+        [
+          "绩效反馈",
+          "performance review"
+        ],
+        [
+          "开场",
+          "定调",
+          "opening"
+        ],
+        [
+          "事实边界",
+          "事实",
+          "evidence"
+        ],
+        [
+          "理解确认",
+          "确认理解",
+          "check understanding",
+          "确保员工知晓",
+          "确保员工了解"
+        ]
+      ],
+      "required_scope_groups": [
+        [
+          "performance"
+        ],
+        [
+          "feedback",
+          "development_dialog",
+          "general"
+        ]
+      ],
+      "required_scope_minimums": {
+        "performance": 1,
+        "feedback": 1
+      }
+    },
+    {
+      "task_id": "emotion_evaluation",
+      "phase": "coach",
+      "dimension": "emotion",
+      "evidence_profiles": [
+        "culture"
+      ],
+      "top3_evidence_profiles": [
+        "culture"
+      ],
+      "required_term_groups": [
+        [
+          "倾听",
+          "listening"
+        ],
+      [
+        "共情",
+        "同理心",
+        "战术同理心",
+        "empathy",
+        "tactical empathy"
+      ],
+      [
+        "共同探索",
+        "共同澄清",
+        "共同解决问题",
+        "开放问题",
+        "校准问题",
+        "joint exploration"
+      ]
+      ],
+      "required_scope_groups": [
+        [
+          "emotion",
+          "feedback",
+          "general"
+        ],
+        [
+          "culture"
+        ]
+      ],
+    "required_scope_minimums": {
+      "culture": 1,
+      "emotion": 2
+    }
+    },
+    {
+      "task_id": "output_expectations_evaluation",
+      "phase": "coach",
+      "dimension": "output_expectations",
+      "job_level_mode": "current",
+      "evidence_profiles": [
+        "job_level",
+        "culture",
+        "asr"
+      ],
+      "top3_evidence_profiles": [
+        "job_level",
+        "culture",
+        "asr"
+      ],
+      "top3_required_term_groups": [],
+      "required_term_groups": [
+        [
+          "产出要求",
+          "输出期望",
+          "output expectations",
+          "绩效标准",
+          "目标与结果对齐",
+          "实际结果"
+        ],
+        [
+          "绩效差距",
+          "表现差距",
+          "gap",
+          "差距 / 偏差",
+          "差距/偏差"
+        ],
+        [
+          "事实证据",
+          "事实",
+          "evidence"
+        ]
+      ],
+      "required_scope_groups": [
+        [
+          "job_level"
+        ],
+        [
+          "performance",
+          "feedback",
+          "general"
+        ],
+        [
+          "culture"
+        ]
+      ],
+      "required_scope_minimums": {
+        "job_level": 1,
+        "performance": 1,
+        "culture": 1,
+        "feedback": 2
+      }
+    },
+    {
+      "task_id": "development_plan_evaluation",
+      "phase": "coach",
+      "dimension": "development_plan",
+      "job_level_mode": "intent_plan",
+      "evidence_profiles": [
+        "job_level",
+        "career",
+        "culture"
+      ],
+      "top3_evidence_profiles": [
+        "job_level",
+        "career"
+      ],
+      "required_term_groups": [
+        [
+          "行动计划",
+          "发展计划",
+          "改进计划",
+          "下一步明确动作",
+          "下一步动作"
+        ],
+        [
+          "验证标准",
+          "验证方式",
+          "可观察结果"
+        ],
+        [
+          "跟进安排",
+          "复盘",
+          "检查节点"
+        ]
+      ],
+      "top3_required_scope_groups": [
+        [
+          "development_dialog",
+          "general",
+          "feedback"
+        ]
+      ],
+      "required_scope_groups": [
+        [
+          "development_dialog",
+          "general",
+          "feedback"
+        ],
+        [
+          "job_level"
+        ],
+        [
+          "career"
+        ],
+        [
+          "culture"
+        ]
+      ],
+      "required_scope_minimums": {
+        "development_dialog": 1,
+        "feedback": 1,
+        "job_level": 1,
+        "career": 1,
+        "culture": 1
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "g8_development_collaboration",
+      "description": "G8 development conversation: delivery is solid and the next step is broader cross-team influence; Career Elements are not applicable.",
+      "level": "G8",
+      "culture_term": "协同共进",
+      "asr_combination": "what_met_how_strong",
+      "career_state": "not_applicable",
+      "critical_profiles": [
+        "job_level",
+        "culture",
+        "asr"
+      ],
+      "context": {
+        "intent": {
+          "id": "development",
+          "name": "发展型反馈"
+        },
+        "profile": {
+          "name": "陈晨",
+          "role": "嵌入式软件工程师",
+          "level": "G8",
+          "department": "XC/ADAS Platform",
+          "reporting_line": "ADAS软件平台主管",
+          "conversation_topic": "年度绩效结果与跨团队交付能力发展",
+          "performance_rating": "2",
+          "tcl": "+++",
+          "key_goals": [
+            "按计划交付量产诊断模块",
+            "降低跨团队接口问题的返工"
+          ]
+        },
+        "motivation": {
+          "primary_motive_id": "Recognition"
+        },
+        "emotion_state": {
+          "current_anchor_id": "cautious_optimism"
+        },
+        "career_elements_applicable": false,
+        "current_career_elements": [],
+        "performance_context": "WHAT：量产诊断模块按计划上线且质量达标；HOW：主动共享接口信息并推动平台与测试团队对齐共同目标。",
+        "supplemental_info": "员工希望下一年度扩大技术影响，但尚未进入G9及以上Career Elements适用范围；本次还需结合协同共进（Collaboration to DELIVER）的行为标准。",
+        "conversation": [
+          {
+            "turn_index": 0,
+            "speaker": "manager",
+            "content": "今年模块按计划上线，质量也稳定。你先说说自己怎么看这次结果。"
+          },
+          {
+            "turn_index": 1,
+            "speaker": "employee",
+            "content": "核心交付完成了，跨团队接口问题也比上半年少，但我还想承担更完整的技术方案。"
+          },
+          {
+            "turn_index": 2,
+            "speaker": "manager",
+            "content": "我认可交付和协作改善，下一步我们需要把发展方向和更高一级的要求连起来。"
+          },
+          {
+            "turn_index": 3,
+            "speaker": "employee",
+            "content": "可以，我想先确认需要扩大的是技术范围还是跨团队影响。"
+          }
+        ]
+      },
+      "evidence_profiles": {
+        "job_level": {
+          "active": true,
+          "applicable_levels": [
+            "G8",
+            "G9"
+          ],
+          "required_term_groups": [
+            [
+              "G8"
+            ],
+            [
+              "G9"
+            ],
+            [
+              "结果",
+              "产出",
+              "result"
+            ],
+            [
+              "能力",
+              "competence"
+            ],
+            [
+              "行为",
+              "behavior"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "job_level"
+            ]
+          ]
+        },
+        "culture": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "协同共进",
+              "Collaboration to DELIVER"
+            ],
+            [
+              "共同目标",
+              "shared goals",
+              "共享信息"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "culture"
+            ]
+          ]
+        },
+        "career": {
+          "active": false,
+          "required_term_groups": [],
+          "required_scope_groups": []
+        },
+        "asr": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "WHAT"
+            ],
+            [
+              "HOW"
+            ],
+            [
+              "70%"
+            ],
+            [
+              "30%"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "performance"
+            ]
+          ]
+        }
+      },
+      "review_rules": [
+        "Career Elements must not be introduced because the employee is below G9 and career_elements_applicable is false.",
+        "协同共进 must map to Collaboration to DELIVER rather than another culture element."
+      ]
+    },
+    {
+      "scenario_id": "g9_development_career_unknown_commitment",
+      "description": "G9 recruiter development conversation: regular hiring delivery is met, scarce-role delivery is mixed, and current Career Elements are unknown.",
+      "level": "G9",
+      "culture_term": "使命必达",
+      "asr_combination": "what_mixed_how_met",
+      "career_state": "unknown",
+      "critical_profiles": [
+        "job_level",
+        "culture",
+        "career",
+        "asr"
+      ],
+      "context": {
+        "intent": {
+          "id": "development",
+          "name": "发展型反馈"
+        },
+        "profile": {
+          "name": "林敏",
+          "role": "招聘专家",
+          "level": "G9",
+          "department": "HR Talent Acquisition",
+          "reporting_line": "招聘负责人",
+          "conversation_topic": "年度绩效与高端自动驾驶人才招聘策略发展",
+          "performance_rating": "3",
+          "tcl": "++",
+          "key_goals": [
+            "保障自动驾驶核心岗位招聘交付",
+            "建立高端稀缺人才的可持续来源"
+          ]
+        },
+        "motivation": {
+          "primary_motive_id": "Recognition"
+        },
+        "emotion_state": {
+          "current_anchor_id": "disappointed_but_engaged"
+        },
+        "career_elements_applicable": true,
+        "current_career_elements": [],
+        "career_elements_state": "unknown",
+        "performance_context": "WHAT：常规岗位基本补齐，高端专家仍有缺口；HOW：拓宽猎头、内推和行业人脉，并与研发细化需求，但新的长期来源尚未系统形成。",
+        "supplemental_info": "员工明确希望发展招聘策略和雇主品牌；当前已具备哪些Career Elements没有可靠记录，不能把未记录项直接判断为缺失；本次还需结合使命必达（Commitment to WIN）的行为标准。",
+        "conversation": [
+          {
+            "turn_index": 0,
+            "speaker": "manager",
+            "content": "常规岗位交付不错，但高端专家还有缺口，我想听听你对原因的判断。"
+          },
+          {
+            "turn_index": 1,
+            "speaker": "employee",
+            "content": "匹配量产经验的人才很少，我已经在做定向挖猎和需求校准，但长期来源还没系统搭起来。"
+          },
+          {
+            "turn_index": 2,
+            "speaker": "manager",
+            "content": "你是G9，我希望下一步不只是扩大渠道，而是形成能够验证的招聘策略。"
+          },
+          {
+            "turn_index": 3,
+            "speaker": "employee",
+            "content": "我认同需要形成策略，但高校合作和眼下稀缺岗位交付的作用周期需要分开看。"
+          },
+          {
+            "turn_index": 4,
+            "speaker": "manager",
+            "content": "我们可以分别明确短期交付和长期人才来源，再讨论你在招聘策略方向的发展。"
+          }
+        ]
+      },
+      "evidence_profiles": {
+        "job_level": {
+          "active": true,
+          "applicable_levels": [
+            "G9",
+            "SL1"
+          ],
+          "required_term_groups": [
+            [
+              "G9"
+            ],
+            [
+              "SL1"
+            ],
+            [
+              "结果",
+              "产出",
+              "result"
+            ],
+            [
+              "能力",
+              "competence"
+            ],
+            [
+              "行为",
+              "behavior"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "job_level"
+            ]
+          ]
+        },
+        "culture": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "使命必达",
+              "Commitment to WIN"
+            ],
+            [
+              "QCD",
+              "质量 成本 交付",
+              "改进计划"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "culture"
+            ]
+          ]
+        },
+        "career": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "Career Elements",
+              "Career Element"
+            ],
+            [
+              "Cross-divisional experience",
+              "Cross - divisional move"
+            ],
+            [
+              "Cross-functional experience",
+              "Cross - functional move"
+            ],
+            [
+              "International experience"
+            ],
+            [
+              "Associate leadership experience"
+            ],
+            [
+              "Project leadership experience"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "career"
+            ]
+          ]
+        },
+        "asr": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "WHAT"
+            ],
+            [
+              "HOW"
+            ],
+            [
+              "70%"
+            ],
+            [
+              "30%"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "performance"
+            ]
+          ]
+        }
+      },
+      "review_rules": [
+        "Unknown current Career Elements must trigger confirmation before any element is labelled missing or selected as new.",
+        "使命必达 must map to Commitment to WIN and its observable behavior, not to generic innovation advice."
+      ]
+    },
+    {
+      "scenario_id": "g9_development_known_elements_innovation",
+      "description": "G9 product owner development conversation: strong results with a HOW gap; two Career Elements are already held and must be excluded from new targets.",
+      "level": "G9",
+      "culture_term": "创变未来",
+      "asr_combination": "what_strong_how_gap",
+      "career_state": "known_partial",
+      "critical_profiles": [
+        "job_level",
+        "culture",
+        "career",
+        "asr"
+      ],
+      "context": {
+        "intent": {
+          "id": "development",
+          "name": "发展型反馈"
+        },
+        "profile": {
+          "name": "周航",
+          "role": "数字产品负责人",
+          "level": "G9",
+          "department": "Digital Transformation",
+          "reporting_line": "数字化平台主管",
+          "conversation_topic": "年度绩效与产品创新影响力发展",
+          "performance_rating": "2",
+          "tcl": "+++",
+          "key_goals": [
+            "上线预测性维护产品并实现业务采用",
+            "建立快速验证和跨职能共创机制"
+          ]
+        },
+        "motivation": {
+          "primary_motive_id": "Power"
+        },
+        "emotion_state": {
+          "current_anchor_id": "ambitious_with_reservation"
+        },
+        "career_elements_applicable": true,
+        "current_career_elements": [
+          "Project leadership experience",
+          "Cross-functional experience"
+        ],
+        "career_elements_state": "known_partial",
+        "performance_context": "WHAT：预测性维护产品按期上线并被两条业务线采用；HOW：员工主导项目且有跨职能经历，但前期验证周期较长，未及时利用小范围实验修正假设。",
+        "supplemental_info": "Project leadership experience和Cross-functional experience是员工已具备的经历资产，只能作为基础和排除项，不能再作为下一步需要获得的Career Element；本次还需结合创变未来（Innovation to SHAPE）的行为标准。",
+        "conversation": [
+          {
+            "turn_index": 0,
+            "speaker": "manager",
+            "content": "产品上线和采用结果很强，你怎么看今年做得最好的部分？"
+          },
+          {
+            "turn_index": 1,
+            "speaker": "employee",
+            "content": "我把研发、工厂和数据团队拉到同一个项目里，最后交付和采用都达成了。"
+          },
+          {
+            "turn_index": 2,
+            "speaker": "manager",
+            "content": "结果很好，但早期实验反馈进入决策偏慢，下一阶段要把创新验证做得更快。"
+          },
+          {
+            "turn_index": 3,
+            "speaker": "employee",
+            "content": "这个差距我接受。我希望下一步扩大业务影响，而不是重复做一次同类项目。"
+          },
+          {
+            "turn_index": 4,
+            "speaker": "manager",
+            "content": "那我们要基于你已有的项目领导和跨职能经历，找一个真正新增的经历方向。"
+          }
+        ]
+      },
+      "evidence_profiles": {
+        "job_level": {
+          "active": true,
+          "applicable_levels": [
+            "G9",
+            "SL1"
+          ],
+          "required_term_groups": [
+            [
+              "G9"
+            ],
+            [
+              "SL1"
+            ],
+            [
+              "结果",
+              "产出",
+              "result"
+            ],
+            [
+              "能力",
+              "competence"
+            ],
+            [
+              "行为",
+              "behavior"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "job_level"
+            ]
+          ]
+        },
+        "culture": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "创变未来",
+              "Innovation to SHAPE"
+            ],
+            [
+              "快速验证",
+              "rapid validation",
+              "迭代"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "culture"
+            ]
+          ]
+        },
+        "career": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "Career Elements",
+              "Career Element"
+            ],
+            [
+              "Cross-divisional experience",
+              "Cross - divisional move"
+            ],
+            [
+              "Cross-functional experience",
+              "Cross - functional move"
+            ],
+            [
+              "International experience"
+            ],
+            [
+              "Associate leadership experience"
+            ],
+            [
+              "Project leadership experience"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "career"
+            ]
+          ]
+        },
+        "asr": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "WHAT"
+            ],
+            [
+              "HOW"
+            ],
+            [
+              "70%"
+            ],
+            [
+              "30%"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "performance"
+            ]
+          ]
+        }
+      },
+      "review_rules": [
+        "Project leadership experience and Cross-functional experience are held assets and cannot be proposed as new Career Elements.",
+        "创变未来 must map to Innovation to SHAPE and rapid validation or iteration."
+      ]
+    },
+    {
+      "scenario_id": "sl1_development_all_elements_customer",
+      "description": "SL1 sales leader development conversation: strong WHAT and HOW, all five Career Elements are already held, so no new element may be manufactured.",
+      "level": "SL1",
+      "culture_term": "聚力共赢",
+      "asr_combination": "what_strong_how_strong",
+      "career_state": "known_all_five",
+      "critical_profiles": [
+        "job_level",
+        "culture",
+        "career",
+        "asr"
+      ],
+      "context": {
+        "intent": {
+          "id": "development",
+          "name": "发展型反馈"
+        },
+        "profile": {
+          "name": "王蕾",
+          "role": "销售团队负责人",
+          "level": "SL1",
+          "department": "Mobility Aftermarket Sales",
+          "reporting_line": "销售总监",
+          "conversation_topic": "年度绩效与复杂业务责任深化",
+          "performance_rating": "1",
+          "tcl": "++++",
+          "key_goals": [
+            "实现重点客户组合增长",
+            "提升端到端客户方案转化率"
+          ]
+        },
+        "motivation": {
+          "primary_motive_id": "Power"
+        },
+        "emotion_state": {
+          "current_anchor_id": "confident_and_open"
+        },
+        "career_elements_applicable": true,
+        "current_career_elements": [
+          "Cross-divisional experience",
+          "Cross-functional experience",
+          "International experience",
+          "Associate leadership experience",
+          "Project leadership experience"
+        ],
+        "career_elements_state": "known_all_five",
+        "performance_context": "WHAT：重点客户组合实现超目标增长；HOW：通过客户访谈识别深层痛点，协调多个职能形成端到端方案并带动团队复制。",
+        "supplemental_info": "五项正式Career Elements均已明确具备；后续复杂度、范围和影响力提升应按岗位等级或职位发展处理，不能制造新的Career Element缺口；本次还需结合聚力共赢（Customer-centricity to GROW）的行为标准。",
+        "conversation": [
+          {
+            "turn_index": 0,
+            "speaker": "manager",
+            "content": "今年客户组合增长超过目标，方案转化也提高了，你怎么看自己的关键贡献？"
+          },
+          {
+            "turn_index": 1,
+            "speaker": "employee",
+            "content": "关键是把客户痛点转成跨团队能执行的方案，并让团队可以复制。"
+          },
+          {
+            "turn_index": 2,
+            "speaker": "manager",
+            "content": "我同意。下一阶段不是再补一项经历，而是在更复杂业务中扩大责任和影响。"
+          },
+          {
+            "turn_index": 3,
+            "speaker": "employee",
+            "content": "我希望我们能明确复杂度提升体现在哪些可观察结果上。"
+          }
+        ]
+      },
+      "evidence_profiles": {
+        "job_level": {
+          "active": true,
+          "applicable_levels": [
+            "SL1",
+            "SL2"
+          ],
+          "required_term_groups": [
+            [
+              "SL1"
+            ],
+            [
+              "SL2"
+            ],
+            [
+              "结果",
+              "产出",
+              "result"
+            ],
+            [
+              "能力",
+              "competence"
+            ],
+            [
+              "行为",
+              "behavior"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "job_level"
+            ]
+          ]
+        },
+        "culture": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "聚力共赢",
+              "Customer-centricity to GROW"
+            ],
+            [
+              "客户痛点",
+              "deep needs",
+              "端到端方案",
+              "hidden needs",
+              "pain points",
+              "end-to-end solutions",
+              "需求与痛点",
+              "解决方案的落地"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "culture"
+            ]
+          ]
+        },
+        "career": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "Career Elements",
+              "Career Element"
+            ],
+            [
+              "Cross-divisional experience",
+              "Cross - divisional move"
+            ],
+            [
+              "Cross-functional experience",
+              "Cross - functional move"
+            ],
+            [
+              "International experience"
+            ],
+            [
+              "Associate leadership experience"
+            ],
+            [
+              "Project leadership experience"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "career"
+            ]
+          ]
+        },
+        "asr": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "WHAT"
+            ],
+            [
+              "HOW"
+            ],
+            [
+              "70%"
+            ],
+            [
+              "30%"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "performance"
+            ]
+          ]
+        }
+      },
+      "review_rules": [
+        "All five Career Elements are held; the retrieved evidence must not be interpreted as requiring a sixth or repeated element.",
+        "聚力共赢 must map to Customer-centricity to GROW and customer needs or end-to-end solutions."
+      ]
+    },
+    {
+      "scenario_id": "g9_mixed_improvement_collaboration",
+      "description": "G9 mixed development and improvement conversation: current performance stabilization must precede later development; two held Career Elements remain exclusions.",
+      "level": "G9",
+      "culture_term": "协同共进",
+      "asr_combination": "what_gap_how_gap",
+      "career_state": "known_partial",
+      "critical_profiles": [
+        "job_level",
+        "culture",
+        "career",
+        "asr"
+      ],
+      "context": {
+        "intent": {
+          "id": "development_improvement",
+          "name": "发展+改进混合反馈"
+        },
+        "profile": {
+          "name": "赵宁",
+          "role": "项目质量经理",
+          "level": "G9",
+          "department": "Quality Management",
+          "reporting_line": "质量平台主管",
+          "conversation_topic": "年度绩效改进与后续质量领导力发展",
+          "performance_rating": "4",
+          "tcl": "+",
+          "key_goals": [
+            "按里程碑关闭关键质量问题",
+            "提升跨团队风险升级和闭环质量"
+          ]
+        },
+        "motivation": {
+          "primary_motive_id": "Security"
+        },
+        "emotion_state": {
+          "current_anchor_id": "anxious_and_defensive"
+        },
+        "career_elements_applicable": true,
+        "current_career_elements": [
+          "Cross-divisional experience",
+          "Associate leadership experience"
+        ],
+        "career_elements_state": "known_partial",
+        "performance_context": "WHAT：两个关键质量问题超过里程碑才关闭；HOW：风险升级较晚，跨团队责任和共同目标未及时对齐。当前需先稳定G9履职表现，再讨论下一阶段发展。",
+        "supplemental_info": "Cross-divisional experience和Associate leadership experience已具备；Career Elements仅能服务后续发展，不能替代当前绩效改进；本次还需结合协同共进（Collaboration to DELIVER）的行为标准。",
+        "conversation": [
+          {
+            "turn_index": 0,
+            "speaker": "manager",
+            "content": "两个关键问题关闭晚于里程碑，这影响了今年的结果。你怎么看原因？"
+          },
+          {
+            "turn_index": 1,
+            "speaker": "employee",
+            "content": "我承认升级不够及时，但部分接口责任一直没有明确，我不认为只是个人执行问题。"
+          },
+          {
+            "turn_index": 2,
+            "speaker": "manager",
+            "content": "责任接口是共同问题，我们还是要先明确你当前岗位需要稳定的风险识别和升级表现。"
+          },
+          {
+            "turn_index": 3,
+            "speaker": "employee",
+            "content": "如果标准和协作方责任一起说清楚，我愿意先把这部分稳定下来。"
+          },
+          {
+            "turn_index": 4,
+            "speaker": "manager",
+            "content": "先形成当前改进的验证节点，稳定后再基于你已有经历讨论后续发展。"
+          }
+        ]
+      },
+      "evidence_profiles": {
+        "job_level": {
+          "active": true,
+          "applicable_levels": [
+            "G9",
+            "SL1"
+          ],
+          "required_term_groups": [
+            [
+              "G9"
+            ],
+            [
+              "SL1"
+            ],
+            [
+              "结果",
+              "产出",
+              "result"
+            ],
+            [
+              "能力",
+              "competence"
+            ],
+            [
+              "行为",
+              "behavior"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "job_level"
+            ]
+          ]
+        },
+        "culture": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "协同共进",
+              "Collaboration to DELIVER"
+            ],
+            [
+              "共同目标",
+              "shared goals",
+              "共享信息"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "culture"
+            ]
+          ]
+        },
+        "career": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "Career Elements",
+              "Career Element"
+            ],
+            [
+              "Cross-divisional experience",
+              "Cross - divisional move"
+            ],
+            [
+              "Cross-functional experience",
+              "Cross - functional move"
+            ],
+            [
+              "International experience"
+            ],
+            [
+              "Associate leadership experience"
+            ],
+            [
+              "Project leadership experience"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "career"
+            ]
+          ]
+        },
+        "asr": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "WHAT"
+            ],
+            [
+              "HOW"
+            ],
+            [
+              "70%"
+            ],
+            [
+              "30%"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "performance"
+            ]
+          ]
+        }
+      },
+      "review_rules": [
+        "Current G9 improvement must remain separate from later Career Elements development.",
+        "Cross-divisional experience and Associate leadership experience are held and cannot be proposed as new."
+      ]
+    },
+    {
+      "scenario_id": "sl1_improvement_exit_no_career",
+      "description": "SL1 improvement-plus-exit-warning conversation: only current-level requirements and confirmed process evidence apply; Career Elements are explicitly inapplicable.",
+      "level": "SL1",
+      "culture_term": "使命必达",
+      "asr_combination": "what_persistent_gap_how_risk",
+      "career_state": "not_applicable",
+      "critical_profiles": [
+        "job_level",
+        "culture",
+        "asr"
+      ],
+      "context": {
+        "intent": {
+          "id": "improvement_exit",
+          "name": "改进+退出预警反馈"
+        },
+        "profile": {
+          "name": "孙涛",
+          "role": "工厂质量团队负责人",
+          "level": "SL1",
+          "department": "Plant Quality",
+          "reporting_line": "工厂质量总监",
+          "conversation_topic": "持续绩效差距与正式改进预警",
+          "performance_rating": "5",
+          "tcl": "#",
+          "key_goals": [
+            "将客户质量投诉控制在目标范围",
+            "按时完成重大问题遏制和根因闭环"
+          ]
+        },
+        "motivation": {
+          "primary_motive_id": "Security"
+        },
+        "emotion_state": {
+          "current_anchor_id": "high_anxiety"
+        },
+        "career_elements_applicable": false,
+        "current_career_elements": [
+          "International experience"
+        ],
+        "career_elements_state": "not_applicable",
+        "performance_context": "WHAT：客户投诉与重大问题闭环连续两个周期未达到当前岗位目标；HOW：遏制行动和风险升级未持续按约定执行。本轮只讨论当前SL1要求、可验证改进及已确认流程，不使用Career Elements或下一岗级发展。",
+        "supplemental_info": "绩效结果可能影响薪酬，但具体调整取决于公司政策；不得推断具体金额、合同结果或转岗安排；本次还需结合使命必达（Commitment to WIN）的行为标准。",
+        "conversation": [
+          {
+            "turn_index": 0,
+            "speaker": "manager",
+            "content": "客户投诉和重大问题闭环连续两个周期没有达到目标，我们需要正式讨论当前岗位的改进要求。"
+          },
+          {
+            "turn_index": 1,
+            "speaker": "employee",
+            "content": "我知道结果没有达到，但我需要理解哪些事实和标准会用于后续判断。"
+          },
+          {
+            "turn_index": 2,
+            "speaker": "manager",
+            "content": "我们只依据已经确认的目标、实际闭环记录和适用流程，不会在今天推断尚未确认的合同结果。"
+          },
+          {
+            "turn_index": 3,
+            "speaker": "employee",
+            "content": "那请把需要达到的表现、验证方式和复盘安排说清楚。"
+          },
+          {
+            "turn_index": 4,
+            "speaker": "manager",
+            "content": "我会区分绩效事实、改进要求和公司后续流程，具体薪酬也只按最终政策说明。"
+          }
+        ]
+      },
+      "evidence_profiles": {
+        "job_level": {
+          "active": true,
+          "applicable_levels": [
+            "SL1"
+          ],
+          "required_term_groups": [
+            [
+              "SL1"
+            ],
+            [
+              "结果",
+              "产出",
+              "result"
+            ],
+            [
+              "能力",
+              "competence"
+            ],
+            [
+              "行为",
+              "behavior"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "job_level"
+            ]
+          ]
+        },
+        "culture": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "使命必达",
+              "Commitment to WIN"
+            ],
+            [
+              "QCD",
+              "质量 成本 交付",
+              "改进计划"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "culture"
+            ]
+          ]
+        },
+        "career": {
+          "active": false,
+          "required_term_groups": [],
+          "required_scope_groups": []
+        },
+        "asr": {
+          "active": true,
+          "required_term_groups": [
+            [
+              "WHAT"
+            ],
+            [
+              "HOW"
+            ],
+            [
+              "70%"
+            ],
+            [
+              "30%"
+            ]
+          ],
+          "required_scope_groups": [
+            [
+              "performance"
+            ]
+          ]
+        }
+      },
+      "review_rules": [
+        "Career Elements remain inapplicable despite the SL1 level and a recorded historical element because the intent is improvement_exit and the authoritative flag is false.",
+        "Retrieved evidence must not invent a salary amount, termination decision, contract outcome or transfer."
+      ]
+    }
+  ]
+}

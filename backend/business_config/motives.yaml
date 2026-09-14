@@ -1,0 +1,69 @@
+version: v1
+name: motive_satisfaction
+default_recommendation:
+  primary_motive_id: security
+  secondary_motive_ids: [recognition, affiliation]
+motives:
+  - id: commerce
+    name: 薪酬
+    dimension: Commerce
+    description: 涨薪、奖金、收益回报。
+    examples: [涨薪, 奖金, 绩效回报]
+  - id: power
+    name: 权力
+    dimension: Power
+    description: 晋升、职权、决策影响力。
+    examples: [晋升, 职权, 负责人机会]
+  - id: recognition
+    name: 认可
+    dimension: Recognition
+    description: 被看见、被肯定、visibility。
+    examples: [认可, 公开肯定, 高绩效可见度]
+  - id: affiliation
+    name: 融洽团队
+    dimension: Affiliation
+    description: 团队关系、支持感、归属感。
+    examples: [团队支持, 协作氛围, 归属]
+  - id: security
+    name: 稳定
+    dimension: Security
+    description: 工作安全、流程确定性、后续保障。
+    examples: [稳定, 不被优化, 明确流程]
+  - id: hedonism
+    name: 舒适工作环境
+    dimension: Hedonism
+    description: 工作舒适度、工作内容多样性、压力可承受。
+    examples: [舒适环境, 工作内容多样性, 压力平衡]
+intent_recommendations:
+  development:
+    primary_motive_id: recognition
+    secondary_motive_ids: [commerce, power]
+  improvement:
+    primary_motive_id: security
+    secondary_motive_ids: [affiliation, recognition]
+  exit:
+    primary_motive_id: security
+    secondary_motive_ids: [recognition, commerce]
+  development_improvement:
+    primary_motive_id: recognition
+    secondary_motive_ids: [power, security]
+  improvement_exit:
+    primary_motive_id: security
+    secondary_motive_ids: [recognition, affiliation]
+scoring_policy:
+  range: [-100, 100]
+  weights:
+    primary: 0.7
+    secondary_total: 0.3
+  notes:
+    - 未选择辅助诉求时，主诉求占 100%。
+    - 选择一个辅诉求时占 30%；选择两个辅诉求时各占 15%。
+    - 满足度评分只评价诉求是否被回应，不参与 VAD 情绪转移。
+    - 主诉求、辅诉求和总满足度初始分数均为 50。
+    - 红线、否定诉求、打压感受会扣到负数；负数绝对值越大，诉求表达越强。
+redlines:
+  - id: attitude_without_behavior_evidence
+    applies_to_intents: [exit, improvement_exit]
+    phrase: 态度不好
+    requires_behavior_evidence: true
+    delta: -35

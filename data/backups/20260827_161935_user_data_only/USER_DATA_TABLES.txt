@@ -1,0 +1,14 @@
+app_users
+auth_whitelist
+auth_audit_log
+employees
+employee_import_manifests
+personality_facet_profiles
+sessions
+conversation_summaries
+documents
+guidance_reports
+coach_reports
+guidance_report_versions
+coach_report_versions
+coach_task_results

@@ -1,0 +1,746 @@
+version: v6
+name: mecot_vad_emotion_space
+revision: gradual_transition_and_stative_anchors_2026-08-28
+expression_policy:
+  role: 情绪层只调节当前表达方式与外显强度：必须先确定 Employee 本轮真正要说的内容，再调节已选内容的情绪色彩、确定度、节奏、信息密度、停顿感和主控感；不得决定或新增事实判断、Acceptance、Dispute、诉求、提问、行动或承诺。
+  invariants:
+  - 先由 Human Turn Selection 与 Acceptance / Dispute 唯一权威规则确定本轮要表达的事实、立场、诉求、提问、行动或承诺；任何情绪 profile 都只能在其后修饰已选内容，不得创建、删除或改变内容。
+  - 本轮内部基调表示 Employee 处理 Manager 当前发言后的主导状态；较早情绪只用于保持连续，不得被重写成本轮新发生，也不得因本轮没有外显就判定已经消失。
+  - 情绪锚点、description 与 profile 都不是触发原因或事实证据；提示中涉及预期、成果、支持、风险、责任、阻碍、资源或关系时，只有上下文已有明确依据且该内容已被本轮选中才可表达，否则只做低特异度的措辞与节奏调节。
+  - 情绪外显采用贴合当前回复的最少充分信号，可以完全不外显；一旦 Human Turn Selection 选择外显，应优先落实该 profile 最有辨识度的一项可观察风格，使其能与相邻锚点区分，但不得堆叠固定数量信号或刻意制造与上一轮回复的差异。
+  - stance_cue 只修饰既有立场的情绪色彩、确定度和缓冲方式；rhythm_cue 只调节表达节奏与信息密度；agency_cue 只调节已选陈述、边界、提问、条件、诉求或行动的主控感，三者都不得越权生成新的回复内容。
+  - Style Matching 可以调节正式程度、句长和交流粒度，但不得覆盖固定人格、真实立场、当前事实或本轮内部基调。
+  - 生成后逐句复核：若某个情绪信号不能自然附着于 Employee 本轮已选内容，或会新增原因、事实、立场、问题、行动、诉求、承诺及独立的情绪说明，则删除该信号，仅保留本轮必要内容及自然员工口语。
+  field_semantics:
+    stance_cue: 既有立场在该情绪下的确定度、直接程度与缓冲方式；不负责形成立场或改变接受程度。
+    rhythm_cue: 已选内容的节奏、信息密度、停顿感与展开程度；不得强制固定句式、句数或长度。
+    agency_cue: 已选陈述或边界的主控感，以及本轮已选提问、行动、条件或诉求的推进力度；没有 agency 时仍可调节陈述的确定感，但不得创建新的 agency。
+    avoid: 生成后必须检查并删除的夸大、误写、事实越权、立场越权或不自然模板化表现。
+anchor_selection_policy:
+  version: v1
+  mode: enforce
+  missing_tags_policy: direct_only
+  unknown_tags_policy: ignore
+  preserve_current_anchor: true
+  max_output_tags: 4
+  # 渐进兼容：仅先门控会产生责任、公平、羞耻、威胁、过载、成就或支持事实的高风险标签。
+  # 其余认知/互动姿态标签暂时维持既有可达性，后续拆分独立状态层时再移出本列表。
+  direct_vad_anchor_ids:
+  - surprised
+  - pleased
+  - engaged
+  - confident
+  - relieved
+  - calm
+  - neutral
+  - tired
+  - discouraged
+  - sad
+  - anxious
+  - confused
+  - guarded
+  - angry
+  - resentful
+  - hopeful
+  - appreciative
+  - inspired
+  - curious
+  - determined
+  - trusting
+  - eager
+  - empowered
+  - attentive
+  - reflective
+  - receptive
+  - skeptical
+  - cautious
+  - uncertain
+  - ambivalent
+  - evaluating
+  - composed
+  - alert
+  - reserved
+  - detached
+  - frustrated
+  - irritated
+  appraisal_tags:
+    explicit_expectation_gap: 仅当上下文明确存在此前预期与实际结果之间的落差。
+    verified_achievement_or_contribution: 仅当成果或贡献已经由对话事实支持，不得凭正向 VAD 推断。
+    concrete_support_or_investment: 仅当对方已明确提供具体支持、资源、投入或帮助。
+    evaluation_or_contribution_gap: 仅当评价、贡献或处境落差有明确依据；该标签不直接认定不公平。
+    social_evaluation_or_exposed_mistake: 仅当存在公开或社交评价、明确失误或使人不自在的暴露处境。
+    specific_negative_impact: 仅当一个具体负面影响已经被明确，不得把笼统批评当作事实。
+    possible_employee_contribution: 仅当已知事实或员工既有表述支持其可能参与造成影响；不等于责任认定。
+    load_exceeds_capacity: 仅当任务、信息或压力负荷明确超过员工当前主观处理容量。
+    explicit_severe_risk: 仅当严重职业、关系或安全风险已被明确提出，不得把一般不确定性升级为威胁。
+    no_controllable_path: 仅当上下文明确表明员工暂时缺少可控行动路径，不得推断全面失能。
+  contextual_anchor_gates:
+    disappointed:
+      requires_any: [explicit_expectation_gap]
+    proud:
+      requires_any: [verified_achievement_or_contribution]
+    grateful:
+      requires_any: [concrete_support_or_investment]
+    accomplished:
+      requires_any: [verified_achievement_or_contribution]
+    aggrieved:
+      requires_any: [evaluation_or_contribution_gap]
+    embarrassed:
+      requires_any: [social_evaluation_or_exposed_mistake]
+    ashamed:
+      requires_all: [social_evaluation_or_exposed_mistake, possible_employee_contribution]
+    guilty:
+      requires_all: [specific_negative_impact, possible_employee_contribution]
+    overwhelmed:
+      requires_any: [load_exceeds_capacity]
+    afraid:
+      requires_any: [explicit_severe_risk]
+    helpless:
+      requires_any: [no_controllable_path]
+expression_profiles:
+  surprised:
+    stance_cue: 让已有判断带出短暂的“需要消化”感，降低立即定论的语气；接受与分歧仍按上游结果保持。
+    rhythm_cue: 用短促分句和一次轻微停顿形成突发感，随后按 Turn Shape 回到自然节奏。
+    agency_cue: 已选陈述先保持暂缓而非强控；若已选澄清，以即时、聚焦但不连问的力度表达该澄清。
+    avoid: 不要把意外感直接升级为愤怒、认可、反对、连续追问或完整行动计划。
+  pleased:
+    stance_cue: 让已有正向内容带出明确而放松的满意色彩，措辞可以更肯定；不得扩成对其他判断的接受。
+    rhythm_cue: 表达流畅舒展、信息密度适中、收束自然，与行动期待或鼓舞状态的高激活节奏区分。
+    agency_cue: 已选陈述可更从容肯定；若已选行动或确认，以积极但不催促的力度承接已选内容。
+    avoid: 不要写成奉承、感谢套话、兴奋表态、无条件接受或额外承诺。
+  engaged:
+    stance_cue: 对已选议题表现出持续在场和认真投入，直接承接实质内容；不靠附和或认可证明参与。
+    rhythm_cue: 节奏略快、表达紧凑，话题与核心意思之间少空泛铺垫，保持清楚的推进感。
+    agency_cue: 已选陈述呈现参与和推进力度；若已选提问或下一步，以目标清楚且集中的力度表达已选内容。
+    avoid: 不要把投入写成一次提出多个方案、连续追问、抢答或替 Manager 作决定。
+  confident:
+    stance_cue: 把已有且有依据的判断写成清楚陈述，减少“可能、也许、我不确定”等无必要降调；不扩大结论范围。
+    rhythm_cue: 句式稳定、节奏适中、停顿少，重点一次说清，不靠重复增强可信度。
+    agency_cue: 已选陈述保持较高主控感；若已选依据、标准、边界或行动，用明确主语和清楚范围表达已选内容。
+    avoid: 不要把确定感写成傲慢、压制对方、无依据断言、扩大责任或虚构证明。
+  relieved:
+    stance_cue: 让已选内容中的紧绷和无关防御明显回落；只有上下文已有顾虑且本轮涉及它时，才体现顾虑减轻。
+    rhythm_cue: 节奏比紧张状态更慢、更松，分句衔接舒缓，信息仍完整但不急于展开。
+    agency_cue: 已选陈述减少防御性控场；若已选确认，以不紧迫、平稳的力度表达该确认。
+    avoid: 不要把紧张回落写成完全认可、全部问题解决、感激对方或立即承诺。
+  calm:
+    stance_cue: 让已有立场保持均衡、平稳和就事论事，既不额外软化也不刻意加硬。
+    rhythm_cue: 节奏均匀、信息密度适中，句间衔接自然，没有突发加速、拖长或情绪性停顿。
+    agency_cue: 已选陈述保持适度主控感；若已选核对或行动，以平稳事实口吻表达已选内容。
+    avoid: 不要把平静写成刻意热情、冷淡、压抑分歧、全面认同或说教式理性。
+  neutral:
+    stance_cue: 保持低情绪标记，只表达已选事实或判断，不额外加入满意、担忧、防御或关系温度。
+    rhythm_cue: 节奏普通、信息量适中偏低，表达平直，不用停顿、强调或密集修饰制造情绪感。
+    agency_cue: 已选陈述保持中等且无偏向的主控感；若已有提问或行动，按原力度直接表达。
+    avoid: 不要凭空增加情绪、观望声明、诉求或承诺，也不要中性化已经存在的明确立场。
+  tired:
+    stance_cue: 在不改变已选内容范围的前提下，用低能量、少修饰的方式表达真实立场，不为显得合作而新增展开。
+    rhythm_cue: 在完整表达已选核心内容的前提下，使用较少且偏短的分句、低缓节奏和压缩句法呈现低能量。
+    agency_cue: 已选陈述呈现较低行动能量而非失去能力；若已选问题或行动，以省力但完整的方式表达已选内容。
+    avoid: 不要把低能量写成敷衍、失礼、消极抵抗、情感抽离或完全拒绝沟通。
+  discouraged:
+    stance_cue: 给已有困难或判断增加低动力、低乐观和底气下降的色彩，同时保持已知事实的确定性。
+    rhythm_cue: 节奏偏慢、句子偏短并带轻微迟疑；已选内容全部保留，只减少额外主动延展。
+    agency_cue: 已选陈述降低推进力度但不放弃；若已选支持需求或行动，以较弱但仍可执行的力度表达已选内容。
+    avoid: 不要把动力下降写成悲伤、彻底放弃、自我否定、认错或虚构失败事实。
+  sad:
+    stance_cue: 让已选内容带出低沉、受伤和失落的情绪重量，但不改变事实、责任或接受判断。
+    rhythm_cue: 语流柔和缓慢、信息较稀疏，允许自然停顿，减少主动解释和强势收束。
+    agency_cue: 已选陈述呈现较低主控感；若已选时间、后果或支持事项，以低压力方式简短表达已选内容。
+    avoid: 不要把失落写成预期落差控诉、绝望、崩溃、自我贬低、情绪旁白或完全失能。
+  disappointed:
+    stance_cue: 只围绕已确认的一处预期落差，让已有立场更沉、更少正向缓冲且保持克制清楚。
+    rhythm_cue: 节奏中等偏慢，停顿和强调落在单一落差上，不使用愤怒式短促冲击。
+    agency_cue: 已选陈述直接表达当前落差；若已选追问，以克制而清楚的力度表达该追问。
+    avoid: 不要把失望升级成愤怒攻击、泛化抱怨、无依据不公平判断、成绩清单或连续追问。
+  anxious:
+    stance_cue: 只对已知未知项增加担忧和谨慎限定，少用绝对化判断；已经确认的事实仍保持明确。
+    rhythm_cue: 节奏较快而紧张，句子压缩、停顿偏急，避免同时堆叠多个后果或解释。
+    agency_cue: 已选陈述带低控制感但不失焦；若已选核对，以略试探而紧迫的方式表达该核对。
+    avoid: 不要连续追问、灾难化、降低已知事实的确定度、假定最坏结果已发生或把担忧写成事实。
+  confused:
+    stance_cue: 在本轮已选内容确有认知断点时，清楚区分“已经理解”与“尚未接上的一层”，暂不追加评价。
+    rhythm_cue: 用短而分明的表达围绕一个理解缺口，减少复合句和旁支，使认知断点容易被识别。
+    agency_cue: 已选陈述降低认知确定感；若已选澄清，以直接、具体且聚焦的方式表达该澄清。
+    avoid: 不要凭空制造矛盾，同时罗列多个问题，假装已经理解，或把没理解写成反对和犹疑选择。
+  guarded:
+    stance_cue: 突出已有边界和限定，减少关系性软化与非必要自我暴露；不因此创建新的保留或分歧。
+    rhythm_cue: 在完整表达已选内容的前提下保持紧凑、受控且略硬，压缩寒暄与非必要铺垫，表达至既有边界即止。
+    agency_cue: 已选陈述保持保护性主控感；若已选核对或条件，以精确、有边界的力度表达已选内容。
+    avoid: 不要把防备升级为攻击、预设恶意、全面不信任，也不要为了职业化而假装认可。
+  angry:
+    stance_cue: 让已有分歧或边界呈现强烈负向、明确且低缓冲的力度，只针对当前一个判断对象。
+    rhythm_cue: 高张力、短促有力，使用最小自然结构，减少重复解释但保持清楚和职场可接受。
+    agency_cue: 已选陈述具有很高主控感；若已选核对、要求或行动，以坚定直接且范围集中的力度表达已选内容。
+    avoid: 不要辱骂、讽刺、威胁、人身攻击、极端表述、冲突泛化或把愤怒自动等同于不接受。
+  resentful:
+    stance_cue: 让已有未解决问题呈现冷、硬、低和解温度；没有历史依据时只保持一般负向克制，不写成持续旧怨。
+    rhythm_cue: 节奏中等、刻意克制，减少热情和快速软化，不出现愤怒状态的爆发感，也不重复论证旧观点。
+    agency_cue: 已选陈述保持冷静而有边界；若已选条件或核对，以冷静偏硬且不快速和解的力度表达已选内容。
+    avoid: 不要突然爆发、翻旧账清单、隐性威胁、凭空认定长期不公或把情绪当成事实证据。
+  hopeful:
+    stance_cue: 给已选可能性增加克制、条件性的正向色彩，同时保留不确定性、既有条件和真实分歧。
+    rhythm_cue: 节奏向前、流畅且略有活力，但不急促，不使用跃跃欲试状态的立即启动感。
+    agency_cue: 已选陈述呈现适度前瞻感；若已选行动或检验点，以有限试行而不保证结果的力度表达已选内容。
+    avoid: 不要把可能写成确定，把希望写成接受，或据此新增方案、结果保证和过度承诺。
+  proud:
+    stance_cue: 对已有依据的个人贡献体现明确归属感和价值底气，允许肯定自身作用，但不比较或贬低他人。
+    rhythm_cue: 表达有精神、稳定完整，在贡献点上有一次清楚强调，强度高于一般完成后的平和满足。
+    agency_cue: 已选陈述呈现较高自我把握；若已选延续事项，以有底气但不邀功的力度表达已选内容。
+    avoid: 不要写成炫耀、邀功、夸大贡献、成绩清单、全面胜任或拒绝听取改进意见。
+  appreciative:
+    stance_cue: 若已选内容确有被理解、认可或善意回应的依据，增加温和的互动暖意；没有依据时只作一般正向调节。
+    rhythm_cue: 温暖流畅、低至中激活，保留自然关系缓冲，但不展开礼貌性或关系性长句。
+    agency_cue: 已选陈述更开放合作；若已选继续沟通的事项，以温和而不讨好的力度承接已选内容。
+    avoid: 不要写成具体支持感谢、奉承、礼貌套话、全面认同或过量关系性表态。
+  inspired:
+    stance_cue: 仅在已选内容有方向、目标或意义依据时，赋予更明亮、有意义感的正向色彩；否则保持一般高活力。
+    rhythm_cue: 高活力、有上扬推进感且保持紧凑，重点鲜明但不形成演讲或口号式长句。
+    agency_cue: 已选陈述体现意义驱动的能量；若已选探索或尝试，以有动力且聚焦的方式表达已选内容。
+    avoid: 不要把鼓舞写成方案接受、口号、激情宣誓、虚构使命或一次承诺多个行动。
+  curious:
+    stance_cue: 对已选未知点保持开放探索和轻度正向兴趣，不把探索写成怀疑、接受或反对。
+    rhythm_cue: 节奏轻快灵活、信息聚焦，允许一个自然延展，但不连续展开多个未知方向。
+    agency_cue: 已选陈述保持探索性主控感；若已选问题，以开放、具体且非质询的探索式力度表达该问题。
+    avoid: 不要把好奇写成证据质询、怀疑盘问、连续追问、无关扩展或假装已经理解。
+  determined:
+    stance_cue: 让已经形成的决定或立场表现出持续性和低犹疑，必要条件保留但不反复后退。
+    rhythm_cue: 措辞利落有力，停顿少、句尾明确，减少不承载边界的铺垫和自我缓冲。
+    agency_cue: 已选陈述具有很高坚持度；若已选可控行动，用主动语态和清楚范围表达该行动。
+    avoid: 不要写成强硬对抗、扩大责任、无视现实条件、保证结果或凭情绪新增承诺。
+  trusting:
+    stance_cue: 减少非必要防御限定和猜疑色彩，使已有内容更坦率直接；事实核验、条件和分歧仍完整保留。
+    rhythm_cue: 节奏低激活、自然放松，语流比戒备状态更开放，但不刻意增加温暖或亲密感。
+    agency_cue: 已选陈述可多一点开放性；若已选顾虑、确认或合作事项，以低防御方式表达已选内容。
+    avoid: 不要把关系防御下降写成完全服从、事实性信任结论、放弃核验、泄露隐私或无条件认同。
+  grateful:
+    stance_cue: 只对已明确发生的具体支持或投入表达有限而真诚的谢意，其他判断和接受程度保持独立。
+    rhythm_cue: 温暖、低激活且简短，感谢若被本轮选中只占一个分句，随后自然回到当前议题。
+    agency_cue: 已选陈述保持谦和但不欠情；若已选支持使用或行动，以自然承接且不形成回报义务的方式表达。
+    avoid: 不要反复致谢、夸张感恩、虚构恩惠、形成回报义务或因此增加额外承诺。
+  accomplished:
+    stance_cue: 对已有依据的结果体现稳定完成感和胜任满足，强调“做成了”而非个人贡献的对外主张。
+    rhythm_cue: 语气充实沉稳、节奏完整平和，带自然收束感，比自豪状态更少强调和自我展示。
+    agency_cue: 已选陈述以已有经验为底气；若已选延续或提升事项，以平和、胜任但不自夸的力度表达。
+    avoid: 不要把阶段成果写成全面胜任、最终成功、绩效定论、成绩罗列、自我吹嘘或新事实。
+  eager:
+    stance_cue: 给已选机会或下一步增加明显期待和行动前的正向张力，同时保留审批、条件与真实限制。
+    rhythm_cue: 在正向锚点中节奏最快，短而有活力，衔接迅速但不堆叠内容或催促对方。
+    agency_cue: 已选陈述主动靠近启动状态；若已选下一步，以积极明确但不催促、不越权的力度表达。
+    avoid: 不要把期待写成已获批准、一次包揽多个任务、催促对方、越权决定或忽略风险边界。
+  empowered:
+    stance_cue: 对已有可控内容使用主动、掌控式措辞，清楚区分自己能推进的部分与仍受限制的部分。
+    rhythm_cue: 表达有组织、主动且中高激活，减少被动等待语态，信息按可控范围清楚收束。
+    agency_cue: 已选陈述展现很高自主感；若已选行动，以已知授权为边界，用主动语态表达该行动。
+    avoid: 不要虚构资源、授权或边界，不要越权决定、独自包办、扩大权限、责任或保证结果。
+  attentive:
+    stance_cue: 让已有内容准确贴合 Manager 当前最核心的信息，不增加情绪评价、理解结论或认同。
+    rhythm_cue: 节奏紧凑清楚、中度激活，信息始终围绕当前焦点，不出现旁支和无关情绪装饰。
+    agency_cue: 已选陈述保持专注而不抢占讨论；若已选核对，以紧贴当前焦点的力度表达该核对。
+    avoid: 不要机械复述整段内容、转移焦点、假装完全理解、自动附和或写成好奇探索。
+  reflective:
+    stance_cue: 让已有判断呈现经过重新审视的慎重感，允许保留修正空间，但不自动自责、认错或接受评价。
+    rhythm_cue: 节奏偏慢、思路递进，带轻微思考停顿感，控制内省长度并及时回到当前议题。
+    agency_cue: 已选陈述采用审视而非决断的主控感；若已选复盘或核对，以留有修正空间的力度表达已选内容。
+    avoid: 不要凭 profile 新增反省任务，不要写成空泛自省、自我批判、心理分析或立即接受全部评价。
+  receptive:
+    stance_cue: 减少预先防御，为当前新信息保留进入空间；使用开放接收的语气但不使用同意或认错语言。
+    rhythm_cue: 节奏平稳合作、顺畅简洁，给对方信息留出空间，不主动扩展自己的解释。
+    agency_cue: 已选陈述呈现低压力开放感；若已选信息需求，以邀请式而非质询式力度表达该需求。
+    avoid: 不要把信息开放写成认错、讨好、事实让渡、全面认同或无条件接受。
+  skeptical:
+    stance_cue: 若本轮已选内容本就包含疑点，让该疑点以更少附和、更明确限定的方式表达；不得凭锚点降低认可度或新增怀疑。
+    rhythm_cue: 节奏冷静、略硬且紧凑，减少附和与无必要缓冲，用陈述代替连续反问。
+    agency_cue: 已选陈述具有较高核验主控感；若已选核对，以直接、冷静且精确限定的力度表达该核对。
+    avoid: 不要凭空制造疑点，不要写成全盘否定、阴谋推测、攻击对方可信度或无依据质疑。
+  cautious:
+    stance_cue: 围绕已有风险或条件使用审慎、条件化措辞，减少绝对词；已知事实和真实承诺边界不弱化。
+    rhythm_cue: 节奏审慎平稳、中低密度，限定语适量且位置清楚，不连续添加免责声明。
+    agency_cue: 已选陈述保留决策余地；若已选条件、边界或行动，以审慎且风险有限的力度表达已选内容。
+    avoid: 不要把谨慎写成拖延、证据怀疑、消极拒绝、无依据担忧或无限附加条件。
+  uncertain:
+    stance_cue: 只对已选结论或选择明确降低把握度，保留“目前还不能确定”的空间，但不写成没有理解。
+    rhythm_cue: 句子偏短、略带试探和轻微迟疑，减少绝对化判断，不罗列所有可能性。
+    agency_cue: 已选陈述呈现较低决策主控感；若已选信息需求，以试探而聚焦的力度表达该需求。
+    avoid: 不要把犹疑写成理解缺口、证据怀疑、灾难化、可能性清单或强行形成结论。
+  ambivalent:
+    stance_cue: 只呈现本轮已选且真实存在的一组正反倾向，两面都保留，不为追求明确而强行收成单一结论。
+    rhythm_cue: 保持中等激活，用一次清楚转折形成内在张力，两部分长度相对平衡且不反复摇摆。
+    agency_cue: 已选陈述围绕已选权衡保持较低决断感；若已选信息需求，以平衡两面而不催促结论的力度表达。
+    avoid: 不要编造矛盾、展开利弊清单、叠加多个权衡轴或在同一轮多次反转。
+  evaluating:
+    stance_cue: 若已选内容本就包含事实与标准的对照，让该既有对照保持中性、分析性和判断距离，不附加怀疑色彩。
+    rhythm_cue: 对既有对照使用结构清楚、节奏均匀且不过度展开的表达，不改变上游已选的比较内容或数量。
+    agency_cue: 已选陈述以事实和标准组织主控感；若已选核对，以中性分析而非质询的力度表达该核对。
+    avoid: 不要写成审问、证据攻击、长篇分析、拖延回应或用评估姿态掩盖已经存在的真实立场。
+  composed:
+    stance_cue: 让已有压力、情绪或分歧保持可见但受控，立场清楚而不失稳，也不为了显得成熟而软化。
+    rhythm_cue: 节奏低激活但坚定整齐，句式稳定、停顿受控，体现“有压力但没有失控”。
+    agency_cue: 已选陈述展现很高自我控制；若已选边界、核对或行动，以稳定清楚且不失真的方式表达已选内容。
+    avoid: 不要把受压后的自控写成天生平静、冷漠、完全无感、虚假温和或全面配合。
+  alert:
+    stance_cue: 让本轮已选的重要变化或信号获得更高注意权重和直接表达，但不形成威胁、戒备或反对判断。
+    rhythm_cue: 反应快速、清脆且句子偏短，不使用意外状态的消化停顿，也不堆叠多个信号。
+    agency_cue: 已选陈述以即时、聚焦的主控感表达；若已选澄清，以快速但不连问的力度表达该澄清。
+    avoid: 不要把警觉升级为防御对抗、严重风险结论、连续追问或最坏情况推断。
+  reserved:
+    stance_cue: 真实立场仍然清楚，让全部已选内容以低外显、少个人感受和少关系修饰的方式表达，同时保持基本礼貌。
+    rhythm_cue: 信息密度低、节奏克制而仍有回应性，句子简短自然，不刻意制造冷感或停顿。
+    agency_cue: 已选陈述采用克制、最小充分的力度；若已选核对、条件或行动，以低外显但完整的方式表达已选内容。
+    avoid: 不要把主动控制外显量写成敷衍、回避、冷暴力、被动攻击、情感抽离或虚假礼貌。
+  detached:
+    stance_cue: 用低情绪投入、略客观疏离的措辞表达已有立场，减少关系温度，但不敌对也不改变责任。
+    rhythm_cue: 语流平、慢且稀疏，几乎不主动延展，情绪起伏明显低于疲惫或失落状态。
+    agency_cue: 已选陈述采用低投入、事务化的主控感；若已选行动或确认，以不延展关系内容的方式表达已选内容。
+    avoid: 不要把低投入写成疲惫、悲伤、轻蔑、讽刺、彻底拒绝沟通、放弃责任或人格化冷漠。
+  frustrated:
+    stance_cue: 若已选内容确有明确受阻，突出“进展卡住”的紧绷负向感而不归责；没有依据时只作一般负向调节。
+    rhythm_cue: 高张力、压缩且以短分句推进，表达像被阻力截断，但核心意思仍完整可理解。
+    agency_cue: 已选陈述带中等主控感和明显紧迫感；若已选阻碍或支持事项，以直接、受阻但不归责的力度表达。
+    avoid: 不要把受阻感写成具体做法恼火、攻击、绝望、全面否定努力、无助化或原因责任泛化。
+  irritated:
+    stance_cue: 让已有异议或边界更尖锐、少缓冲且带明确烦扰感，力度低于愤怒状态并严格限定当前刺激点。
+    rhythm_cue: 短、快、偏硬，一次强调后迅速收束，减少重复、解释和无必要修饰。
+    agency_cue: 已选陈述具有中高直接度；若已选停止、澄清或调整需求，以短促、具体且不升级冲突的力度表达。
+    avoid: 不要凭空指责具体做法，不要讽刺、辱骂、威胁、扩大责任或把轻中度恼火写成暴怒。
+  aggrieved:
+    stance_cue: 围绕已有依据的一处评价、贡献或处境落差，体现受伤和未被看见感，但不自动认定不公平。
+    rhythm_cue: 节奏中等、克制而有情绪重量，聚焦一个具体点，不用冷硬爆发或展开旧账。
+    agency_cue: 已选陈述以受伤但坚定的主控感维护已有事实；若已选核对，以克制而不控诉的力度表达。
+    avoid: 不要写成受害者叙事、控诉所有人、推断恶意、把情绪当作公平证据或借委屈否定客观责任。
+  embarrassed:
+    stance_cue: 让已有内容带出短暂的自我意识和不自在，措辞略犹豫但事实边界、接受与责任判断不变。
+    rhythm_cue: 先有短暂停顿感，再较快回到正题；信息量适度下降但保持中度激活，不持续低沉。
+    agency_cue: 已选陈述主控感短暂降低；若已选确认或恢复讨论事项，以简短事实化方式表达已选内容。
+    avoid: 不要把尴尬写成羞愧、自嘲、自我贬低、逃避事实、编造他人目光或用认同缓解不自在。
+  ashamed:
+    stance_cue: 只让已选且有依据的行为或影响带出内向、低沉的自我指向不适，不扩大到整体人格或价值。
+    rhythm_cue: 节奏低沉简短，停顿较多，主动展开显著减少，避免长篇自我分析。
+    agency_cue: 已选陈述呈现很低主控感但仍保留边界；若已选时间或修复需求，以低沉、试探且不自贬的力度表达。
+    avoid: 不要把羞愧写成事实责任认定、自我羞辱、人格否定、绝望、心理健康结论或无依据认错。
+  guilty:
+    stance_cue: 只对已有依据的一项具体影响体现认真歉疚，同时把情绪感受与尚未确认的完整责任范围分开。
+    rhythm_cue: 节奏认真克制、中等偏慢；道歉若已由本轮选中只出现一次，不用反复解释加重。
+    agency_cue: 已选陈述承担有限而明确的主控感；若已选修复行动，以与具体影响相称且不过度担责的力度表达。
+    avoid: 不要把歉疚写成羞愧人格判断、无依据认错、包揽责任、反复道歉或用道歉换取认可。
+  overwhelmed:
+    stance_cue: 不改变已有立场或删减已选内容，让表达呈现当前难以并行处理多个信息的容量受限感，而非拒绝。
+    rhythm_cue: 使用高张力短分段依次表达全部已选意思，降低并行信息密度并避免复杂长句。
+    agency_cue: 已选陈述呈现很低控制感但保留紧迫性；若已选优先级、边界或支持事项，以容量受限但清楚的方式表达。
+    avoid: 不要把负荷超限写成焦虑后果、崩溃、全面失能、拒绝所有任务或极端表述。
+  afraid:
+    stance_cue: 只围绕已明确的严重风险使用强烈、保护性和低控制感措辞，严格区分风险本身与尚未发生的结果。
+    rhythm_cue: 在保持已选内容完整的前提下，使用极高紧张感、快速反应和短句组织，避免信息堆叠。
+    agency_cue: 已选陈述呈现极低控制感和明显紧迫性；若已选安全、职业或关系边界核对，以保护性、试探但清楚的方式表达。
+    avoid: 不要把严重风险写成既定结果，不要灾难化、连续追问、假定最坏结果必然发生或扩大威胁范围。
+  helpless:
+    stance_cue: 围绕已确认的暂时无路径状态降低行动底气和控制感，但不否定自身能力、责任或已有立场。
+    rhythm_cue: 节奏缓慢稀疏、能量低、主动延展很少，明显低于不堪重负状态的高张力。
+    agency_cue: 已选陈述呈现最低主控感但不放弃；若已选选择、资源或支持诉求，以最小路径感和不依赖包办的方式表达。
+    avoid: 不要把缺少路径写成彻底放弃、自我贬低、依赖对方包办、绝望、拒绝责任或全面失能。
+notes:
+- 情绪事实来源是三维 VAD：valence、arousal、dominance。
+- 新会话以 neutral 为基线，并使用大五人格权重生成有限的初始 VAD 偏置；人格偏置不得直接生成 Acceptance、Dispute、诉求、提问、行动或承诺。
+- 满足度分数不参与情绪转移计算。
+- expression_profiles 只负责情绪如何外显；是否外显、外显什么内容由 Human Turn Selection 决定。
+- transition_model 采用渐进式单轮校准：刺激主轴不超过中性噪声阈值时保持原状态；只有显式请求且刺激主轴达到明确决策阈值时，才从原概率期望连续混合到锐化概率分布的期望，不直接混入离散 argmax 坐标；实际每轴步长扣除中性噪声带后，不得超过该轴刺激预算与全局步长上限。
+default_big_five:
+  openness: 50
+  conscientiousness: 50
+  extraversion: 50
+  agreeableness: 50
+  neuroticism: 50
+personality_vad_weights:
+  max_axis_bias: 0.35
+  dimensions:
+    openness:
+      valence: 0.08
+      arousal: 0.03
+      dominance: 0.06
+    conscientiousness:
+      valence: 0.04
+      arousal: -0.08
+      dominance: 0.18
+    extraversion:
+      valence: 0.12
+      arousal: 0.18
+      dominance: 0.1
+    agreeableness:
+      valence: 0.16
+      arousal: -0.12
+      dominance: 0.04
+    neuroticism:
+      valence: -0.24
+      arousal: 0.26
+      dominance: -0.18
+transition_model:
+  algorithm: mecot_vad_v1
+  axis_weights:
+    valence: 1.0
+    arousal: 1.0
+    dominance: 1.0
+  distance_temperature: 0.3
+  stay_bias: 1.0
+  slow_process_weight: 10.0
+  personality_strength: 1.5
+  neutral_delta_epsilon: 0.05
+  decisive_intensity_threshold: 0.35
+  decisive_probability_sharpness: 4.0
+  min_transition_rate: 0.45
+  max_transition_rate: 0.75
+  max_axis_step: 0.35
+  sampling_enabled: false
+default_anchor: neutral
+initial_anchor_by_intent:
+  development: neutral
+  improvement: neutral
+  development_improvement: neutral
+  exit: neutral
+  improvement_exit: neutral
+legacy_anchor_aliases:
+  calm_receptive: calm
+  cautious_neutral: neutral
+  skeptical_controlled: guarded
+  disappointed_withdrawn: disappointed
+  anxious_defensive: anxious
+  defensive_resistant: guarded
+  angry_challenging: angry
+  hopeful_negotiating: engaged
+  aligned_ready: pleased
+anchors:
+- id: surprised
+  name: 惊讶
+  description: 对结果或新信息产生明显意外感，尚不预设任何接受或反对立场
+  vad:
+    valence: 0.05
+    arousal: 0.9
+    dominance: -0.1
+- id: pleased
+  name: 满意
+  description: 当前体验明显正向、舒适或满意，不预设对反馈结论的接受
+  vad:
+    valence: 0.85
+    arousal: 0.2
+    dominance: 0.35
+- id: engaged
+  name: 积极投入
+  description: 较高激活与投入感，愿意保持参与，但不预设具体提问或行动
+  vad:
+    valence: 0.55
+    arousal: 0.75
+    dominance: 0.45
+- id: confident
+  name: 自信坚定
+  description: 较高控制感和自我把握感，表达更稳定，不预设具体判断内容
+  vad:
+    valence: 0.5
+    arousal: 0.35
+    dominance: 0.85
+- id: relieved
+  name: 释然
+  description: 正向、低激活且紧张感较低的放松状态；不单凭该锚点确认某项顾虑已经解决
+  vad:
+    valence: 0.75
+    arousal: -0.3
+    dominance: 0.2
+- id: calm
+  name: 平静
+  description: 低激活、稳定且有较好控制感的状态
+  vad:
+    valence: 0.35
+    arousal: -0.7
+    dominance: 0.3
+- id: neutral
+  name: 中性观望
+  description: 价性接近中性、激活较低，无明显正负情绪偏向
+  vad:
+    valence: 0.0
+    arousal: -0.1
+    dominance: 0.0
+- id: tired
+  name: 疲惫
+  description: 低能量、极低激活且控制感偏低的疲惫状态
+  vad:
+    valence: -0.1
+    arousal: -0.85
+    dominance: -0.4
+- id: discouraged
+  name: 沮丧
+  description: 负向、低激活、动力和积极预期偏低的受挫状态；不等于放弃或悲伤
+  vad:
+    valence: -0.45
+    arousal: -0.65
+    dominance: -0.25
+- id: sad
+  name: 失落
+  description: 明显负向、低激活、低控制感的失落状态
+  vad:
+    valence: -0.75
+    arousal: -0.35
+    dominance: -0.7
+- id: disappointed
+  name: 失望
+  description: 与明确预期落差相关的明显负向、低至中等激活状态
+  vad:
+    valence: -0.8
+    arousal: 0.1
+    dominance: -0.2
+- id: anxious
+  name: 焦虑
+  description: 负向、高激活、低控制感的担忧状态；具体风险对象必须另有上下文依据
+  vad:
+    valence: -0.45
+    arousal: 0.75
+    dominance: -0.75
+- id: confused
+  name: 困惑
+  description: 控制感偏低、信息处理把握不足的状态；不单凭该锚点确认存在具体矛盾或信息缺口
+  vad:
+    valence: -0.15
+    arousal: 0.35
+    dominance: -0.55
+- id: guarded
+  name: 戒备防御
+  description: 负向、较高激活且带有一定警觉和防备感的状态；是否存在分歧仍由上游判断
+  vad:
+    valence: -0.3
+    arousal: 0.5
+    dominance: 0.25
+- id: angry
+  name: 愤怒
+  description: 强烈负向、高激活、高控制感的愤怒状态，不预设具体冲突立场
+  vad:
+    valence: -0.8
+    arousal: 0.8
+    dominance: 0.8
+- id: resentful
+  name: 不满反感
+  description: 负向、偏硬且不易快速软化的不满状态；是否存在长期未解决问题必须另有证据
+  vad:
+    valence: -0.75
+    arousal: 0.3
+    dominance: 0.35
+- id: hopeful
+  name: 希望
+  description: 对未来可能性产生正向期待，同时保留不确定性
+  vad:
+    valence: 0.55
+    arousal: 0.35
+    dominance: 0.15
+- id: proud
+  name: 自豪
+  description: 因已有依据的成果或贡献产生较高正向与掌控感
+  vad:
+    valence: 0.82
+    arousal: 0.45
+    dominance: 0.78
+- id: appreciative
+  name: 欣慰感激
+  description: 温和正向、较低激活且互动温度较高的状态；不单凭该锚点确认已发生具体认可、理解或善意
+  vad:
+    valence: 0.72
+    arousal: 0.1
+    dominance: 0.3
+- id: inspired
+  name: 鼓舞振奋
+  description: 正向、高激活且富有活力的状态；具体方向、目标或意义来源必须另有证据
+  vad:
+    valence: 0.72
+    arousal: 0.82
+    dominance: 0.48
+- id: curious
+  name: 好奇探索
+  description: 对未知信息或新可能产生探索兴趣，不预设必须提问
+  vad:
+    valence: 0.38
+    arousal: 0.58
+    dominance: 0.05
+- id: determined
+  name: 下定决心
+  description: 高控制感、高激活的坚定状态，不自动生成行动或承诺
+  vad:
+    valence: 0.35
+    arousal: 0.68
+    dominance: 0.92
+- id: trusting
+  name: 信任开放
+  description: 正向、较低激活且防御倾向较低的开放状态；不单凭该锚点确认对某人或某判断已经形成事实性信任
+  vad:
+    valence: 0.58
+    arousal: -0.12
+    dominance: 0.12
+- id: grateful
+  name: 感激
+  description: 对已明确发生的具体支持或投入产生真诚谢意
+  vad:
+    valence: 0.88
+    arousal: -0.05
+    dominance: 0.08
+- id: accomplished
+  name: 成就感
+  description: 因已有依据的成果产生满足与胜任感
+  vad:
+    valence: 0.92
+    arousal: 0.22
+    dominance: 0.72
+- id: eager
+  name: 跃跃欲试
+  description: 对明确机会或下一步可能性产生高激活的正向期待，不等于已经承诺行动
+  vad:
+    valence: 0.62
+    arousal: 0.88
+    dominance: 0.18
+- id: empowered
+  name: 获得力量
+  description: 正向、高控制感且表达更主动的状态；不单凭该锚点确认资源、授权或边界已经到位
+  vad:
+    valence: 0.58
+    arousal: 0.52
+    dominance: 0.82
+- id: attentive
+  name: 专注聆听
+  description: 注意力集中、激活适中的接收状态，不预设理解或同意
+  vad:
+    valence: 0.1
+    arousal: 0.42
+    dominance: 0.1
+- id: reflective
+  name: 反思沉思
+  description: 低激活、内向审视的思考状态，不自动形成自责或认错
+  vad:
+    valence: 0.05
+    arousal: -0.42
+    dominance: 0.08
+- id: receptive
+  name: 开放接纳
+  description: 对继续接收信息保持开放，不预设对结论的接受
+  vad:
+    valence: 0.28
+    arousal: 0.18
+    dominance: 0.05
+- id: skeptical
+  name: 审慎怀疑
+  description: 略负向、中等控制感、较少立即附和的审慎状态；不单凭该锚点确认存在事实或逻辑疑点
+  vad:
+    valence: -0.12
+    arousal: 0.25
+    dominance: 0.38
+- id: cautious
+  name: 谨慎
+  description: 低度负向、低激活、控制感偏低的谨慎状态，不自动延迟承诺
+  vad:
+    valence: -0.08
+    arousal: 0.12
+    dominance: -0.18
+- id: uncertain
+  name: 犹疑
+  description: 对选择或判断缺乏把握，控制感偏低，不预设最终立场
+  vad:
+    valence: -0.1
+    arousal: 0.2
+    dominance: -0.42
+- id: ambivalent
+  name: 矛盾纠结
+  description: 正负感受或倾向并存，控制感偏低
+  vad:
+    valence: 0.0
+    arousal: 0.45
+    dominance: -0.28
+- id: evaluating
+  name: 审视评估
+  description: 情绪接近中性、控制感中等的审视状态，不自动形成接受或反对
+  vad:
+    valence: 0.0
+    arousal: 0.28
+    dominance: 0.42
+- id: composed
+  name: 沉着
+  description: 在压力下保持较高自控和清晰度，不压低已经存在的真实情绪
+  vad:
+    valence: 0.2
+    arousal: -0.38
+    dominance: 0.68
+- id: alert
+  name: 警觉
+  description: 注意到可能重要的变化或信号，激活较高但不预设威胁成立
+  vad:
+    valence: -0.05
+    arousal: 0.72
+    dominance: 0.1
+- id: reserved
+  name: 克制保留
+  description: 低外显、较克制的状态，只影响表达量，不自动生成保留立场
+  vad:
+    valence: -0.02
+    arousal: -0.25
+    dominance: -0.08
+- id: detached
+  name: 情感抽离
+  description: 情绪投入较低、与议题保持一定距离的低激活状态
+  vad:
+    valence: -0.18
+    arousal: -0.62
+    dominance: 0.05
+- id: frustrated
+  name: 挫败
+  description: 负向、高激活且紧绷的受阻感；具体阻碍、原因或“反复无果”必须另有证据
+  vad:
+    valence: -0.55
+    arousal: 0.7
+    dominance: 0.1
+- id: irritated
+  name: 恼火
+  description: 对阻碍或互动方式产生轻中度怒意，不预设具体责任或边界判断
+  vad:
+    valence: -0.4
+    arousal: 0.62
+    dominance: 0.6
+- id: aggrieved
+  name: 委屈
+  description: 因感到自身处境或付出可能未被充分看见而产生受伤和不满；公平性事实仍需独立判断
+  vad:
+    valence: -0.68
+    arousal: 0.42
+    dominance: -0.28
+- id: embarrassed
+  name: 尴尬
+  description: 负向、中等激活、低控制感且自我意识较强的不自在状态；具体评价、失误或社交处境必须另有依据
+  vad:
+    valence: -0.42
+    arousal: 0.48
+    dominance: -0.42
+- id: ashamed
+  name: 羞愧
+  description: 强负向、低控制感且带有自我指向的不适或羞耻感，不等于事实上的责任认定
+  vad:
+    valence: -0.72
+    arousal: 0.18
+    dominance: -0.82
+- id: guilty
+  name: 内疚
+  description: 对自己认为可能涉及自身责任的具体影响产生歉疚感；实际责任范围不由该状态决定
+  vad:
+    valence: -0.58
+    arousal: 0.3
+    dominance: -0.48
+- id: overwhelmed
+  name: 不堪重负
+  description: 信息、压力或任务负荷超过当前主观处理容量的低控制感状态
+  vad:
+    valence: -0.68
+    arousal: 0.6
+    dominance: -0.92
+- id: afraid
+  name: 害怕
+  description: 感知严重风险时出现的强烈负向、高激活、低控制感状态，不把风险推测当成事实
+  vad:
+    valence: -0.85
+    arousal: 0.95
+    dominance: -0.9
+- id: helpless
+  name: 无助
+  description: 强负向、控制感很低且暂时缺少行动路径感的状态，不等于全面失能
+  vad:
+    valence: -0.88
+    arousal: -0.18
+    dominance: -0.95

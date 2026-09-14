@@ -1,0 +1,6 @@
+name: "06-emotion-main"
+
+include:
+  - path: deployment/compose/compose.mode.yml
+    project_directory: .
+    env_file: backend/config/.env

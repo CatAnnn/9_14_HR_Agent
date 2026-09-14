@@ -1,0 +1,916 @@
+{
+  "description": "面向日常运维的紧凑看板：模型费用、Token 用量、调用质量和后端健康。",
+  "layout": [
+    {
+      "h": 1,
+      "i": "10000000-0000-4000-8000-000000000001",
+      "maxH": 1,
+      "minH": 1,
+      "minW": 12,
+      "moved": false,
+      "static": false,
+      "w": 12,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "h": 4,
+      "i": "20000000-0000-4000-8000-000000000001",
+      "moved": false,
+      "static": false,
+      "w": 3,
+      "x": 0,
+      "y": 1
+    },
+    {
+      "h": 4,
+      "i": "20000000-0000-4000-8000-000000000003",
+      "moved": false,
+      "static": false,
+      "w": 3,
+      "x": 3,
+      "y": 1
+    },
+    {
+      "h": 4,
+      "i": "20000000-0000-4000-8000-000000000005",
+      "moved": false,
+      "static": false,
+      "w": 3,
+      "x": 6,
+      "y": 1
+    },
+    {
+      "h": 4,
+      "i": "20000000-0000-4000-8000-000000000004",
+      "moved": false,
+      "static": false,
+      "w": 3,
+      "x": 9,
+      "y": 1
+    },
+    {
+      "h": 7,
+      "i": "30000000-0000-4000-8000-000000000001",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 0,
+      "y": 5
+    },
+    {
+      "h": 7,
+      "i": "30000000-0000-4000-8000-000000000002",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 6,
+      "y": 5
+    },
+    {
+      "h": 1,
+      "i": "10000000-0000-4000-8000-000000000002",
+      "maxH": 1,
+      "minH": 1,
+      "minW": 12,
+      "moved": false,
+      "static": false,
+      "w": 12,
+      "x": 0,
+      "y": 12
+    },
+    {
+      "h": 7,
+      "i": "40000000-0000-4000-8000-000000000001",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 0,
+      "y": 13
+    },
+    {
+      "h": 7,
+      "i": "40000000-0000-4000-8000-000000000003",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 6,
+      "y": 13
+    },
+    {
+      "h": 7,
+      "i": "50000000-0000-4000-8000-000000000002",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 0,
+      "y": 20
+    },
+    {
+      "h": 7,
+      "i": "50000000-0000-4000-8000-000000000003",
+      "moved": false,
+      "static": false,
+      "w": 6,
+      "x": 6,
+      "y": 20
+    }
+  ],
+  "name": "",
+  "tags": [
+    "hr-agent",
+    "llm",
+    "cost",
+    "api",
+    "infrastructure"
+  ],
+  "title": "HR Agent API 成本与质量",
+  "variables": {
+    "70000000-0000-4000-8000-000000000001": {
+      "allSelected": false,
+      "customValue": "",
+      "description": "Deployment environment",
+      "dynamicVariablesAttribute": "deployment.environment",
+      "dynamicVariablesSource": "All telemetry",
+      "id": "70000000-0000-4000-8000-000000000001",
+      "key": "70000000-0000-4000-8000-000000000001",
+      "modificationUUID": "71000000-0000-4000-8000-000000000001",
+      "multiSelect": false,
+      "name": "deployment.environment",
+      "order": 0,
+      "queryValue": "SELECT JSONExtractString(labels, 'deployment.environment') AS `deployment.environment`\nFROM signoz_metrics.time_series_v4_1day\nWHERE metric_name = 'hr_agent.llm.token.usage'\nGROUP BY `deployment.environment`",
+      "selectedValue": "local",
+      "showALLOption": false,
+      "sort": "DISABLED",
+      "textboxValue": "",
+      "type": "DYNAMIC"
+    },
+    "70000000-0000-4000-8000-000000000002": {
+      "allSelected": false,
+      "customValue": "",
+      "description": "Backend service",
+      "dynamicVariablesAttribute": "service.name",
+      "dynamicVariablesSource": "All telemetry",
+      "id": "70000000-0000-4000-8000-000000000002",
+      "key": "70000000-0000-4000-8000-000000000002",
+      "modificationUUID": "71000000-0000-4000-8000-000000000002",
+      "multiSelect": false,
+      "name": "service.name",
+      "order": 1,
+      "queryValue": "SELECT JSONExtractString(labels, 'service.name') AS `service.name`\nFROM signoz_metrics.time_series_v4_1day\nWHERE metric_name = 'hr_agent.llm.token.usage'\n  AND JSONExtractString(labels, 'deployment.environment') = $deployment.environment\nGROUP BY `service.name`",
+      "selectedValue": "hr-agent-backend",
+      "showALLOption": false,
+      "sort": "DISABLED",
+      "textboxValue": "",
+      "type": "DYNAMIC"
+    }
+  },
+  "version": "v5",
+  "widgets": [
+    {
+      "description": "只保留调用、Token 和费用的核心指标。",
+      "id": "10000000-0000-4000-8000-000000000001",
+      "panelTypes": "row",
+      "title": "LLM API 成本与用量"
+    },
+    {
+      "description": "按 Model Farm 人民币单价计算的总费用；包含普通输入、缓存输入和输出。",
+      "id": "20000000-0000-4000-8000-000000000001",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "hr_agent.llm.cost",
+                  "temporality": null,
+                  "timeAggregation": "increase",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "sum"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "20000000-0000-5000-8000-000000000001",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Token 计费总额（¥）",
+      "yAxisUnit": "none"
+    },
+    {
+      "description": "当前时间范围内的全部模型调用。",
+      "id": "20000000-0000-4000-8000-000000000003",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "hr_agent.llm.request",
+                  "temporality": null,
+                  "timeAggregation": "increase",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "sum"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "20000000-0000-5000-8000-000000000003",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "模型调用次数",
+      "yAxisUnit": "short"
+    },
+    {
+      "description": "当前时间范围内输入与输出 Token 总量。",
+      "id": "20000000-0000-4000-8000-000000000005",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "hr_agent.llm.token.usage",
+                  "temporality": null,
+                  "timeAggregation": "increase",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "sum"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "20000000-0000-5000-8000-000000000005",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Token 总量",
+      "yAxisUnit": "short"
+    },
+    {
+      "description": "没有命中 LLM_MODEL_PRICING 的调用；正常状态应为 0。",
+      "id": "20000000-0000-4000-8000-000000000004",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "hr_agent.llm.pricing.missing",
+                  "temporality": null,
+                  "timeAggregation": "increase",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "sum"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "20000000-0000-5000-8000-000000000004",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "未配置价格调用",
+      "yAxisUnit": "short"
+    },
+    {
+      "description": "按模型汇总的人民币 Token 费用趋势。",
+      "id": "30000000-0000-4000-8000-000000000001",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "gen_ai.request.model--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{gen_ai.request.model}}",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "hr_agent.llm.cost",
+                  "temporality": null,
+                  "timeAggregation": "increase",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "avg"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "30000000-0000-5000-8000-000000000001",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "各模型费用趋势（¥）",
+      "yAxisUnit": "none"
+    },
+    {
+      "description": "按模型及 input/output 类型展示 Token 用量。",
+      "id": "30000000-0000-4000-8000-000000000002",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "gen_ai.request.model--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                },
+                {
+                  "dataType": "string",
+                  "id": "gen_ai.token.type--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "gen_ai.token.type",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{gen_ai.request.model}} / {{gen_ai.token.type}}",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "hr_agent.llm.token.usage",
+                  "temporality": null,
+                  "timeAggregation": "increase",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "avg"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "30000000-0000-5000-8000-000000000002",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "输入/输出 Token 趋势",
+      "yAxisUnit": "short"
+    },
+    {
+      "description": "只保留能够直接定位用户体验和失败问题的指标。",
+      "id": "10000000-0000-4000-8000-000000000002",
+      "panelTypes": "row",
+      "title": "调用质量与服务健康"
+    },
+    {
+      "description": "按模型聚合端到端调用延迟，避免按任务展开过多曲线。",
+      "id": "40000000-0000-4000-8000-000000000001",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "gen_ai.request.model--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "gen_ai.request.model",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{gen_ai.request.model}}",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "hr_agent.llm.request.duration.bucket",
+                  "temporality": null,
+                  "timeAggregation": "",
+                  "spaceAggregation": "p95",
+                  "reduceTo": "avg"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "40000000-0000-5000-8000-000000000001",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "模型调用 P95",
+      "yAxisUnit": "ms"
+    },
+    {
+      "description": "全部结构化调用的整体 fallback 比例。",
+      "id": "40000000-0000-4000-8000-000000000003",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "hr_agent.llm.structured_output",
+                  "temporality": null,
+                  "timeAggregation": "rate",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "avg"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name AND hr_agent.structured_output.outcome = 'fallback')"
+              }
+            },
+            {
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "B",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "B",
+              "aggregations": [
+                {
+                  "metricName": "hr_agent.llm.structured_output",
+                  "temporality": null,
+                  "timeAggregation": "rate",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "avg"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": [
+            {
+              "disabled": false,
+              "expression": "100*A/B",
+              "legend": "整体降级率",
+              "limit": null,
+              "queryName": "F1"
+            }
+          ]
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "40000000-0000-5000-8000-000000000003",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "结构化输出降级率",
+      "yAxisUnit": "percentunit"
+    },
+    {
+      "description": "后端所有接口的整体 P95，不按路由展开。",
+      "id": "50000000-0000-4000-8000-000000000002",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "API P95",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "signoz_latency.bucket",
+                  "temporality": null,
+                  "timeAggregation": "",
+                  "spaceAggregation": "p95",
+                  "reduceTo": "avg"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "50000000-0000-5000-8000-000000000002",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "后端 API P95",
+      "yAxisUnit": "ms"
+    },
+    {
+      "description": "后端全部请求的整体错误比例。",
+      "id": "50000000-0000-4000-8000-000000000003",
+      "isStacked": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "aggregations": [
+                {
+                  "metricName": "signoz_calls_total",
+                  "temporality": null,
+                  "timeAggregation": "rate",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "avg"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name AND status.code = 'STATUS_CODE_ERROR')"
+              }
+            },
+            {
+              "dataSource": "metrics",
+              "disabled": true,
+              "expression": "B",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "B",
+              "aggregations": [
+                {
+                  "metricName": "signoz_calls_total",
+                  "temporality": null,
+                  "timeAggregation": "rate",
+                  "spaceAggregation": "sum",
+                  "reduceTo": "avg"
+                }
+              ],
+              "filter": {
+                "expression": "(deployment.environment = $deployment.environment AND service.name = $service.name)"
+              }
+            }
+          ],
+          "queryFormulas": [
+            {
+              "disabled": false,
+              "expression": "100*A/B",
+              "legend": "整体错误率",
+              "limit": null,
+              "queryName": "F1"
+            }
+          ]
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "50000000-0000-5000-8000-000000000003",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "后端 API 错误率",
+      "yAxisUnit": "percentunit"
+    }
+  ]
+}

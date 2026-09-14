@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Conda
+.conda/
+
+# Env / secrets
+.env
+*.env
+backend/config/.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local merge/backup artifacts
+*.orig
+
+# Logs
+*.log
+logs/
+
+# Large raw files
+*.xml
+*.xml.gz
+*.zip
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Runtime artifacts
+data/runtime/
+data/kb_processed/
+data/upload_raw/
+data/upload_processed/
+data_runtime/**
+
+# Load-test runtime data and reports
+loadtests/data/accounts.jsonl
+loadtests/data/audio/*.pcm
+loadtests/results/
+loadtests/artifacts/
+
+# Crawler runtime data and sensitive local inputs
+spider/.playwright-profile/
+spider/results/
+spider/__pycache__/
+spider/tests/__pycache__/
+spider/人才矩阵.html

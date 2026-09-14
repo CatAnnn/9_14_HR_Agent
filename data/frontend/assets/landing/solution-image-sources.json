@@ -1,0 +1,217 @@
+{
+  "version": 4,
+  "updated_at": "2026-09-05",
+  "processing": "The active premium solution and method assets are licensed real photographs from Unsplash and Pexels. Originals were only deterministically cropped, resized, and encoded as WebP; no generative image editing was used. Source pages, creators, licenses, hashes, and responsive-crop checks are recorded by family in stock_asset_records.",
+  "stock_asset_records": [
+    "docs/visual-assets/strategy-premium-202609.md",
+    "docs/visual-assets/coaching-premium-202609.md",
+    "docs/visual-assets/feedback-premium-202609.md",
+    "docs/visual-assets/development-premium-202609.md"
+  ],
+  "licenses": {
+    "Pexels": "https://www.pexels.com/license/",
+    "Unsplash": "https://unsplash.com/license"
+  },
+  "superseded_assets": [
+    {
+      "asset": "solution-category-coaching-premium-202609.webp",
+      "replacement": "solution-category-coaching-premium-202609-v2.webp",
+      "provider": "Pexels",
+      "creator": "ThisIsEngineering",
+      "source_id": "3912369",
+      "source_page": "https://www.pexels.com/photo/engineers-in-workshop-3912369/",
+      "sha256": "b9cd7c7289594ffbb263b528e5894d40936afa144a5971ae53eed1dac436d083"
+    },
+    {
+      "asset": "solution-category-development-premium-202609.webp",
+      "replacement": "solution-category-development-premium-202609-v2.webp",
+      "provider": "Pexels",
+      "creator": "ThisIsEngineering",
+      "source_id": "3861960",
+      "source_page": "https://www.pexels.com/photo/engineers-in-workshop-3861960/",
+      "sha256": "1f5a6ed0908842c74c3de55ad86f63bcbac8f3674bd6b28497d629d447c1a0cf"
+    }
+  ],
+  "legacy_assets": [
+    {
+      "asset": "solution-overview-collaboration-202609.webp",
+      "usage": "Solutions overview hero",
+      "provider": "Unsplash",
+      "creator": "Fiqih Alfarish",
+      "source_id": "N3Bf0ArT5J0",
+      "source_page": "https://unsplash.com/photos/team-collaborating-on-laptops-in-modern-office-N3Bf0ArT5J0",
+      "sha256": "9933b5d22bafc57c8f071ea9e31c39219827561ca0a070a1808a4b8c4190694b"
+    },
+    {
+      "asset": "solution-category-strategy-202609.webp",
+      "usage": "Strategy & Analysis category",
+      "provider": "Unsplash",
+      "creator": "Vitaly Gariev",
+      "source_id": "PSksbOVDhWk",
+      "source_page": "https://unsplash.com/photos/diverse-team-collaborating-on-a-project-in-an-office-PSksbOVDhWk",
+      "sha256": "81e5ea20c80e15385c3053046741486b7a72c608bf26e7795b7fd3bb07920f71"
+    },
+    {
+      "asset": "solution-category-coaching-202609.webp",
+      "usage": "Coaching & Goal category",
+      "provider": "Unsplash",
+      "creator": "Walls.io",
+      "source_id": "FHz2OJZmt_o",
+      "source_page": "https://unsplash.com/photos/a-man-and-a-woman-sitting-at-a-table-with-a-laptop-FHz2OJZmt_o",
+      "sha256": "b327b92b2aa1025412401b633902e09a6c7d30ff8359228a798dd8a139ff695b"
+    },
+    {
+      "asset": "solution-category-feedback-202609.webp",
+      "usage": "Feedback & Assessment category",
+      "provider": "Pexels",
+      "creator": "Kindel Media",
+      "source_id": "6773846",
+      "source_page": "https://www.pexels.com/photo/colleagues-discussing-in-the-office-6773846/",
+      "sha256": "e9debef41c2b987af6d5fcb3c38dd59823efc194501e82fd48c062a20a27d5a9"
+    },
+    {
+      "asset": "solution-category-development-202609.webp",
+      "usage": "Development Framework category",
+      "provider": "Pexels",
+      "creator": "Yan Krukau",
+      "source_id": "7792770",
+      "source_page": "https://www.pexels.com/photo/colleagues-having-a-meeting-7792770/",
+      "sha256": "73ba4732f1a74ef8d6cc193e3357c181819e6c1e1cdcc43ac7b97a0258c97bb3"
+    },
+    {
+      "asset": "method-swot-analysis-202609.webp",
+      "usage": "SWOT Analysis",
+      "provider": "Pexels",
+      "creator": "Alena Darmel",
+      "source_id": "7710074",
+      "source_page": "https://www.pexels.com/photo/photo-of-a-man-and-a-woman-writing-on-a-whiteboard-with-sticky-notes-7710074/",
+      "sha256": "68f042254b6da3ac1a903f085f50b4dc15bb21b0fc1f06d4ca60f2014ed056e9"
+    },
+    {
+      "asset": "method-vrio-analysis-202609.webp",
+      "usage": "VRIO Analysis",
+      "provider": "Pexels",
+      "creator": "Bulat843",
+      "source_id": "34054483",
+      "source_page": "https://www.pexels.com/photo/team-discussing-machinery-in-industrial-setting-34054483/",
+      "sha256": "b643fe67eb677d5e2d014477fb5d0666d107e3089b3b96de8d7b4326fbe6762d"
+    },
+    {
+      "asset": "method-mckinsey-7s-202609.webp",
+      "usage": "McKinsey 7S Framework",
+      "provider": "Pexels",
+      "creator": "Kindel Media",
+      "source_id": "6774141",
+      "source_page": "https://www.pexels.com/photo/office-team-having-discussion-in-the-room-6774141/",
+      "sha256": "f048138ecffd23374423351cee1e4aa3ab04da98d48759dd1c0e288ce85e3e35"
+    },
+    {
+      "asset": "method-skills-gap-analysis-202609.webp",
+      "usage": "Skills Gap Analysis",
+      "provider": "Pexels",
+      "creator": "Matheus Bertelli",
+      "source_id": "18999535",
+      "source_page": "https://www.pexels.com/photo/people-during-digital-presentation-18999535/",
+      "sha256": "29c67d259231ca04648b19161aae6ca8b42bb301514832a1ad7d91e6a059ace9"
+    },
+    {
+      "asset": "method-grow-model-202609.webp",
+      "usage": "GROW Model",
+      "provider": "Pexels",
+      "creator": "Andrea Piacquadio",
+      "source_id": "3932227",
+      "source_page": "https://www.pexels.com/photo/concentrated-boss-and-worker-discussing-project-3932227/",
+      "sha256": "8621eec2f2b35d5a1f3100c6a1f16d78bcac07b7b65da2ce1e7e366b8004fe46"
+    },
+    {
+      "asset": "method-smart-goals-202609.webp",
+      "usage": "SMART Goals",
+      "provider": "Pexels",
+      "creator": "Jakub Zerdzicki",
+      "source_id": "29521529",
+      "source_page": "https://www.pexels.com/photo/creative-brainstorming-session-with-sticky-notes-29521529/",
+      "sha256": "6f8ae86eae0b659bdc123f720a23bef577e2e3f23f338b86a302cbc299c7481e"
+    },
+    {
+      "asset": "method-career-coaching-tools-202609.webp",
+      "usage": "Career Coaching",
+      "provider": "Pexels",
+      "creator": "Andrea Piacquadio",
+      "source_id": "3932231",
+      "source_page": "https://www.pexels.com/photo/cheerful-colleagues-discussing-business-at-workspace-3932231/",
+      "sha256": "114ebcc99622781b9f9d6ee71162f36b0e20e2132c74f4231cf1f4751877a75c"
+    },
+    {
+      "asset": "method-360-degree-feedback-202609.webp",
+      "usage": "360-Degree Feedback",
+      "provider": "Pexels",
+      "creator": "Yan Krukau",
+      "source_id": "7640435",
+      "source_page": "https://www.pexels.com/photo/group-of-people-working-together-7640435/",
+      "sha256": "2f360397884a9d9f74f2cf5ab2a0a8eb29ca91bb911c29571cee0b774803192b"
+    },
+    {
+      "asset": "method-leadership-self-assessment-202609.webp",
+      "usage": "Leadership Self-Assessment",
+      "provider": "Pexels",
+      "creator": "pedro furtado",
+      "source_id": "28516281",
+      "source_page": "https://www.pexels.com/photo/professional-man-in-office-writing-notes-28516281/",
+      "sha256": "ccf535754e655a070a771bf9a9bedc3a23eb5ba8857411fd59035a7c7b0b77be"
+    },
+    {
+      "asset": "method-belbin-team-roles-202609.webp",
+      "usage": "Belbin Team Roles",
+      "provider": "Pexels",
+      "creator": "Kampus Production",
+      "source_id": "6248982",
+      "source_page": "https://www.pexels.com/photo/photo-of-people-working-in-the-office-6248982/",
+      "sha256": "b64085d55718c5d17fd99298073ff2ce96a40815c673c274f67086c6e4b0cb80"
+    },
+    {
+      "asset": "method-soft-skills-assessment-202609.webp",
+      "usage": "Soft Skills Assessment",
+      "provider": "Pexels",
+      "creator": "RDNE Stock project",
+      "source_id": "5756755",
+      "source_page": "https://www.pexels.com/photo/man-explaining-something-to-other-man-holding-clipboard-5756755/",
+      "sha256": "e07287dbb6669bc64b49763cb4f8537a2519e9459764efdee42ec34d25da2a9c"
+    },
+    {
+      "asset": "method-workplace-skills-assessment-202609.webp",
+      "usage": "Workplace Skills Assessment",
+      "provider": "Pexels",
+      "creator": "Safi Erneste",
+      "source_id": "35082108",
+      "source_page": "https://www.pexels.com/photo/industrial-safety-training-session-in-factory-35082108/",
+      "sha256": "e043ccd18942bee6b5037aebf67b0c2585684abc2549679f63415c23cc7a0beb"
+    },
+    {
+      "asset": "method-peter-principle-202609.webp",
+      "usage": "Peter Principle",
+      "provider": "Pexels",
+      "creator": "Antoni Shkraba",
+      "source_id": "6632535",
+      "source_page": "https://www.pexels.com/photo/colleagues-in-a-meeting-6632535/",
+      "sha256": "61063a7039618c28787d320d203f60fb0cf72086775da34bb55fbd3292a8d416"
+    },
+    {
+      "asset": "method-management-models-202609.webp",
+      "usage": "Management Models",
+      "provider": "Pexels",
+      "creator": "Edmond Dantès",
+      "source_id": "4344116",
+      "source_page": "https://www.pexels.com/photo/people-having-a-meeting-at-the-office-4344116/",
+      "sha256": "eba7c17a4044d7586bdef3e1d9a470c72886738aaa3212ef629b707021a150ad"
+    },
+    {
+      "asset": "method-professional-development-202609.webp",
+      "usage": "Professional Development Models",
+      "provider": "Pexels",
+      "creator": "Matheus Bertelli",
+      "source_id": "18999270",
+      "source_page": "https://www.pexels.com/photo/people-giving-a-presentation-in-an-office-18999270/",
+      "sha256": "2dd332b6244fd6737a6b489ea00ba7036936b9f2ed9f9c781f2ef8fe16c705c8"
+    }
+  ]
+}

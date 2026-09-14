@@ -1,0 +1,592 @@
+name: 06-emotion-loadtest
+
+x-build-proxy: &build-proxy
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  args:
+    HTTP_PROXY: "${LOADTEST_BUILD_HTTP_PROXY:-http://host.docker.internal:3128}"
+    HTTPS_PROXY: "${LOADTEST_BUILD_HTTPS_PROXY:-http://host.docker.internal:3128}"
+    NO_PROXY: "localhost,127.0.0.1,::1,host.docker.internal"
+
+x-backend-environment: &backend-environment
+  PYTHONPATH: /app
+  HTTP_PROXY: ""
+  HTTPS_PROXY: ""
+  http_proxy: ""
+  https_proxy: ""
+  NO_PROXY: localhost,127.0.0.1,::1,postgres,pgbouncer,redis,model_stub,qwen3_asr,qwen3_asr_secondary,gateway,backend
+  no_proxy: localhost,127.0.0.1,::1,postgres,pgbouncer,redis,model_stub,qwen3_asr,qwen3_asr_secondary,gateway,backend
+  ENVIRONMENT: loadtest
+  RUNTIME_DATA_DIR: /app/loadtest-data
+  DATABASE_URL: postgresql://hr_agent:hr_agent@pgbouncer:6432/hr_agent_loadtest
+  DATABASE_ADMIN_URL: postgresql://hr_agent:hr_agent@postgres:7214/hr_agent_loadtest
+  REDIS_URL: redis://:${LOADTEST_REDIS_PASSWORD:?Set in loadtests/.env}@redis:6379/0
+  REDIS_MAX_CONNECTIONS: "0"
+  DISTRIBUTED_COORDINATION_ENABLED: "true"
+  DISTRIBUTED_COORDINATION_KEY_PREFIX: hr_agent:loadtest:coordination
+  LLM_PROVIDER: openai_compatible
+  CHAT_API_ENDPOINT: http://model_stub:8099/v1/chat/completions
+  CHAT_API_ENDPOINTS: http://model_stub:8099/v1/chat/completions
+  API_KEY: loadtest-stub-key
+  MODEL_API_AUTH_MODE: bearer
+  MODEL_API_KEY_HEADER_NAME: Authorization
+  DEFAULT_CHAT_MODEL: loadtest-chat
+  PROFILE_MODEL: loadtest-chat
+  INTENT_MODEL: loadtest-chat
+  INTENT_PERFORMANCE_MODEL: loadtest-chat
+  PERSONALITY_FACET_MODEL: loadtest-chat
+  REHEARSAL_DIMENSION_MODEL: loadtest-chat
+  EMPLOYEE_MODEL: loadtest-chat
+  CONVERSATION_SUMMARY_MODEL: loadtest-chat
+  MOTIVATION_SCORING_MODEL: loadtest-chat
+  EMOTION_TRANSITION_MODEL: loadtest-chat
+  GUIDANCE_MODEL: loadtest-chat
+  COACH_EVALUATOR_MODEL: loadtest-chat
+  COACH_REDLINE_MODEL: loadtest-chat
+  MODEL_RETRY_RACE_MODEL: loadtest-retry
+  MODEL_PROVIDER_MODE: platform
+  EMBEDDING_PROVIDER: openai_compatible
+  EMBEDDING_API_ENDPOINT: http://model_stub:8099/v1/embeddings
+  EMBEDDING_MODEL: loadtest-embedding
+  EMBEDDING_DIMENSIONS: "1024"
+  EMBEDDING_API_BATCH_SIZE: "46"
+  RERANK_PROVIDER: openai_compatible
+  RERANK_API_ENDPOINT: http://model_stub:8099/v1/rerank
+  RERANK_MODEL: loadtest-reranker
+  MODEL_WARMUP_ENABLED: "false"
+  LOCAL_MODEL_AUTO_START_ENABLED: "false"
+  LOCAL_MODEL_AUTO_RECYCLE_ENABLED: "false"
+  LOCAL_MODEL_PINNED_SERVICES: "${LOADTEST_LOCAL_MODEL_PINNED_SERVICES:-}"
+  MINERU_ENABLED: "false"
+  MINERU_API_URL: http://disabled.invalid
+  DOCUMENT_VISION_ENABLED: "false"
+  DOCUMENT_VISION_PREFLIGHT_ENABLED: "false"
+  KB_SYNC_ON_STARTUP: "false"
+  POSTGRES_AUTO_INITIALIZE_SCHEMA: "false"
+  POSTGRES_POOL_MIN_SIZE: "1"
+  POSTGRES_POOL_MAX_SIZE: "122"
+  POSTGRES_POOL_TIMEOUT_SECONDS: "30"
+  POSTGRES_CREATE_HNSW_INDEX: "false"
+  RAG_DB_SEARCH_MAX_CONCURRENCY: "0"
+  RAG_THREAD_POOL_MAX_WORKERS: "98"
+  RAG_GLOBAL_DB_SEARCH_MAX_CONCURRENCY: "0"
+  RAG_RERANK_MAX_CONCURRENCY: "4"
+  RAG_GLOBAL_RERANK_MAX_CONCURRENCY: "4"
+  WORKFLOW_DB_THREAD_POOL_MAX_WORKERS: "16"
+  WORKFLOW_GLOBAL_DB_MAX_CONCURRENCY: "64"
+  MODEL_TOTAL_MAX_CONCURRENCY: "0"
+  RAG_AGENTIC_SEARCH_MODE: "off"
+  AUTH_ENABLED: "true"
+  AUTH_COOKIE_SECURE: "false"
+  AUTH_SESSION_IDLE_TIMEOUT_MINUTES: "120"
+  AUTH_SESSION_ABSOLUTE_TIMEOUT_HOURS: "24"
+  AUTH_WHITELIST_ENABLED: "true"
+  AUTH_ALLOWED_EMAILS: ""
+  AUTH_ADMIN_EMAILS: ""
+  AUTH_ALLOWED_EMAIL_DOMAINS: loadtest.invalid
+  AUTH_MAX_ACTIVE_SESSIONS: "0"
+  AUTH_LOGIN_HASH_MAX_CONCURRENCY: "64"
+  AUTH_LOGIN_RATE_LIMIT_PER_EMAIL: 2000/minute
+  AUTH_LOGIN_RATE_LIMIT_PER_IP: 2000/minute
+  AUTH_REGISTER_RATE_LIMIT_PER_IP: 2000/minute
+  ASR_ENABLED: "${LOADTEST_ASR_ENABLED:-false}"
+  ASR_REALTIME_ENABLED: "${LOADTEST_ASR_ENABLED:-false}"
+  ASR_PROVIDER_MODE: local
+  ASR_LOCAL_STREAMING_URL: http://qwen3_asr:7118
+  ASR_LOCAL_STREAMING_URLS: http://qwen3_asr:7118,http://qwen3_asr_secondary:7118
+  ASR_LOCAL_PREVIEW_MAX_CONCURRENCY: "11"
+  ASR_LOCAL_ADMISSION_TIMEOUT_SECONDS: "2"
+  ASR_LOCAL_ROUTING_PROBE_TIMEOUT_SECONDS: "0.25"
+  ASR_CAPTURE_MAX_CONNECTIONS: "0"
+  ASR_LOCAL_FINAL_ENABLED: "true"
+  ASR_LOCAL_FINAL_PER_RECORDING_CONCURRENCY: "8"
+  ASR_FINAL_MAX_CONCURRENCY: "2"
+  ASR_REMOTE_FALLBACK_ON_STREAM_FAILURE: "false"
+  ASR_HTTP_URL: http://disabled.invalid
+  ASR_RECORDING_TMP_DIR: /app/loadtest-data/asr_tmp
+  TTS_ENABLED: "false"
+  OTEL_SDK_DISABLED: "true"
+  OTEL_TRACES_EXPORTER: none
+  OTEL_METRICS_EXPORTER: none
+  OTEL_LOGS_EXPORTER: none
+  LOADTEST_MODEL_MODE: stub
+
+x-backend-service: &backend-service
+  build:
+    <<: *build-proxy
+    context: ..
+    dockerfile: backend/Dockerfile
+  env_file:
+    - ../backend/config/.env.example
+  environment: *backend-environment
+  volumes:
+    - loadtest_runtime:/app/loadtest-data
+    - ./data/kb_raw:/app/loadtest-data/kb_raw:ro
+
+services:
+  postgres:
+    image: tensorchord/vchord-suite:pg16-20260501@sha256:65b98b5aa96507d3d8aa61c5a0ed7d333828f128a72cefd9de677efe92712277
+    environment:
+      POSTGRES_DB: hr_agent_loadtest
+      POSTGRES_USER: hr_agent
+      POSTGRES_PASSWORD: hr_agent
+      PGPORT: "7214"
+    command:
+      - postgres
+      - -c
+      - port=7214
+      - -c
+      - max_connections=1020
+      - -c
+      - superuser_reserved_connections=10
+      - -c
+      - shared_preload_libraries=vchord,vchord_bm25,vector,pg_tokenizer
+      - -c
+      - 'search_path="$$user", public, bm25_catalog, tokenizer_catalog'
+    ports:
+      - "127.0.0.1:7214:7214"
+    volumes:
+      - loadtest_postgres:/var/lib/postgresql/data
+    ulimits:
+      nofile: {soft: 65536, hard: 65536}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hr_agent -d hr_agent_loadtest -p 7214"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+
+  redis:
+    image: redis:7-alpine
+    environment:
+      REDIS_PASSWORD: "${LOADTEST_REDIS_PASSWORD:?Set in loadtests/.env}"
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${LOADTEST_REDIS_PASSWORD:?Set in loadtests/.env}"]
+    ports:
+      - "${LOADTEST_INFRA_BIND_IP:-127.0.0.1}:7238:6379"
+    volumes:
+      - loadtest_redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  pgbouncer:
+    image: percona/percona-pgbouncer:1.25.2-4-amd64@sha256:8d34761507b36840ecfe3d42e32a4a333d6c5a973703dd648203b135f02ac9d0
+    platform: linux/amd64
+    entrypoint: ["/usr/bin/pgbouncer"]
+    command: ["/etc/pgbouncer/pgbouncer.ini"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    volumes:
+      - ./deployment/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./deployment/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    expose: ["6432"]
+    ulimits:
+      nofile: {soft: 65536, hard: 65536}
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/6432'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  model_stub:
+    image: 06-emotion-loadtest-model-stub:20260812
+    build:
+      <<: *build-proxy
+      context: ..
+      dockerfile: loadtests/model_stub/Dockerfile
+    environment:
+      MODEL_STUB_TTFT_MS: "${MODEL_STUB_TTFT_MS:-80}"
+      MODEL_STUB_ITL_MS: "${MODEL_STUB_ITL_MS:-8}"
+      MODEL_STUB_RESPONSE_MS: "${MODEL_STUB_RESPONSE_MS:-120}"
+      MODEL_STUB_EMBEDDING_MS: "${MODEL_STUB_EMBEDDING_MS:-20}"
+      MODEL_STUB_RERANK_MS: "${MODEL_STUB_RERANK_MS:-40}"
+      MODEL_STUB_ERROR_RATE: "${MODEL_STUB_ERROR_RATE:-0}"
+      MODEL_STUB_TRIGGER_RETRY_RACE: "${MODEL_STUB_TRIGGER_RETRY_RACE:-true}"
+      MODEL_STUB_RETRY_MODEL: loadtest-retry
+    expose: ["8099"]
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8099/health', timeout=2)\""]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  qwen3_asr:
+    profiles: ["asr-local"]
+    image: qwenllm/qwen3-asr:latest@sha256:fb75b775f089e06e5a1aaebffd421e37505cc630d50c86d889d95ffa45a7e16a
+    restart: "no"
+    shm_size: "16g"
+    ipc: host
+    gpus:
+      - driver: nvidia
+        device_ids: ["0"]
+        capabilities: [gpu]
+    environment:
+      HTTP_PROXY: http://host.docker.internal:3128
+      HTTPS_PROXY: http://host.docker.internal:3128
+      http_proxy: http://host.docker.internal:3128
+      https_proxy: http://host.docker.internal:3128
+      NO_PROXY: localhost,127.0.0.1,::1,qwen3_asr
+      no_proxy: localhost,127.0.0.1,::1,qwen3_asr
+      NVIDIA_VISIBLE_DEVICES: "0"
+      CUDA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      HF_HUB_DISABLE_XET: "1"
+      HF_HUB_OFFLINE: "${LOADTEST_HF_HUB_OFFLINE:-1}"
+      TRANSFORMERS_OFFLINE: "${LOADTEST_HF_HUB_OFFLINE:-1}"
+    command:
+      - python3
+      - /opt/hr-agent/run_qwen3_asr.py
+      - --asr-model-path
+      - Qwen/Qwen3-ASR-1.7B
+      - --gpu-memory-utilization
+      - "${QWEN3_ASR_GPU_MEMORY_UTILIZATION:-0.17}"
+      - --max-model-len
+      - "${QWEN3_ASR_MAX_MODEL_LEN:-2048}"
+      - --max-num-seqs
+      - "11"
+      - --max-sessions
+      - "${LOADTEST_ASR_MAX_SESSIONS:-16}"
+      - --max-new-tokens
+      - "${QWEN3_ASR_MAX_NEW_TOKENS:-256}"
+      - --soft-window-seconds
+      - "12"
+      - --window-seconds
+      - "20"
+      - --overlap-seconds
+      - "1.5"
+      - --batch-wait-ms
+      - "10"
+      - --silence-commit-ms
+      - "750"
+      - --force-refresh-ms
+      - "1000"
+      - --silence-rms-threshold
+      - "0.006"
+      - --max-request-audio-seconds
+      - "20"
+      - --unfixed-chunk-num
+      - "2"
+      - --unfixed-token-num
+      - "64"
+      - --chunk-size-sec
+      - "1.0"
+      - --host
+      - 0.0.0.0
+      - --port
+      - "7118"
+    volumes:
+      - ../scripts/run_qwen3_asr.py:/opt/hr-agent/run_qwen3_asr.py:ro
+      - qwen_hf_cache:/root/.cache/huggingface
+      - qwen_vllm_cache:/root/.cache/vllm
+    expose: ["7118"]
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7118/health', timeout=5)"
+      interval: 10s
+      timeout: 10s
+      retries: 60
+      start_period: 900s
+
+
+  qwen3_asr_secondary:
+    profiles: ["asr-local"]
+    image: qwenllm/qwen3-asr:latest@sha256:fb75b775f089e06e5a1aaebffd421e37505cc630d50c86d889d95ffa45a7e16a
+    restart: "no"
+    shm_size: "16g"
+    ipc: host
+    gpus:
+      - driver: nvidia
+        device_ids: ["1"]
+        capabilities: [gpu]
+    environment:
+      HTTP_PROXY: http://host.docker.internal:3128
+      HTTPS_PROXY: http://host.docker.internal:3128
+      http_proxy: http://host.docker.internal:3128
+      https_proxy: http://host.docker.internal:3128
+      NO_PROXY: localhost,127.0.0.1,::1,qwen3_asr_secondary
+      no_proxy: localhost,127.0.0.1,::1,qwen3_asr_secondary
+      NVIDIA_VISIBLE_DEVICES: "1"
+      CUDA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      HF_HUB_DISABLE_XET: "1"
+      HF_HUB_OFFLINE: "${LOADTEST_HF_HUB_OFFLINE:-1}"
+      TRANSFORMERS_OFFLINE: "${LOADTEST_HF_HUB_OFFLINE:-1}"
+    command:
+      - python3
+      - /opt/hr-agent/run_qwen3_asr.py
+      - --asr-model-path
+      - Qwen/Qwen3-ASR-1.7B
+      - --gpu-memory-utilization
+      - "${QWEN3_ASR_GPU_MEMORY_UTILIZATION:-0.17}"
+      - --max-model-len
+      - "${QWEN3_ASR_MAX_MODEL_LEN:-2048}"
+      - --max-num-seqs
+      - "11"
+      - --max-sessions
+      - "${LOADTEST_ASR_MAX_SESSIONS:-16}"
+      - --max-new-tokens
+      - "${QWEN3_ASR_MAX_NEW_TOKENS:-256}"
+      - --soft-window-seconds
+      - "12"
+      - --window-seconds
+      - "20"
+      - --overlap-seconds
+      - "1.5"
+      - --batch-wait-ms
+      - "10"
+      - --silence-commit-ms
+      - "750"
+      - --force-refresh-ms
+      - "1000"
+      - --silence-rms-threshold
+      - "0.006"
+      - --max-request-audio-seconds
+      - "20"
+      - --unfixed-chunk-num
+      - "2"
+      - --unfixed-token-num
+      - "64"
+      - --chunk-size-sec
+      - "1.0"
+      - --host
+      - 0.0.0.0
+      - --port
+      - "7118"
+    volumes:
+      - ../scripts/run_qwen3_asr.py:/opt/hr-agent/run_qwen3_asr.py:ro
+      - qwen_hf_cache:/root/.cache/huggingface
+      - qwen_vllm_cache:/root/.cache/vllm
+    expose: ["7118"]
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7118/health', timeout=5)"
+      interval: 10s
+      timeout: 10s
+      retries: 60
+      start_period: 900s
+
+  migrate:
+    <<: *backend-service
+    environment:
+      <<: *backend-environment
+      ASR_ENABLED: "false"
+      ASR_REALTIME_ENABLED: "false"
+      LOCAL_MODEL_PINNED_SERVICES: ""
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      model_stub: {condition: service_healthy}
+    command: ["/bin/sh", "-ec", "python loadtests/validate_environment.py && python scripts/init_postgres.py"]
+    restart: "no"
+
+  kb_seed:
+    <<: *backend-service
+    environment:
+      <<: *backend-environment
+      ASR_ENABLED: "false"
+      ASR_REALTIME_ENABLED: "false"
+      LOCAL_MODEL_PINNED_SERVICES: ""
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    command:
+      ["python", "scripts/rebuild_vectorstore.py", "--dataset", "core", "--exact"]
+    restart: "no"
+
+  account_seed:
+    <<: *backend-service
+    environment:
+      <<: *backend-environment
+      LOADTEST_ACCOUNT_PASSWORD: "${LOADTEST_ACCOUNT_PASSWORD:?Set in loadtests/.env}"
+      ASR_ENABLED: "false"
+      ASR_REALTIME_ENABLED: "false"
+      LOCAL_MODEL_PINNED_SERVICES: ""
+      LOADTEST_ACCOUNT_POOL_SIZE: "480"
+      LOADTEST_ACCOUNT_PREFIX: loadtest
+      LOADTEST_ACCOUNT_DOMAIN: loadtest.invalid
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    command: ["python", "loadtests/seed_accounts.py"]
+    restart: "no"
+
+  backend:
+    <<: *backend-service
+    depends_on:
+      account_seed: {condition: service_completed_successfully}
+      kb_seed: {condition: service_completed_successfully}
+      pgbouncer: {condition: service_healthy}
+      qwen3_asr:
+        condition: service_healthy
+        required: false
+      qwen3_asr_secondary:
+        condition: service_healthy
+        required: false
+    expose: ["7111"]
+    deploy:
+      replicas: 8
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:7111/api/v1/health', timeout=3)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s
+
+  gateway:
+    image: nginx:1.27-alpine
+    depends_on:
+      backend: {condition: service_healthy}
+    ports:
+      - "${LOADTEST_GATEWAY_BIND_IP:-127.0.0.1}:7210:7210"
+    volumes:
+      - ./deployment/nginx.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:7210/api/v1/health >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  locust_master:
+    profiles: ["loadgen"]
+    image: 06-emotion-loadtest-locust:2.44.4
+    build:
+      <<: *build-proxy
+      context: ..
+      dockerfile: loadtests/Dockerfile
+    environment:
+      LOCUST_HOST: http://gateway:7210
+      LOADTEST_RUN_ID: "${LOADTEST_RUN_ID:?Set in loadtests/.env}"
+      LOADTEST_SHAPE: "${LOADTEST_SHAPE:-smoke}"
+      LOADTEST_MODEL_MODE: stub
+      LOADTEST_COORDINATION_REDIS_URL: redis://:${LOADTEST_REDIS_PASSWORD:?Set in loadtests/.env}@redis:6379/1
+      LOADTEST_ACCOUNT_PASSWORD: "${LOADTEST_ACCOUNT_PASSWORD:?Set in loadtests/.env}"
+      LOADTEST_ACCOUNT_POOL_SIZE: "480"
+      LOADTEST_ACCOUNT_PREFIX: loadtest
+      LOADTEST_ACCOUNT_DOMAIN: loadtest.invalid
+      LOADTEST_EXPECTED_WORKERS: "${LOADTEST_EXPECTED_WORKERS:-8}"
+      LOADTEST_RESULTS_DIR: /results
+      LOADTEST_REQUIRE_SYSTEM_METRICS: "${LOADTEST_REQUIRE_SYSTEM_METRICS:-}"
+      LOADTEST_SYSTEM_METRICS_FILE: "${LOADTEST_SYSTEM_METRICS_FILE:-}"
+    depends_on:
+      gateway: {condition: service_healthy}
+    command:
+      - --headless
+      - --master
+      - --expect-workers
+      - "${LOADTEST_EXPECTED_WORKERS:-8}"
+      - --host
+      - http://gateway:7210
+      - --html
+      - "/results/${LOADTEST_RUN_ID}/locust.html"
+      - --csv
+      - "/results/${LOADTEST_RUN_ID}/locust"
+      - --csv-full-history
+    volumes:
+      - ./results:/results
+      - ./metrics:/metrics:ro
+    ports:
+      - "${LOADTEST_MASTER_BIND_IP:-127.0.0.1}:5557:5557"
+
+  locust_worker:
+    profiles: ["loadgen"]
+    image: 06-emotion-loadtest-locust:2.44.4
+    build:
+      <<: *build-proxy
+      context: ..
+      dockerfile: loadtests/Dockerfile
+    environment:
+      LOCUST_HOST: http://gateway:7210
+      LOADTEST_RUN_ID: "${LOADTEST_RUN_ID:?Set in loadtests/.env}"
+      LOADTEST_SHAPE: "${LOADTEST_SHAPE:-smoke}"
+      LOADTEST_MODEL_MODE: stub
+      LOADTEST_COORDINATION_REDIS_URL: redis://:${LOADTEST_REDIS_PASSWORD:?Set in loadtests/.env}@redis:6379/1
+      LOADTEST_ACCOUNT_PASSWORD: "${LOADTEST_ACCOUNT_PASSWORD:?Set in loadtests/.env}"
+      LOADTEST_ACCOUNT_POOL_SIZE: "480"
+      LOADTEST_ACCOUNT_PREFIX: loadtest
+      LOADTEST_ACCOUNT_DOMAIN: loadtest.invalid
+      LOADTEST_EXPECTED_WORKERS: "${LOADTEST_EXPECTED_WORKERS:-8}"
+    depends_on:
+      gateway: {condition: service_healthy}
+      locust_master: {condition: service_started}
+    command: ["--worker", "--master-host", "locust_master", "--host", "http://gateway:7210"]
+    deploy:
+      replicas: 8
+
+  asr_load:
+    profiles: ["asr-loadgen"]
+    image: 06-emotion-loadtest-locust:2.44.4
+    build:
+      <<: *build-proxy
+      context: ..
+      dockerfile: loadtests/Dockerfile
+    entrypoint: ["python", "-m", "loadtests.asr_load"]
+    environment:
+      HTTP_PROXY: ""
+      HTTPS_PROXY: ""
+      http_proxy: ""
+      https_proxy: ""
+      NO_PROXY: localhost,127.0.0.1,::1,gateway
+      no_proxy: localhost,127.0.0.1,::1,gateway
+      LOADTEST_ACCOUNT_PASSWORD: "${LOADTEST_ACCOUNT_PASSWORD:?Set in loadtests/.env}"
+      LOADTEST_ACCOUNT_POOL_SIZE: "480"
+      LOADTEST_ACCOUNT_PREFIX: loadtest
+      LOADTEST_ACCOUNT_DOMAIN: loadtest.invalid
+    depends_on:
+      gateway: {condition: service_healthy}
+      qwen3_asr: {condition: service_healthy}
+      qwen3_asr_secondary: {condition: service_healthy}
+    command:
+      - --base-url
+      - http://gateway:7210
+      - --pcm-file
+      - /fixtures/asr-sample.pcm
+      - --concurrency
+      - "${LOADTEST_ASR_CONCURRENCY:-8}"
+      - --artifact-root
+      - /results
+      - --run-id
+      - "${LOADTEST_RUN_ID:?Set in loadtests/.env}"
+    volumes:
+      - ./data/audio:/fixtures:ro
+      - ./results:/results
+
+  aiperf:
+    profiles: ["aiperf"]
+    image: 06-emotion-aiperf:0.11.0
+    build:
+      <<: *build-proxy
+      context: ..
+      dockerfile: loadtests/AIPerf.Dockerfile
+    environment:
+      LOADTEST_RUN_ID: "${LOADTEST_RUN_ID:?Set in loadtests/.env}"
+    depends_on:
+      model_stub: {condition: service_healthy}
+    command:
+      - --target
+      - llm
+      - --base-url
+      - http://model_stub:8099
+      - --model
+      - loadtest-chat
+      - --artifact-root
+      - /results
+      - --dry-run
+    volumes:
+      - ./results:/results
+
+volumes:
+  loadtest_postgres:
+    name: 06_emotion_loadtest_postgres_v1
+  loadtest_redis:
+    name: 06_emotion_loadtest_redis_v1
+  loadtest_runtime:
+    name: 06_emotion_loadtest_runtime_v1
+  qwen_hf_cache:
+    external: true
+    name: "${QWEN_HF_CACHE_VOLUME:-06_emotion_qwen_hf_cache}"
+  qwen_vllm_cache:
+    external: true
+    name: "${QWEN_VLLM_CACHE_VOLUME:-06_emotion_qwen_vllm_cache}"

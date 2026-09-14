@@ -1,0 +1,3 @@
+services:
+  fish_tts:
+    profiles: !reset []

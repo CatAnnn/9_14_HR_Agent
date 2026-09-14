@@ -1,0 +1,349 @@
+.ebook-detail-page {
+  min-height: 100vh;
+  color: #182a31;
+  background: #fff;
+}
+
+.ebook-detail-shell {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 132px 0 96px;
+}
+
+.ebook-back-link {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #36515c;
+  font-size: 14px;
+  font-weight: 620;
+}
+
+.ebook-back-link svg {
+  width: 17px;
+  height: 17px;
+}
+
+.ebook-detail-hero {
+  min-height: min(620px, calc(100svh - 220px));
+  margin-top: 42px;
+  display: grid;
+  grid-template-columns: minmax(250px, 350px) minmax(0, 1fr);
+  gap: clamp(56px, 8vw, 112px);
+  align-items: center;
+}
+
+.ebook-detail-cover {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #eef1f2;
+  box-shadow: 0 24px 60px rgba(20, 37, 44, .2), 0 3px 10px rgba(20, 37, 44, .12);
+}
+
+.ebook-detail-cover img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.ebook-detail-copy {
+  min-width: 0;
+}
+
+.ebook-detail-eyebrow {
+  margin: 0 0 13px;
+  color: #007bc0;
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.ebook-detail-copy h1 {
+  margin: 0;
+  color: #14282f;
+  font-size: clamp(38px, 5vw, 62px);
+  font-weight: 620;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.ebook-detail-authors {
+  margin: 18px 0 0;
+  color: #4e636b;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.ebook-detail-metadata {
+  margin: 24px 0 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 8px 22px;
+  color: #61737a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.ebook-detail-metadata dt {
+  color: #859298;
+}
+
+.ebook-detail-metadata dd {
+  margin: 0;
+}
+
+.ebook-detail-summary {
+  max-width: 720px;
+  margin: 30px 0 0;
+  color: #364f58;
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.ebook-detail-tags {
+  margin: 22px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.ebook-detail-tags li {
+  padding: 6px 11px;
+  border-radius: 4px;
+  color: #48616a;
+  background: #f1f4f4;
+  font-size: 12px;
+}
+
+.ebook-detail-actions {
+  margin-top: 34px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ebook-detail-actions a,
+.ebook-detail-actions button {
+  min-height: 48px;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid #c8d1d4;
+  border-radius: 5px;
+  color: #253c45;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 680;
+  transition: transform .18s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.ebook-detail-actions .ebook-primary-action {
+  border-color: #007bc0;
+  color: #fff;
+  background: #007bc0;
+}
+
+.ebook-detail-actions a:hover,
+.ebook-detail-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(21, 53, 65, .14);
+}
+
+.ebook-detail-actions svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ebook-detail-actions button:disabled {
+  opacity: .62;
+}
+
+.ebook-auth-note,
+.ebook-action-error {
+  margin: 15px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.ebook-auth-note {
+  color: #718188;
+}
+
+.ebook-action-error {
+  color: #b42318;
+}
+
+.ebook-related {
+  margin-top: 112px;
+  padding-top: 54px;
+  border-top: 1px solid #e2e7e8;
+}
+
+.ebook-related > header p {
+  margin: 0 0 8px;
+  color: #007bc0;
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.ebook-related > header h2 {
+  margin: 0;
+  color: #172c34;
+  font-size: 30px;
+  font-weight: 620;
+}
+
+.ebook-related > div {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.ebook-related > div > a {
+  min-width: 0;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 18px;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid #e1e6e7;
+  border-radius: 6px;
+  color: #253c45;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.ebook-related > div > a:hover {
+  transform: translateY(-2px);
+  border-color: #aebdc2;
+  box-shadow: 0 10px 26px rgba(28, 49, 57, .1);
+}
+
+.ebook-related img {
+  width: 72px;
+  aspect-ratio: 3 / 4;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.ebook-related strong,
+.ebook-related small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.ebook-related strong {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.ebook-related small {
+  margin-top: 5px;
+  color: #718188;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ebook-related svg {
+  width: 17px;
+  height: 17px;
+  color: #007bc0;
+}
+
+.ebook-not-found {
+  padding-top: 120px;
+}
+
+.ebook-not-found > section {
+  min-height: 70vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.ebook-not-found > section > svg {
+  width: 34px;
+  height: 34px;
+  color: #007bc0;
+}
+
+.ebook-not-found h1 {
+  margin: 18px 0 0;
+  font-size: 30px;
+}
+
+.ebook-not-found p {
+  margin: 10px 0 22px;
+  color: #64767d;
+}
+
+.ebook-not-found section a {
+  color: #007bc0;
+  font-weight: 680;
+}
+
+@media (max-width: 900px) {
+  .ebook-detail-shell {
+    width: min(100% - 40px, 760px);
+    padding-top: 112px;
+  }
+
+  .ebook-detail-hero {
+    grid-template-columns: minmax(190px, 260px) minmax(0, 1fr);
+    gap: 42px;
+  }
+
+  .ebook-related > div {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .ebook-detail-shell {
+    width: min(100% - 32px, 520px);
+    padding: 96px 0 64px;
+  }
+
+  .ebook-detail-hero {
+    min-height: 0;
+    margin-top: 28px;
+    grid-template-columns: 1fr;
+    gap: 38px;
+  }
+
+  .ebook-detail-cover {
+    width: min(68vw, 280px);
+    justify-self: center;
+  }
+
+  .ebook-detail-copy h1 {
+    font-size: 40px;
+  }
+
+  .ebook-detail-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .ebook-related {
+    margin-top: 76px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ebook-detail-page *,
+  .ebook-detail-page *::before,
+  .ebook-detail-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}

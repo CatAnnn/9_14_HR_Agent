@@ -1,0 +1,515 @@
+version: v1.0
+name: rag_retrieval_queries
+retrieval_policy:
+  entry_service: RetrievalService
+  agent_direct_vectorstore_access: forbidden
+  employee_agent_kb_access: employee_only
+  note: EmployeeAgent 只读取 employee 范围作为员工视角背景语境，不能直接读取 general 或政策/方法论专用 scope，避免员工像 HR/政策专家。
+scope_search_policies:
+  default:
+    dense_mode: exact
+    exact_search_enabled: false
+  organization_unit:
+    dense_mode: ann_preferred
+    dense_top_k: 46
+    lexical_top_k: 32
+    exact_top_k: 24
+    hybrid_search_enabled: true
+    exact_search_enabled: false
+  employee:
+    dense_mode: ann_preferred
+    dense_top_k: 28
+    lexical_top_k: 28
+    exact_top_k: 16
+    hybrid_search_enabled: true
+    exact_search_enabled: false
+defaults:
+  dense_top_k: 28
+  lexical_top_k: 28
+  hybrid_search_enabled: true
+  dense_weight: 1.0
+  lexical_weight: 1.0
+  exact_search_enabled: false
+  exact_top_k: 16
+  exact_weight: 1.25
+  rrf_k: 60
+  fusion_top_n: 46
+  # 多知识域任务的默认候选预算；低约束任务在 queries 中按需收紧。
+  rerank_candidate_top_n: 21
+  # 二阶段每个父文档重排一阶段得分最高的 5 个 unit。
+  rerank_units_per_parent: 5
+  # 复合候选默认关闭；只在任务明确声明跨 leaf 证据组时稀疏启用。
+  rerank_semantic_group_candidate_enabled: false
+  rerank_compound_evidence_sets: []
+  # 不满足权威适用条件时，在召回前移除对应知识域，避免无配额但仍泄漏。
+  retrieval_scope_conditions:
+    career: career_elements_applicable
+  # 父文档级 rerank rank 与一阶段 rank 的 RRF 平滑常数。
+  rerank_rank_fusion_k: 60
+  # 让 Reranker 能纠正一阶段相邻误排，同时保留一阶段约束。
+  rerank_rank_weight: 2.0
+  first_stage_rank_weight: 1.0
+  rerank_enabled: true
+  rerank_top_n: 8
+  query_parallelism: 8
+  rerank_parallelism: 8
+  metadata_filter: {}
+  scopes:
+  - general
+  - development_dialog
+  - performance
+  - redline
+  - job_level
+  - emotion
+  - examples
+
+agentic_search:
+  enabled_flows: [guidance, coach]
+  max_tool_calls: 4
+  max_rounds: 2
+  first_round_max_parallel_calls: 3
+  tool_top_k: 8
+  neighbor_window: 1
+  added_context_top_k: 4
+
+queries:
+  employee_response:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages directly useful for grounding the employee's own context and perspective; prefer specific employee-side background over generic HR policy.
+    rerank_query_template: >-
+      经理当前发言：{{ latest_manager_message[:600] if latest_manager_message else '' }}；员工岗位：{{ profile.role if profile and profile.role else '' }}；沟通主题：{{ profile.conversation_topic if profile and profile.conversation_topic else '' }}。寻找员工本人已知且与当前回应直接相关的背景。
+    # 单 employee scope 保留 final top_n 两倍的候选。
+    rerank_candidate_top_n: 16
+    rerank_top_n: 8
+    scopes:
+    - employee
+    query_templates:
+    - template: "{{ intent.name if intent else '' }} {{ profile.conversation_topic if profile else '' }} {{ latest_manager_message }} 员工视角 绩效沟通 背景"
+      scopes: [employee]
+      weight: 1.0
+    - template: "{{ motivation.primary_motive_id if motivation else '' }} {{ emotion_state.current_anchor_id if emotion_state else '' }} 员工反应 沟通语境 关注点"
+      scopes: [employee]
+      weight: 1.0
+    - template: "{{ supplemental_info[:800] if supplemental_info else '' }} {{ rehearsal_context.runtime_notes[:4] | join(' ') if rehearsal_context and rehearsal_context.runtime_notes else '' }} 用户补充背景 动态模拟设定 员工当前反应"
+      scopes: [employee]
+      weight: 1.6
+
+  employee_rating_basis:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that explicitly define the applicable performance rating and its results, competence and behavior basis for the stated employee. Prefer exact employee-visible standards over broad HR advice.
+    rerank_query_template: >-
+      员工岗位：{{ profile.role if profile and profile.role else '' }}；职级：{{ profile.level if profile and profile.level else '' }}。寻找适用的绩效等级定义以及结果、能力和行为评价依据。
+    dense_top_k: 16
+    lexical_top_k: 16
+    hybrid_search_enabled: true
+    dense_weight: 1.0
+    lexical_weight: 1.0
+    rrf_k: 60
+    fusion_top_n: 24
+    rerank_candidate_top_n: 11
+    rerank_enabled: true
+    rerank_top_n: 4
+    metadata_filter: {}
+    scopes: [employee]
+    query_templates:
+    - template: "绩效评价体系 等级定义 评级依据 结果 能力 行为 Deliverables Competence Behavior"
+      scopes: [employee]
+      weight: 1.2
+    - template: "{{ profile.level if profile else '' }} {{ profile.role if profile else '' }} 岗位 职级 绩效标准 结果要求 能力要求 行为要求"
+      scopes: [employee]
+      weight: 1.0
+    - template: "WHAT 70% HOW 30% 目标结果 行为贡献 文化行为 绩效校准"
+      scopes: [employee]
+      weight: 1.0
+
+  intent_performance:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that directly support drafting the performance context for the stated conversation intent and employee. Prefer applicable job-level, performance and culture standards connected to the employee's goals over broad HR advice.
+    rerank_query_template: >-
+      沟通意图：{{ intent.name if intent else '' }}；员工岗位：{{ profile.role if profile else '' }}；职级：{{ profile.level if profile else '' }}；目标：{{ profile.key_goals[:3] | join('；') if profile and profile.key_goals else '' }}。寻找适用的岗位、绩效和文化评价依据。
+    dense_top_k: 18
+    lexical_top_k: 18
+    hybrid_search_enabled: true
+    dense_weight: 1.0
+    lexical_weight: 1.0
+    rrf_k: 60
+    fusion_top_n: 46
+    rerank_candidate_top_n: 21
+    rerank_enabled: true
+    rerank_top_n: 8
+    query_parallelism: 8
+    rerank_parallelism: 8
+    metadata_filter: {}
+    scopes: [employee, job_level, performance, career, culture, feedback, development_dialog, general]
+    query_templates:
+    - template: "{{ intent.name if intent else '' }} {{ profile.role if profile else '' }} {{ profile.level if profile else '' }} 岗位 职级 责任范围 能力标准 绩效要求 高绩效文化 行为标准"
+      scopes: [job_level, career, culture]
+      weight: 1.0
+    - template: "{{ profile.key_goals | join(' ') if profile and profile.key_goals else '' }} {{ profile.performance_rating if profile else '' }} {{ profile.tcl if profile else '' }} 绩效目标 当前表现 交付 质量 效率 业务影响"
+      scopes: [employee, performance]
+      weight: 1.0
+    - template: "{{ intent.name if intent else '' }} {{ profile.key_goals | join(' ') if profile and profile.key_goals else '' }} 绩效反馈 事实证据 表现差距 评价口径"
+      scopes: [feedback, development_dialog, general]
+      weight: 1.0
+
+  intent_performance_organization_unit:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that directly establish the applicable organization path, department responsibilities and business scope for the stated employee; prefer exact organizational evidence over general HR guidance.
+    rerank_query_template: >-
+      部门：{{ profile.department if profile and profile.department else '' }}；汇报关系：{{ profile.reporting_line if profile and profile.reporting_line else '' }}；岗位：{{ profile.role if profile and profile.role else '' }}；职级：{{ profile.level if profile and profile.level else '' }}。寻找准确的组织路径、部门职责和业务范围。
+    dense_top_k: 18
+    lexical_top_k: 18
+    hybrid_search_enabled: true
+    dense_weight: 1.0
+    lexical_weight: 1.0
+    rrf_k: 60
+    fusion_top_n: 24
+    rerank_candidate_top_n: 11
+    rerank_enabled: true
+    rerank_top_n: 3
+    metadata_filter: {}
+    scopes: [organization_unit]
+    query_templates:
+    - template: "{{ profile.department if profile and profile.department else '' }} {{ profile.reporting_line if profile and profile.reporting_line else '' }} {{ profile.role if profile and profile.role else '' }} {{ profile.level if profile and profile.level else '' }} 组织单元 组织路径 上级组织 部门职责 业务范围 核心任务 协作关系"
+      scopes: [organization_unit]
+      weight: 1.0
+
+  resource_chat:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that directly and completely answer the stated query within the requested knowledge scope; prefer explicit supporting content over broad topical similarity.
+    rerank_query_template: "{{ user_query }}"
+    dense_top_k: 16
+    lexical_top_k: 16
+    hybrid_search_enabled: true
+    dense_weight: 1.0
+    lexical_weight: 1.0
+    rrf_k: 60
+    fusion_top_n: 20
+    rerank_candidate_top_n: 11
+    rerank_enabled: true
+    rerank_top_n: 4
+    query_parallelism: 1
+    rerank_parallelism: 4
+    metadata_filter: {}
+    scopes: [resources]
+    query_templates:
+    - template: "{{ user_query }}"
+      scopes: [resources]
+      weight: 1.0
+
+  guidance_start:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that directly support opening a performance conversation, aligning the rating with facts, and checking understanding. Prefer applicable, transparent and actionable guidance over generic HR advice.
+    rerank_query_template: >-
+      为{{ intent.name if intent else '' }}绩效沟通准备开场；员工岗位：{{ profile.role if profile else '' }}；职级：{{ profile.level if profile else '' }}；主题：{{ profile.conversation_topic if profile else '' }}。需要清楚定调、说明结果与事实边界并确认理解。
+    rerank_candidate_top_n: 18
+    rerank_top_n: 8
+    citation_scope_minimums: {performance: 1, feedback: 1}
+    citation_scope_preferred_terms:
+      feedback: [开场, 谈话主题, 目的, 影响, 流程, 规则]
+    generation_prefix_scope_targets: {performance: 1, feedback: 1}
+    generation_prefix_fill_scopes: [feedback, performance, development_dialog, general, redline]
+    scopes: [job_level, redline, culture, general, performance, career, development_dialog, feedback]
+    query_templates:
+    - template: "{{ intent.name if intent else '' }} {{ profile.conversation_topic if profile else '' }} 绩效面谈 谈前准备 开场定调 绩效结果 事实边界 理解确认"
+      scopes: [job_level, redline, general, performance, career, development_dialog, feedback]
+      weight: 1.0
+    - template: "{{ company_value_terms if company_value_terms else '' }} 开场沟通 客观坦诚 尊重信任 管理者行为"
+      scopes: [culture]
+      weight: 0.9
+
+  guidance_emotion:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that directly support anticipating and handling the employee's likely emotional response in a performance conversation. Prefer concrete imperative steps, checklists, rules, examples and observable listening, empathy, de-escalation or joint-exploration behavior. Downrank chapter or book summaries, introductions, FBI or hostage stories, historical narratives, personality descriptions, generic feedback doctrine and emotion-dismissive passages such as advice that the manager does not need to comfort or understand emotion.
+    rerank_query_template: >-
+      为{{ intent.name if intent else '' }}绩效沟通预判员工反应；主题：{{ profile.conversation_topic if profile else '' }}；核心关注：{{ motivation.primary_motive_id if motivation else '' }}；当前情绪锚点：{{ emotion_state.current_anchor_id if emotion_state else '' }}{% if supplemental_info %}；本轮补充背景：{{ supplemental_info[:400] }}{% endif %}。需要主动倾听、战术同理心、标注或镜像、开放式校准问题、共同澄清或共同解决问题，以及适用文化行为指导。
+    # preferred evidence 会从完整融合结果保留关键方法，16 个父候选已足够。
+    rerank_candidate_top_n: 16
+    rerank_top_n: 8
+    citation_scope_minimums: {culture: 1, emotion: 2}
+    citation_scope_conditions: {culture: company_values_or_culture_skill}
+    citation_scope_preferred_terms:
+      emotion: [有效的停顿, 最低限度的鼓励, 策略性的同理心, 校准问题, 共同解决问题, 封闭性问题]
+    generation_prefix_scope_semantic_groups:
+      emotion:
+      - required_terms: [共情, 同理心, 战术同理心, 策略性的同理心, empathy, tactical empathy]
+        preferred_terms: [主动倾听, 倾听, 设想自己处在对方的境地, 标注, 镜像, 释义, 有效的停顿, 最低限度的鼓励, 重复]
+        downrank_terms: [目录, 关于本书, 本章介绍, 本章将, 本书将, 这本书将, 将介绍, 将展示, 将要学到, 将学习到, 不用安慰, 无需安慰, 不需要安慰]
+      - required_terms: [共同探索, 共同澄清, 共同解决问题, 开放问题, 校准问题, joint exploration]
+        preferred_terms: [共同解决问题, 开放性的校准问题, 避免封闭性问题, 寻求对方帮助, 让对方给出方案]
+        downrank_terms: [目录, 关于本书, 本章介绍, 本章将, 本书将, 这本书将, 将介绍, 将展示, 将要学到, 将学习到, 不用安慰, 无需安慰, 不需要安慰]
+    generation_prefix_scope_targets: {emotion: 2, culture: 1}
+    generation_prefix_scope_conditions: {culture: company_values_or_culture_skill}
+    generation_prefix_fill_scopes: [emotion, culture]
+    scopes: [culture, emotion]
+    query_templates:
+    - template: "{{ intent.name if intent else '' }} {{ motivation.primary_motive_id if motivation else '' }} 主动倾听 有效的停顿 最低限度的鼓励 重复 释义 镜像 标注情绪 总结 具体步骤 示例"
+      scopes: [emotion]
+      weight: 1.2
+    - template: "{{ intent.name if intent else '' }} {{ emotion_state.current_anchor_id if emotion_state else '' }} 开放问题 校准问题 什么 如何 避免为什么 共同澄清 共同解决问题 消弭对抗 提问规则 示例"
+      scopes: [emotion]
+      weight: 1.2
+    - template: "{{ company_value_terms if company_value_terms else '' }} {{ supplemental_info[:500] if supplemental_info else '' }} 困难沟通 尊重信任 倾听 共情 管理者行为"
+      scopes: [culture]
+      weight: 1.1
+
+  guidance_requirement:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that directly support explaining output expectations and evidence-based performance gaps for the stated employee. Prefer applicable job-level, performance, organization and culture standards over generic HR advice. For performance evidence, prefer the complete WHAT 70% and HOW 30% assessment definition over generic rating or culture descriptions. When current or next job-level labels are supplied, prefer passages that explicitly cover those exact labels and downrank unrelated level systems. When supplemental context names a culture value, prefer the passage that explicitly defines that exact value rather than a different culture value.
+    rerank_query_template: >-
+      {% set current_level = normalized_employee_level %}
+      为{{ intent.name if intent else '' }}绩效沟通解释要求和差距；岗位：{{ profile.role if profile else '' }}；适用当前职级：{{ current_level }}；主题：{{ profile.conversation_topic if profile else '' }}{% if performance_context %}；已有绩效事实：{{ performance_context[:400] }}{% endif %}{% if supplemental_info %}；补充背景：{{ supplemental_info[:400] }}{% endif %}。需要可连接具体事实的岗位、WHAT 70%与HOW 30%绩效、组织和文化标准。
+    rerank_candidate_top_n: 18
+    rerank_top_n: 8
+    citation_scope_minimums: {job_level: 1, performance: 1, culture: 1, feedback: 2}
+    citation_scope_preferred_terms:
+      feedback: [目标与结果对齐, 实际结果, 差距 / 偏差, 只说事实]
+      job_level: [结果, 能力, 行为]
+    generation_prefix_scope_targets: {job_level: 1, performance: 1, culture: 1}
+    generation_prefix_scope_conditions: {job_level: applicable_job_levels, culture: company_values_or_culture_skill}
+    generation_prefix_fill_scopes: [job_level, performance, culture, organization_unit, feedback]
+    scopes: [job_level, culture, general, performance, career, development_dialog, feedback, organization_unit]
+    query_templates:
+    - template: >-
+        {% set current_level = normalized_employee_level %}
+        {{ intent.name if intent else '' }} {{ profile.role if profile else '' }} {{ current_level }} {{ profile.conversation_topic if profile else '' }} 绩效事实 评价标准 差距 产出期望 岗位要求 结果 能力 行为 校准问题
+      scopes: [job_level, general, performance, career, development_dialog, feedback]
+      weight: 1.0
+    - template: "{{ company_value_terms if company_value_terms else '' }} {{ supplemental_info[:500] if supplemental_info else '' }} 结果导向 责任担当 事实标准 管理者行为"
+      scopes: [culture]
+      weight: 1.1
+    - template: "{{ profile.department if profile and profile.department else '' }} {{ profile.role if profile and profile.role else '' }} {{ profile.level if profile and profile.level else '' }} 部门职责 岗位上下文 产出要求"
+      scopes: [organization_unit]
+      weight: 1.1
+    - template: "WHAT 70% HOW 30% Results KPIs Behaviors contributions 绩效期望与评估"
+      scopes: [performance]
+      weight: 1.2
+
+  guidance_plan:
+    enabled: true
+    rerank_instruction: >-
+      Given a performance-review planning task, rank passages that directly support a tailored, actionable and verifiable development or improvement plan. Prefer applicable job-level and the complete official five-part Career Elements framework over generic HR advice. When current or next job-level labels are supplied, prefer passages that explicitly cover those exact labels and downrank unrelated level systems. When supplemental context names a culture value, prefer the passage that explicitly defines that exact value rather than a different culture value. When Career Elements are listed as already held, treat them only as exclusions from new-development targets.
+    rerank_query_template: >-
+      {% set current_level = normalized_employee_level %}
+      为{{ intent.name if intent else '' }}绩效沟通制定总结与差异化后续计划；岗位：{{ profile.role if profile else '' }}{% if intent and intent.id == 'development' %}；适用下一职级：{{ next_employee_level }}{% elif intent and intent.id == 'development_improvement' %}；适用当前职级：{{ current_level }}；适用下一职级：{{ next_employee_level }}{% else %}；适用当前职级：{{ current_level }}{% endif %}；主题：{{ profile.conversation_topic if profile else '' }}；目标：{{ profile.key_goals[:2] | join('；') if profile and profile.key_goals else '' }}{% if performance_context %}；已有绩效事实：{{ performance_context[:400] }}{% endif %}{% if supplemental_info %}；补充背景：{{ supplemental_info[:400] }}{% endif %}{% if career_elements_applicable and current_career_elements %}；当前已具备、仅用于排除的 Career Elements：{{ current_career_elements | join('、') }}{% endif %}。需要行动、验证和跟进依据。
+    rerank_top_n: 8
+    citation_scope_minimums: {development_dialog: 1, feedback: 1, job_level: 1, career: 2, culture: 1}
+    citation_scope_conditions: {job_level: applicable_job_levels, career: career_elements_applicable, culture: company_values_or_culture_skill}
+    citation_scope_preferred_terms:
+      feedback: [下一步明确动作, 验证标准, 检查节点]
+      job_level: [结果, 能力, 行为]
+    generation_prefix_scope_targets: {job_level: 1, feedback: 1, career: 1, culture: 1, development_dialog: 1}
+    generation_prefix_scope_conditions: {job_level: applicable_job_levels, career: career_elements_applicable, culture: company_values_or_culture_skill}
+    generation_prefix_fill_scopes: [development_dialog, job_level, career, culture, performance, feedback, general]
+    scopes: [job_level, culture, general, performance, career, development_dialog, feedback]
+    query_templates:
+    - template: >-
+        {% set current_level = normalized_employee_level %}
+        {{ intent.name if intent else '' }} {{ profile.conversation_topic if profile else '' }} {% if intent and intent.id == 'development' %}{{ next_employee_level }}{% elif intent and intent.id == 'development_improvement' %}{{ current_level }} {{ next_employee_level }}{% else %}{{ current_level }}{% endif %} 谈前行动预案 总结 共识 分歧 责任 时间节点 验证标准 跟进安排 岗位要求 结果 能力 行为
+      scopes: [job_level, general, performance, career, development_dialog, feedback]
+      weight: 1.0
+    - template: "{% if career_elements_applicable %}{{ profile.level if profile else '' }} {{ intent.name if intent else '' }} {{ current_career_elements | join(' ') }} Career Elements 职业要素 Cross Division Cross Function International Associate Leadership Project Leadership 下一岗级 发展计划{% endif %}"
+      scopes: [career]
+      weight: 1.3
+    - template: "{{ company_value_terms if company_value_terms else '' }} {{ supplemental_info[:500] if supplemental_info else '' }} 发展支持 主动负责 合作 行动计划 管理者行为"
+      scopes: [culture]
+      weight: 1.1
+
+  opening_evaluation:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that provide explicit criteria for evaluating the manager's opening and performance-result alignment. Prefer observable, applicable conversation standards over generic best practices.
+    rerank_query_template: >-
+      评估{{ intent.name if intent else '' }}绩效沟通中的开场和绩效结果对齐；岗位：{{ profile.role if profile else '' }}；职级：{{ profile.level if profile else '' }}；主题：{{ profile.conversation_topic if profile else '' }}。寻找定调、事实边界、透明说明和理解确认标准。
+    rerank_candidate_top_n: 18
+    rerank_top_n: 8
+    citation_scope_minimums: {performance: 1, feedback: 1}
+    citation_scope_preferred_terms:
+      feedback: [开场, 谈话主题, 目的, 影响, 流程, 规则]
+    generation_prefix_scope_targets: {performance: 1, feedback: 1}
+    generation_prefix_fill_scopes: [feedback, performance, development_dialog, general]
+    scopes: [job_level, culture, general, performance, career, development_dialog, feedback]
+    query_templates:
+    - template: "{{ intent.name if intent else '' }} 绩效反馈 开场 定调 绩效结果 产出与预期 理解确认"
+      scopes: [job_level, culture, general, performance, career, development_dialog, feedback]
+      weight: 1.0
+    - template: "performance review opening 结果对齐 客观坦诚 开放式确认 员工复述"
+      scopes: [general, development_dialog, culture, feedback]
+      weight: 1.0
+
+  output_expectations_evaluation:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that provide explicit criteria for evaluating how the manager explained outputs, standards, evidence and performance gaps. Prefer applicable job-level, performance, organization and culture standards over generic best practices. When current or next job-level labels are supplied, prefer passages that explicitly cover those exact labels and downrank unrelated level systems. When supplemental context names a culture value, prefer the passage that explicitly defines that exact value rather than a different culture value.
+    rerank_query_template: >-
+      评估{{ intent.name if intent else '' }}绩效沟通中的产出、标准、差距和期望说明；岗位：{{ profile.role if profile else '' }}；适用当前职级：{{ normalized_employee_level }}；{% if performance_context %}已有绩效事实：{{ performance_context[:400] }}；{% endif %}{% if supplemental_info %}补充背景：{{ supplemental_info[:400] }}；{% endif %}寻找适用的岗位、WHAT/HOW绩效、组织和文化标准。
+    rerank_top_n: 8
+    citation_scope_minimums: {job_level: 1, performance: 1, culture: 1, feedback: 2}
+    citation_scope_preferred_terms:
+      feedback: [目标与结果对齐, 实际结果, 差距 / 偏差, 只说事实]
+      job_level: [结果, 能力, 行为]
+    generation_prefix_scope_targets: {job_level: 1, performance: 1, culture: 1}
+    generation_prefix_scope_conditions: {job_level: applicable_job_levels, culture: company_values_or_culture_skill}
+    generation_prefix_fill_scopes: [job_level, performance, culture, organization_unit, feedback]
+    scopes: [job_level, culture, general, performance, career, development_dialog, feedback, organization_unit]
+    query_templates:
+    - template: "绩效反馈 情绪承接后回归事实 方向 结果 过程行为 产出要求"
+      scopes: [culture, general, performance, career, development_dialog, feedback]
+      weight: 1.0
+    - template: "{{ intent.name if intent else '' }} 绩效差距 事实证据 评价标准 结果与预期"
+      scopes: [performance, career, culture]
+      weight: 1.0
+    - template: >-
+        {% set current_level = normalized_employee_level %}
+        {{ profile.role if profile else '' }} {{ current_level }} 岗位标准 job level 当前职级要求 结果 能力 行为
+      scopes: [job_level]
+      weight: 1.2
+    - template: "Performance Review Feedback 方向价值 结果差距 可观察行为"
+      scopes: [performance, development_dialog, career, culture]
+      weight: 1.0
+    - template: "{{ profile.department if profile and profile.department else '' }} {{ profile.role if profile and profile.role else '' }} {{ profile.level if profile and profile.level else '' }} 部门职责 业务目标 绩效产出标准"
+      scopes: [organization_unit]
+      weight: 1.1
+    - template: "{{ supplemental_info[:500] if supplemental_info else '' }} 适用的高绩效文化 行为标准"
+      scopes: [culture]
+      weight: 1.1
+
+  development_plan_evaluation:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that provide explicit criteria for evaluating the manager's summary and tailored development or improvement plan. Prefer applicable job-level, the complete official five-part Career Elements framework, action, verification and follow-up standards over generic best practices. When current or next job-level labels are supplied, prefer passages that explicitly cover those exact labels and downrank unrelated level systems. When supplemental context names a culture value, prefer the passage that explicitly defines that exact value rather than a different culture value. When Career Elements are listed as already held, treat them only as exclusions from new-development targets.
+    rerank_query_template: >-
+      {% set current_level = normalized_employee_level %}
+      评估{{ intent.name if intent else '' }}绩效沟通中的总结与差异化发展或改进计划；岗位：{{ profile.role if profile else '' }}{% if intent and intent.id == 'development' %}；适用下一职级：{{ next_employee_level }}{% elif intent and intent.id == 'development_improvement' %}；适用当前职级：{{ current_level }}；适用下一职级：{{ next_employee_level }}{% else %}；适用当前职级：{{ current_level }}{% endif %}；目标：{{ profile.key_goals[:2] | join('；') if profile and profile.key_goals else '' }}{% if performance_context %}；已有绩效事实：{{ performance_context[:400] }}{% endif %}{% if supplemental_info %}；补充背景：{{ supplemental_info[:400] }}{% endif %}{% if career_elements_applicable and current_career_elements %}；当前已具备、仅用于排除的 Career Elements：{{ current_career_elements | join('、') }}{% endif %}。寻找行动、岗位对齐、验证和跟进标准。
+    rerank_top_n: 8
+    citation_scope_minimums: {development_dialog: 1, feedback: 1, job_level: 1, career: 1, culture: 1}
+    citation_scope_conditions: {job_level: applicable_job_levels, career: career_elements_applicable, culture: company_values_or_culture_skill}
+    citation_scope_preferred_terms:
+      feedback: [下一步明确动作, 验证标准, 检查节点]
+      job_level: [结果, 能力, 行为]
+    generation_prefix_scope_targets: {job_level: 1, feedback: 1, career: 1, culture: 1, development_dialog: 1}
+    generation_prefix_scope_conditions: {job_level: applicable_job_levels, career: career_elements_applicable, culture: company_values_or_culture_skill}
+    generation_prefix_fill_scopes: [development_dialog, job_level, career, culture, performance, feedback, general]
+    scopes: [job_level, culture, general, performance, career, development_dialog, feedback, organization_unit]
+    query_templates:
+    - template: >-
+        {% set current_level = normalized_employee_level %}
+        {% if intent and intent.id == 'development' %}{{ next_employee_level }}{% elif intent and intent.id == 'development_improvement' %}{{ current_level }} {{ next_employee_level }}{% else %}{{ current_level }}{% endif %} 绩效反馈 总结 共识 分歧 行动计划 责任人 时间节点 验证标准 岗位要求 结果 能力 行为
+      scopes: [job_level, culture, general, performance, career, development_dialog, feedback]
+      weight: 1.0
+    - template: "{{ intent.name if intent else '' }} 差异化发展计划 改进路径 管理者支持 跟进机制"
+      scopes: [culture, general, performance, career, development_dialog, feedback]
+      weight: 1.0
+    - template: "{% if career_elements_applicable %}{{ profile.level if profile else '' }} {{ intent.name if intent else '' }} {{ current_career_elements | join(' ') }} Career Elements 职业要素 Cross Division Cross Function International Associate Leadership Project Leadership 下一岗级 发展计划{% endif %}"
+      scopes: [career]
+      weight: 1.3
+    - template: "SMART 行动计划 员工责任 资源支持 检查节点 下一步确认"
+      scopes: [culture, general, performance, career, development_dialog, feedback]
+      weight: 1.0
+    - template: "{{ profile.department if profile and profile.department else '' }} {{ profile.role if profile and profile.role else '' }} 组织职责 协作接口 资源支持 发展路径"
+      scopes: [organization_unit]
+      weight: 1.0
+    - template: "{{ supplemental_info[:500] if supplemental_info else '' }} 适用的高绩效文化 行为标准"
+      scopes: [culture]
+      weight: 1.1
+
+  emotion_evaluation:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that provide explicit criteria for evaluating the manager's listening, empathy, de-escalation and joint exploration of employee emotion. Prefer concrete imperative steps, checklists, rules, examples and observable conversation behavior. Downrank chapter or book summaries, introductions, FBI or hostage stories, historical narratives, personality descriptions, generic feedback doctrine and emotion-dismissive passages such as advice that the manager does not need to comfort or understand emotion.
+    rerank_query_template: >-
+      评估{{ intent.name if intent else '' }}绩效沟通中经理对员工情绪的主动倾听、战术同理心、标注或镜像、开放式校准问题、共同澄清或共同解决；核心关注：{{ motivation.primary_motive_id if motivation else '' }}；当前情绪锚点：{{ emotion_state.current_anchor_id if emotion_state else '' }}{% if supplemental_info %}；本轮补充背景：{{ supplemental_info[:400] }}{% endif %}。寻找具体的情绪承接评价标准和适用文化行为依据。
+    rerank_candidate_top_n: 18
+    rerank_top_n: 8
+    citation_scope_minimums: {culture: 1, emotion: 2}
+    citation_scope_conditions: {culture: company_values_or_culture_skill}
+    citation_scope_preferred_terms:
+      emotion: [有效的停顿, 最低限度的鼓励, 策略性的同理心, 校准问题, 共同解决问题, 封闭性问题]
+    generation_prefix_scope_semantic_groups:
+      emotion:
+      - required_terms: [共情, 同理心, 战术同理心, 策略性的同理心, empathy, tactical empathy]
+        preferred_terms: [主动倾听, 倾听, 设想自己处在对方的境地, 标注, 镜像, 释义, 有效的停顿, 最低限度的鼓励, 重复]
+        downrank_terms: [目录, 关于本书, 本章介绍, 本章将, 本书将, 这本书将, 将介绍, 将展示, 将要学到, 将学习到, 不用安慰, 无需安慰, 不需要安慰]
+      - required_terms: [共同探索, 共同澄清, 共同解决问题, 开放问题, 校准问题, joint exploration]
+        preferred_terms: [共同解决问题, 开放性的校准问题, 避免封闭性问题, 寻求对方帮助, 让对方给出方案]
+        downrank_terms: [目录, 关于本书, 本章介绍, 本章将, 本书将, 这本书将, 将介绍, 将展示, 将要学到, 将学习到, 不用安慰, 无需安慰, 不需要安慰]
+    generation_prefix_scope_targets: {emotion: 2, culture: 1}
+    generation_prefix_scope_conditions: {culture: company_values_or_culture_skill}
+    generation_prefix_fill_scopes: [emotion, culture]
+    scopes: [culture, emotion]
+    query_templates:
+    - template: "{{ emotion_state.current_anchor_id if emotion_state else '' }} 主动倾听 有效的停顿 最低限度的鼓励 重复 释义 镜像 标注情绪 总结 具体步骤 可观察行为 示例"
+      scopes: [emotion]
+      weight: 1.2
+    - template: "开放问题 校准问题 什么 如何 避免为什么 共同澄清 共同解决问题 消弭对抗 提问规则 可观察行为 示例"
+      scopes: [emotion]
+      weight: 1.2
+    - template: "{{ supplemental_info[:500] if supplemental_info else '' }} 适用的高绩效文化 行为标准"
+      scopes: [culture]
+      weight: 1.1
+
+  model_rag_tool:
+    enabled: true
+    rerank_instruction: >-
+      Rank passages that directly and completely answer the stated query within the requested knowledge scope; prefer explicit supporting content over broad topical similarity.
+    rerank_query_template: >-
+      {{ tool_query }}{% if requested_scopes %}；限定知识范围：{{ requested_scopes | join('、') }}{% endif %}
+    dense_top_k: 28
+    lexical_top_k: 28
+    hybrid_search_enabled: true
+    dense_weight: 1.0
+    lexical_weight: 1.0
+    rrf_k: 60
+    fusion_top_n: 46
+    rerank_candidate_top_n: 21
+    rerank_enabled: true
+    rerank_top_n: 8
+    query_parallelism: 8
+    rerank_parallelism: 8
+    metadata_filter: {}
+    scopes: [career, culture, development_dialog, emotion, feedback, general, handbook, job_level, organization_unit, performance, redline]
+    query_templates:
+    - template: "{% if 'career' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [career]
+      weight: 1.0
+    - template: "{% if 'culture' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [culture]
+      weight: 1.0
+    - template: "{% if 'development_dialog' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [development_dialog]
+      weight: 1.0
+    - template: "{% if 'emotion' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [emotion]
+      weight: 1.0
+    - template: "{% if 'employee' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [employee]
+      weight: 1.0
+    - template: "{% if 'feedback' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [feedback]
+      weight: 1.0
+    - template: "{% if 'general' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [general]
+      weight: 1.0
+    - template: "{% if 'handbook' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [handbook]
+      weight: 1.0
+    - template: "{% if 'job_level' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [job_level]
+      weight: 1.0
+    - template: "{% if 'organization_unit' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [organization_unit]
+      weight: 1.0
+    - template: "{% if 'performance' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [performance]
+      weight: 1.0
+    - template: "{% if 'redline' in requested_scopes %}{{ tool_query }}{% endif %}"
+      scopes: [redline]
+      weight: 1.0

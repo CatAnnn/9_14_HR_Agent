@@ -1,0 +1,50 @@
+id: career_development
+version: "1.0.0"
+enabled: true
+priority: 90
+applies_to:
+  - guidance_start
+  - guidance_emotion
+  - guidance_requirement
+  - guidance_plan
+  - opening_evaluation
+  - emotion_evaluation
+  - output_expectations_evaluation
+  - development_plan_evaluation
+triggers:
+  - career element
+  - career elements
+  - career development
+  - 职业发展
+  - 发展路径
+  - 发展要素
+  - 能力发展
+scopes:
+  - career
+context_requirements:
+  career_elements_applicable: true
+core_knowledge: |-
+  # Career Elements_China_FAQ
+  ## Version 20260427
+  | Category | Questions | Answers |
+  | --- | --- | --- |
+  | overall | 晋升是否须满足职业发展要素要求？ | 是的，晋升到目标岗级时，须满足该岗级的职业要素要求。 |
+  | overall | 对于现在在Talent Pool中的成员，中国区职业发展要素的要求有什么影响？ | 即日起到2027年7月1日前，满足目标岗级职业要素要求者，HR将规划至下一级的继任者计划/succession planning; 不满足目标岗级职业要素要求、高绩效且有流动意愿者，HR可规划至下一级别继任者计划。 2027年7月1日起，如果仍不满足要求，将从继任者计划中移除，且不再规划。 |
+  | overall | 外部公司在5个职业要素维度的经历，是否算？ | 外部公司该维度经验，满足以下任一情形，即可认定为职业要素达标： 1.cross - divisional experience: 博世体系外相关经验，TP1及更高级别无年限限制；TP2及以上层级，需在近5年有双效经验。 2.International experience，具体任职时长与要求：参考career elements政策文件。 |
+  | Cross - functional Experience | 可被认定为跨职能/跨事业部（Cross function/division）经历的时长要求？ | 一般仍要求满2年，确保员工在跨域岗位上充分履职、实现有效轮岗。 TP提名时，最近一次跨职能/跨事业部变动无时间限制。 |
+  | Cross - divisional Experience | 哪些属于外公司？BSH, JV(BHSS, UAES)是否算？ | 博世全资公司BSH, 博世JV不算外部公司，但认定为cross - divisional move。 |
+  | International experience | 关于“global P&L (for RBR/UBR/TCR roles) 涉及产品中心平台开发global owner的角色是否算，如何界定？ | 只有P&L担责者算，负责全球平台开发者不算。 |
+  | International experience | “National new growth business”如何认定？ | 暂无list，BBM由M - CN board批准,non - BBM由 GL批准。 审批所需文件C/HRR3 - CN组正在准备中。 |
+  | Associate Leadership Experience | > 5 target and/or disciplinary reporting line, 具体如何计算？ | 统计该管理岗向下5级及以内所有间接下属的总人数（indirect），直接下级人员（direct）不计入统计范围。 员工角色须为Project Manager。 |
+  | Project leadership Experience | 关于项目管理经历如何界定？ | 具体职责请参照RBGP 00250 Project Management at Bosch中条款4.2.2 project manager的定义。 |
+usage_rules:
+  - 仅将核心知识作为通用方法，不得据此断言员工已具备某项能力或晋升资格。
+  - 需要具体资格、流程、年份或岗位要求时，以本次检索片段和已确认组织信息为准。
+  - 将长期发展方向转化为近期可实践、可观察、可复盘的行动。
+retrieval_queries:
+  - Career Elements 职业发展 发展路径 能力模型 专家管理横向路径 实践经历 晋升人才池条件
+source_files:
+  - career/career.md
+reviewed_source_sha256:
+  career/career.md: f327a49f8a1698a82a0634c13aafda6ea835f4659020806bee4b5b135254e24e
+reviewed_at: "2026-09-02"

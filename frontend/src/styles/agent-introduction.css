@@ -1,0 +1,183 @@
+.agent-introduction-page {
+  min-height: 100vh;
+  color: #051c2c;
+  background: #ffffff;
+}
+
+.agent-introduction-main {
+  min-height: 100vh;
+  padding: clamp(2.5rem, 6vw, 5.5rem) clamp(1.25rem, 5vw, 3rem);
+}
+
+.agent-introduction-document {
+  width: min(100%, 50rem);
+  margin: 0 auto;
+}
+
+.agent-introduction-heading {
+  margin-bottom: clamp(3rem, 7vw, 5rem);
+}
+
+.agent-introduction-heading h1 {
+  margin: 0;
+  font-size: clamp(2.45rem, 6vw, 4.75rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.agent-introduction-heading p {
+  max-width: 42rem;
+  margin: 1.25rem 0 0;
+  color: #42535f;
+  font-size: clamp(1.05rem, 2vw, 1.28rem);
+  line-height: 1.6;
+}
+
+.agent-introduction-section + .agent-introduction-section {
+  margin-top: clamp(3.5rem, 8vw, 6rem);
+}
+
+.agent-introduction-section h2 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+}
+
+.agent-introduction-section > p,
+.agent-introduction-step-copy p {
+  margin: 0;
+  color: #334955;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.agent-introduction-section > p + p,
+.agent-introduction-step-copy p + p,
+.agent-introduction-step-copy ul + p,
+.agent-introduction-step-copy p + ul {
+  margin-top: 0.5rem;
+}
+
+.agent-introduction-step-list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.agent-introduction-step-list > li {
+  padding-left: 0.45rem;
+}
+
+.agent-introduction-step-list > li + li {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+}
+
+.agent-introduction-step-list > li::marker {
+  color: #051c2c;
+  font-size: 1.14rem;
+  font-weight: 650;
+}
+
+.agent-introduction-step-list h3 {
+  margin: 0 0 0.85rem;
+  font-size: 1.18rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.agent-introduction-step-copy ul {
+  margin-bottom: 0;
+  padding-left: 1.35rem;
+  color: #334955;
+}
+
+.agent-introduction-step-copy ul li {
+  padding-left: 0.15rem;
+  line-height: 1.65;
+}
+
+.agent-introduction-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: clamp(4rem, 9vw, 7rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid #dce2e5;
+}
+
+.agent-introduction-actions a,
+.agent-introduction-actions button {
+  min-height: 2.75rem;
+  padding: 0.72rem 1.15rem;
+  border-radius: 0.35rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: background-color 160ms ease, color 160ms ease, opacity 160ms ease;
+}
+
+.agent-introduction-actions a {
+  color: #42535f;
+  text-decoration: none;
+}
+
+.agent-introduction-actions a:hover {
+  color: #051c2c;
+  background: #f1f4f5;
+}
+
+.agent-introduction-actions button {
+  border: 1px solid #051c2c;
+  color: #ffffff;
+  background: #051c2c;
+  cursor: pointer;
+}
+
+.agent-introduction-actions button:hover:not(:disabled) {
+  background: #12374b;
+}
+
+.agent-introduction-actions button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.agent-introduction-actions a:focus-visible,
+.agent-introduction-actions button:focus-visible {
+  outline: 3px solid rgba(5, 28, 44, 0.24);
+  outline-offset: 3px;
+}
+
+@media (max-width: 38rem) {
+  .agent-introduction-main {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .agent-introduction-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .agent-introduction-actions a,
+  .agent-introduction-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media print {
+  .agent-introduction-main {
+    padding: 0;
+  }
+
+  .agent-introduction-actions {
+    display: none;
+  }
+}

@@ -1,0 +1,26 @@
+[Unit]
+Description=Bosch organization crawler
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=3600
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=/home/uay4sgh/hr_agent/06_emotion/spider
+ExecStartPre=/home/uay4sgh/hr_agent/06_emotion/spider/run_linux.sh check
+ExecStart=/home/uay4sgh/hr_agent/06_emotion/spider/run_linux.sh all
+Environment=SPIDER_HEADLESS=1
+Environment=SPIDER_BROWSER_CHANNEL=msedge
+Environment=SPIDER_WORKER_PROFILE=balanced
+Environment=SPIDER_FAIL_ON_PAGE_ERRORS=1
+Environment=SPIDER_PYTHON=/home/uay4sgh/miniconda3/envs/hr_agent/bin/python
+Restart=on-failure
+RestartSec=300
+KillSignal=SIGINT
+TimeoutStopSec=180
+UMask=0077
+Nice=10
+
+[Install]
+WantedBy=default.target

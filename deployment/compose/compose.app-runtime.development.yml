@@ -1,0 +1,66 @@
+services:
+  backend:
+    environment:
+      # Reloaded workers reuse the already-active KB profile and should not
+      # repeatedly warm every model after each source-code save.
+      KB_SYNC_ON_STARTUP: "false"
+      MODEL_WARMUP_ENABLED: "false"
+      WATCHFILES_FORCE_POLLING: "true"
+    command: >
+      opentelemetry-instrument uvicorn backend.main:app
+      --host 0.0.0.0 --port 7111
+      --reload --reload-dir /app/backend --reload-delay 0.5
+      --reload-include '*.py'
+      --reload-include '*.yaml'
+      --reload-include '*.yml'
+    volumes:
+      - ./backend:/app/backend:ro
+
+  # Nginx remains the public HTTPS/API edge and forwards only page/HMR traffic
+  # to Vite. API, SSE, and speech WebSockets keep production session affinity.
+  frontend:
+    depends_on:
+      frontend_dev:
+        condition: service_healthy
+
+  frontend_dev:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      target: build
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+      args:
+        HTTP_PROXY: http://host.docker.internal:3128
+        HTTPS_PROXY: http://host.docker.internal:3128
+        NO_PROXY: localhost,127.0.0.1,::1,host.docker.internal
+    command: ["npm", "run", "dev"]
+    environment:
+      FRONTEND_HTTPS_HOST: "${FRONTEND_HTTPS_HOST:-localhost}"
+      FRONTEND_HTTPS_PORT: "${FRONTEND_HTTPS_PORT:-7443}"
+      VITE_HMR_SECURE: "true"
+      VITE_USE_POLLING: "true"
+      VITE_WATCH_INTERVAL_MS: "${VITE_WATCH_INTERVAL_MS:-250}"
+    expose:
+      - "8080"
+    volumes:
+      - ./frontend/src:/app/frontend/src:ro
+      - ./frontend/index.html:/app/frontend/index.html:ro
+      - ./frontend/vite.config.ts:/app/frontend/vite.config.ts:ro
+      - ./frontend/postcss.config.mjs:/app/frontend/postcss.config.mjs:ro
+      - ./data/frontend:/app/data/frontend:ro
+      - ./Ebook:/app/Ebook:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          env -u HTTP_PROXY -u HTTPS_PROXY -u http_proxy -u https_proxy
+          wget -qO- http://127.0.0.1:8080/ >/dev/null
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s

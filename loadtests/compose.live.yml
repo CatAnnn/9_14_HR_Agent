@@ -1,0 +1,117 @@
+# Safe live-model override for the isolated load-test stack.
+#
+# Compose interpolation deliberately allowlists model-only values from
+# backend/config/.env. Do not add that file as a service env_file: doing so could
+# leak production database, Redis, or runtime settings into this isolated stack.
+#
+# Validate without starting containers or printing resolved secrets:
+#   LOADTEST_ALLOW_LIVE_MODELS=true LOADTEST_MAX_COST_CNY=100 \
+#   docker compose \
+#     --env-file loadtests/.env \
+#     --env-file backend/config/.env \
+#     -f loadtests/compose.yml \
+#     -f loadtests/compose.live.yml \
+#     --profile asr-local config --quiet
+
+x-live-model-environment: &live-model-environment
+  LOADTEST_MODEL_MODE: live
+  LOADTEST_ALLOW_LIVE_MODELS: "${LOADTEST_ALLOW_LIVE_MODELS:?Set LOADTEST_ALLOW_LIVE_MODELS=true to acknowledge live model usage}"
+  LOADTEST_MAX_COST_CNY: "${LOADTEST_MAX_COST_CNY:?Set a positive LOADTEST_MAX_COST_CNY cost ceiling}"
+
+  # Live Bosch endpoints require the host proxy. Internal load-test and ASR
+  # traffic stays on the isolated Compose network.
+  HTTP_PROXY: "${LOADTEST_LIVE_HTTP_PROXY:-http://host.docker.internal:3128}"
+  HTTPS_PROXY: "${LOADTEST_LIVE_HTTPS_PROXY:-http://host.docker.internal:3128}"
+  http_proxy: "${LOADTEST_LIVE_HTTP_PROXY:-http://host.docker.internal:3128}"
+  https_proxy: "${LOADTEST_LIVE_HTTPS_PROXY:-http://host.docker.internal:3128}"
+  NO_PROXY: localhost,127.0.0.1,::1,postgres,pgbouncer,redis,model_stub,qwen3_asr,qwen3_asr_secondary,gateway,backend
+  no_proxy: localhost,127.0.0.1,::1,postgres,pgbouncer,redis,model_stub,qwen3_asr,qwen3_asr_secondary,gateway,backend
+
+  # Chat provider and authentication. Secrets remain interpolation-only and are
+  # never stored in this file.
+  LLM_PROVIDER: "${LLM_PROVIDER:?backend/config/.env must define LLM_PROVIDER}"
+  CHAT_API_ENDPOINT: "${CHAT_API_ENDPOINT:?backend/config/.env must define CHAT_API_ENDPOINT}"
+  CHAT_API_ENDPOINTS: "${CHAT_API_ENDPOINTS:-}"
+  MODEL_API_AUTH_MODE: "${MODEL_API_AUTH_MODE:?backend/config/.env must define MODEL_API_AUTH_MODE}"
+  MODEL_API_KEY_HEADER_NAME: "${MODEL_API_KEY_HEADER_NAME:?backend/config/.env must define MODEL_API_KEY_HEADER_NAME}"
+  API_KEY: "${API_KEY:?backend/config/.env must define API_KEY}"
+  OAUTH2_TOKEN_URL: "${OAUTH2_TOKEN_URL:-}"
+  OAUTH2_CLIENT_ID: "${OAUTH2_CLIENT_ID:-}"
+  OAUTH2_CLIENT_SECRET: "${OAUTH2_CLIENT_SECRET:-}"
+  OAUTH2_SCOPE: "${OAUTH2_SCOPE:-}"
+
+  # Task routing follows the current backend configuration instead of the stub
+  # model names from compose.yml.
+  DEFAULT_CHAT_MODEL: "${DEFAULT_CHAT_MODEL:?backend/config/.env must define DEFAULT_CHAT_MODEL}"
+  PROFILE_MODEL: "${PROFILE_MODEL:?backend/config/.env must define PROFILE_MODEL}"
+  INTENT_MODEL: "${INTENT_MODEL:?backend/config/.env must define INTENT_MODEL}"
+  INTENT_PERFORMANCE_MODEL: "${INTENT_PERFORMANCE_MODEL:?backend/config/.env must define INTENT_PERFORMANCE_MODEL}"
+  PERSONALITY_FACET_MODEL: "${PERSONALITY_FACET_MODEL:?backend/config/.env must define PERSONALITY_FACET_MODEL}"
+  REHEARSAL_DIMENSION_MODEL: "${REHEARSAL_DIMENSION_MODEL:?backend/config/.env must define REHEARSAL_DIMENSION_MODEL}"
+  EMPLOYEE_MODEL: "${EMPLOYEE_MODEL:?backend/config/.env must define EMPLOYEE_MODEL}"
+  CONVERSATION_SUMMARY_MODEL: "${CONVERSATION_SUMMARY_MODEL:?backend/config/.env must define CONVERSATION_SUMMARY_MODEL}"
+  MOTIVATION_SCORING_MODEL: "${MOTIVATION_SCORING_MODEL:?backend/config/.env must define MOTIVATION_SCORING_MODEL}"
+  EMOTION_TRANSITION_MODEL: "${EMOTION_TRANSITION_MODEL:?backend/config/.env must define EMOTION_TRANSITION_MODEL}"
+  GUIDANCE_MODEL: "${GUIDANCE_MODEL:?backend/config/.env must define GUIDANCE_MODEL}"
+  COACH_EVALUATOR_MODEL: "${COACH_EVALUATOR_MODEL:?backend/config/.env must define COACH_EVALUATOR_MODEL}"
+  COACH_REDLINE_MODEL: "${COACH_REDLINE_MODEL:?backend/config/.env must define COACH_REDLINE_MODEL}"
+  MODEL_RETRY_RACE_MODEL: "${MODEL_RETRY_RACE_MODEL:?backend/config/.env must define MODEL_RETRY_RACE_MODEL}"
+
+  # Keep backend token/cost telemetry on the exact production pricing catalog.
+  # The base service reads .env.example, which can lag behind the active config;
+  # forwarding these values prevents a live run from silently recording stale
+  # or null llm_cost_cny values.
+  LLM_PRICING_VERSION: "${LLM_PRICING_VERSION:?backend/config/.env must define LLM_PRICING_VERSION}"
+  LLM_MODEL_PRICING: "${LLM_MODEL_PRICING:?backend/config/.env must define LLM_MODEL_PRICING}"
+
+  # Use configured platform Embedding/Reranker endpoints so the two ASR GPUs
+  # remain dedicated to qwen3_asr and qwen3_asr_secondary.
+  MODEL_PROVIDER_MODE: platform
+  EMBEDDING_PROVIDER: "${EMBEDDING_PROVIDER:?backend/config/.env must define EMBEDDING_PROVIDER}"
+  EMBEDDING_API_ENDPOINT: "${EMBEDDING_API_ENDPOINT:?backend/config/.env must define EMBEDDING_API_ENDPOINT}"
+  EMBEDDING_MODEL: "${EMBEDDING_MODEL:?backend/config/.env must define EMBEDDING_MODEL}"
+  EMBEDDING_PLATFORM_DIMENSIONS: "${EMBEDDING_PLATFORM_DIMENSIONS:?backend/config/.env must define EMBEDDING_PLATFORM_DIMENSIONS}"
+  EMBEDDING_API_BATCH_SIZE: "${EMBEDDING_API_BATCH_SIZE:-46}"
+  RERANK_PROVIDER: "${RERANK_PROVIDER:?backend/config/.env must define RERANK_PROVIDER}"
+  RERANK_API_ENDPOINT: "${RERANK_API_ENDPOINT:?backend/config/.env must define RERANK_API_ENDPOINT}"
+  RERANK_MODEL: "${RERANK_MODEL:?backend/config/.env must define RERANK_MODEL}"
+
+x-live-load-generator-environment: &live-load-generator-environment
+  LOADTEST_MODEL_MODE: live
+  LOADTEST_ALLOW_LIVE_MODELS: "${LOADTEST_ALLOW_LIVE_MODELS:?Set LOADTEST_ALLOW_LIVE_MODELS=true to acknowledge live model usage}"
+  LOADTEST_MAX_COST_CNY: "${LOADTEST_MAX_COST_CNY:?Set a positive LOADTEST_MAX_COST_CNY cost ceiling}"
+  LOADTEST_LIVE_MODEL: "${DEFAULT_CHAT_MODEL:?backend/config/.env must define DEFAULT_CHAT_MODEL}"
+  LOADTEST_MODEL_PRICING: "${LLM_MODEL_PRICING:?backend/config/.env must define LLM_MODEL_PRICING}"
+
+x-live-extra-hosts: &live-extra-hosts
+  - "host.docker.internal:host-gateway"
+
+services:
+  # migrate validates authorization, budget and isolation before KB seeding or
+  # workflow traffic can contact paid endpoints.
+  migrate:
+    extra_hosts: *live-extra-hosts
+    environment:
+      <<: *live-model-environment
+
+  kb_seed:
+    extra_hosts: *live-extra-hosts
+    environment:
+      <<: *live-model-environment
+
+  backend:
+    extra_hosts: *live-extra-hosts
+    environment:
+      <<: *live-model-environment
+
+  locust_master:
+    environment:
+      <<: *live-load-generator-environment
+
+  locust_worker:
+    environment:
+      <<: *live-load-generator-environment
+
+  asr_load:
+    environment:
+      <<: *live-load-generator-environment

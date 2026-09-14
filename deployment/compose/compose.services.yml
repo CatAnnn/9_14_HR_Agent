@@ -1,0 +1,1096 @@
+x-host-proxy-environment: &host-proxy-environment
+  HTTP_PROXY: http://host.docker.internal:3128
+  HTTPS_PROXY: http://host.docker.internal:3128
+  http_proxy: http://host.docker.internal:3128
+  https_proxy: http://host.docker.internal:3128
+
+x-tls-client-environment: &tls-client-environment
+  REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+  SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+  CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+
+x-model-download-environment: &model-download-environment
+  <<: [*host-proxy-environment, *tls-client-environment]
+  HF_HUB_DISABLE_XET: "1"
+
+x-postgres-client-environment: &postgres-client-environment
+  DATABASE_URL: postgresql://hr_agent:hr_agent@postgres:7114/hr_agent
+  DATABASE_ADMIN_URL: postgresql://hr_agent:hr_agent@postgres:7114/hr_agent
+  POSTGRES_AUTO_INITIALIZE_SCHEMA: "false"
+  POSTGRES_POOL_MIN_SIZE: "1"
+  POSTGRES_POOL_MAX_SIZE: "16"
+
+x-otel-exporter-environment: &otel-exporter-environment
+  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${ENVIRONMENT:-local},service.version=${OTEL_SERVICE_VERSION:-0.5.0-postgres-pgvector}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://signoz_collection_agent:4318
+  OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+  OTEL_TRACES_EXPORTER: otlp
+  OTEL_METRICS_EXPORTER: otlp
+  OTEL_LOGS_EXPORTER: none
+  OTEL_METRIC_EXPORT_INTERVAL: "30000"
+  OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: delta
+
+x-fish-tts-build: &fish-tts-build
+  context: .
+  dockerfile: fish_tts/Dockerfile
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  args:
+    HTTP_PROXY: http://host.docker.internal:3128
+    HTTPS_PROXY: http://host.docker.internal:3128
+    NO_PROXY: localhost,127.0.0.1,::1,host.docker.internal
+
+x-qwen-vllm-build: &qwen-vllm-build
+  context: .
+  dockerfile: deployment/vllm/Dockerfile.v0.8.5-no-xet
+
+services:
+  postgres:
+    image: tensorchord/vchord-suite:pg16-20260501@sha256:65b98b5aa96507d3d8aa61c5a0ed7d333828f128a72cefd9de677efe92712277
+    restart: unless-stopped
+    # HNSW index maintenance uses PostgreSQL dynamic shared memory. Docker's
+    # 64 MiB default is smaller than one maintenance_work_mem allocation and
+    # makes backend startup sync fail with a misleading DiskFull error.
+    shm_size: "1g"
+    environment:
+      POSTGRES_DB: hr_agent
+      POSTGRES_USER: hr_agent
+      POSTGRES_PASSWORD: hr_agent
+      PGPORT: "7114"
+    command:
+      - postgres
+      - -c
+      - port=7114
+      - -c
+      - max_connections=1020
+      - -c
+      - superuser_reserved_connections=10
+      - -c
+      - shared_preload_libraries=vchord,vchord_bm25,vector,pg_tokenizer
+      - -c
+      - 'search_path="$$user", public, bm25_catalog, tokenizer_catalog'
+    ports:
+      - "7114:7114"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          pg_isready -U hr_agent -d hr_agent -p 7114 &&
+          test "$$(psql -U hr_agent -d hr_agent -p 7114 -Atqc 'SHOW max_connections')" -eq 1020
+      interval: 10s
+      timeout: 10s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  pgbouncer:
+    image: percona/percona-pgbouncer:1.25.2-4-amd64@sha256:8d34761507b36840ecfe3d42e32a4a333d6c5a973703dd648203b135f02ac9d0
+    platform: linux/amd64
+    entrypoint: ["/usr/bin/pgbouncer"]
+    command: ["/etc/pgbouncer/pgbouncer.ini"]
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./deployment/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini
+      - ./deployment/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt
+    expose:
+      - "6432"
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - bash -c 'exec 3<>/dev/tcp/127.0.0.1/6432'
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  mineru:
+    # Knowledge-base parsing is a maintenance workflow, not an online dependency.
+    profiles: ["knowledge-build"]
+    restart: unless-stopped
+    build:
+      # The MinerU image installs only published packages and does not copy the
+      # application repository. Keeping this context local avoids sending the
+      # entire workspace to BuildKit for every image rebuild.
+      context: ./mineru_service
+      dockerfile: Dockerfile
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+      args:
+        HTTP_PROXY: http://host.docker.internal:3128
+        HTTPS_PROXY: http://host.docker.internal:3128
+        NO_PROXY: localhost,127.0.0.1,::1,host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    shm_size: "32g"
+    ipc: host
+    gpus:
+      - driver: nvidia
+        device_ids: ["${MINERU_GPU_DEVICE:-0}"]
+        capabilities: [gpu]
+    environment:
+      # Reuse the same proxy/TLS-safe Hugging Face download settings as the
+      # other local model services.  Xet's Rust TLS client cannot validate the
+      # corporate proxy certificate and otherwise stalls VLM preload.
+      <<: *model-download-environment
+      NO_PROXY: localhost,127.0.0.1,::1,backend,frontend,postgres,redis,mineru,qwen_embedding,qwen_reranker,qwen3_asr,qwen3_asr_secondary,fish_tts
+      no_proxy: localhost,127.0.0.1,::1,backend,frontend,postgres,redis,mineru,qwen_embedding,qwen_reranker,qwen3_asr,qwen3_asr_secondary,fish_tts
+      NVIDIA_VISIBLE_DEVICES: "${MINERU_GPU_DEVICE:-0}"
+      CUDA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      PYTORCH_CUDA_ALLOC_CONF: "expandable_segments:True"
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - mineru_hf_cache:/root/.cache/huggingface
+      - mineru_vllm_cache:/root/.cache/vllm
+    ports:
+      - "7112:7112"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7112/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
+
+  qwen_embedding:
+    profiles: ["local"]
+    build: *qwen-vllm-build
+    image: 06-emotion-qwen-vllm:v0.8.5-no-xet
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    shm_size: "16g"
+    ipc: host
+    gpus:
+      - driver: nvidia
+        device_ids: ["${QWEN_EMBEDDING_GPU_DEVICE:-0}"]
+        capabilities: [gpu]
+    environment:
+      <<: [*host-proxy-environment, *tls-client-environment]
+      NO_PROXY: localhost,127.0.0.1,::1,backend,frontend,postgres,redis,mineru,qwen_embedding,qwen_reranker,qwen3_asr,qwen3_asr_secondary,fish_tts
+      no_proxy: localhost,127.0.0.1,::1,backend,frontend,postgres,redis,mineru,qwen_embedding,qwen_reranker,qwen3_asr,qwen3_asr_secondary,fish_tts
+      NVIDIA_VISIBLE_DEVICES: "${QWEN_EMBEDDING_GPU_DEVICE:-0}"
+      CUDA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --model
+      - Qwen/Qwen3-Embedding-4B
+      - --served-model-name
+      - Qwen/Qwen3-Embedding-4B
+      - --task
+      - embed
+      - --max-model-len
+      - "8192"
+      - --gpu-memory-utilization
+      - "${QWEN_EMBEDDING_GPU_MEMORY_UTILIZATION:-0.20}"
+    volumes:
+      - qwen_hf_cache:/root/.cache/huggingface
+      - qwen_vllm_cache:/root/.cache/vllm
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    ports:
+      - "7115:8000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 600s
+
+  qwen_reranker:
+    profiles: ["local"]
+    image: vllm/vllm-openai:v0.27.1
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    shm_size: "16g"
+    ipc: host
+    gpus:
+      - driver: nvidia
+        device_ids: ["${QWEN_RERANKER_GPU_DEVICE:-1}"]
+        capabilities: [gpu]
+    environment:
+      <<: *model-download-environment
+      NO_PROXY: localhost,127.0.0.1,::1,backend,frontend,postgres,redis,mineru,qwen_embedding,qwen_reranker,qwen3_asr,qwen3_asr_secondary,fish_tts
+      no_proxy: localhost,127.0.0.1,::1,backend,frontend,postgres,redis,mineru,qwen_embedding,qwen_reranker,qwen3_asr,qwen3_asr_secondary,fish_tts
+      NVIDIA_VISIBLE_DEVICES: "${QWEN_RERANKER_GPU_DEVICE:-1}"
+      CUDA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --model
+      - Qwen/Qwen3-Reranker-4B
+      - --served-model-name
+      - Qwen/Qwen3-Reranker-4B
+      - --runner
+      - pooling
+      - --hf_overrides
+      - '{"architectures":["Qwen3ForSequenceClassification"],"classifier_from_token":["no","yes"],"is_original_qwen3_reranker":true}'
+      - --chat-template
+      - /etc/vllm/qwen3_reranker.jinja
+      - --max-model-len
+      - "8192"
+      - --gpu-memory-utilization
+      - "${QWEN_RERANK_GPU_MEMORY_UTILIZATION:-0.35}"
+      - --enable-prefix-caching
+      - --max-num-batched-tokens
+      - "${QWEN_RERANK_MAX_NUM_BATCHED_TOKENS:-24576}"
+      - --max-num-seqs
+      - "${QWEN_RERANK_MAX_NUM_SEQS:-96}"
+      - --dtype
+      - float16
+    volumes:
+      - qwen_hf_cache:/root/.cache/huggingface
+      - qwen_vllm_reranker_cache:/root/.cache/vllm
+      - ./deployment/vllm/qwen3_reranker.jinja:/etc/vllm/qwen3_reranker.jinja:ro
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    ports:
+      - "7116:8000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 600s
+
+  # Native /v1/rerank A/B target. This service is intentionally isolated from
+  # the production qwen_reranker and starts only with --profile rerank-shadow.
+  # GPU 1 must be healthy before use; do not move it to GPU 0 because that card
+  # is reserved for Embedding/ASR and would invalidate throughput comparisons.
+  qwen_reranker_shadow:
+    profiles: ["rerank-shadow"]
+    image: vllm/vllm-openai:v0.27.1
+    restart: "no"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    shm_size: "16g"
+    ipc: host
+    gpus:
+      - driver: nvidia
+        device_ids: ["${QWEN_RERANKER_SHADOW_GPU_DEVICE:-1}"]
+        capabilities: [gpu]
+    environment:
+      <<: *model-download-environment
+      NO_PROXY: localhost,127.0.0.1,::1,qwen_reranker_shadow
+      no_proxy: localhost,127.0.0.1,::1,qwen_reranker_shadow
+      NVIDIA_VISIBLE_DEVICES: "${QWEN_RERANKER_SHADOW_GPU_DEVICE:-1}"
+      CUDA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --model
+      - Qwen/Qwen3-Reranker-4B
+      - --served-model-name
+      - Qwen/Qwen3-Reranker-4B
+      - --runner
+      - pooling
+      - --hf_overrides
+      - '{"architectures":["Qwen3ForSequenceClassification"],"classifier_from_token":["no","yes"],"is_original_qwen3_reranker":true}'
+      - --chat-template
+      - /etc/vllm/qwen3_reranker.jinja
+      - --max-model-len
+      - "8192"
+      - --gpu-memory-utilization
+      - "${QWEN_RERANK_SHADOW_GPU_MEMORY_UTILIZATION:-0.46}"
+      - --max-num-batched-tokens
+      - "${QWEN_RERANK_SHADOW_MAX_NUM_BATCHED_TOKENS:-16384}"
+      - --max-num-seqs
+      - "${QWEN_RERANK_SHADOW_MAX_NUM_SEQS:-64}"
+      - --enable-prefix-caching
+      - --dtype
+      - float16
+    volumes:
+      - qwen_hf_cache:/root/.cache/huggingface
+      - qwen_vllm_shadow_cache:/root/.cache/vllm
+      - ./deployment/vllm/qwen3_reranker.jinja:/etc/vllm/qwen3_reranker.jinja:ro
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    ports:
+      - "127.0.0.1:${QWEN_RERANKER_SHADOW_PORT:-7123}:8000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 600s
+
+  qwen3_asr:
+    profiles: ["asr-local"]
+    image: qwenllm/qwen3-asr:latest@sha256:fb75b775f089e06e5a1aaebffd421e37505cc630d50c86d889d95ffa45a7e16a
+    restart: unless-stopped
+    depends_on:
+      qwen_embedding:
+        condition: service_healthy
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    shm_size: "16g"
+    ipc: host
+    gpus:
+      - driver: nvidia
+        device_ids: ["${QWEN3_ASR_PRIMARY_GPU_DEVICE:-0}"]
+        capabilities: [gpu]
+    environment:
+      <<: *model-download-environment
+      NO_PROXY: localhost,127.0.0.1,::1,qwen3_asr,fish_tts
+      no_proxy: localhost,127.0.0.1,::1,qwen3_asr,fish_tts
+      NVIDIA_VISIBLE_DEVICES: "${QWEN3_ASR_PRIMARY_GPU_DEVICE:-0}"
+      CUDA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    command:
+      - python3
+      - /opt/hr-agent/run_qwen3_asr.py
+      - --asr-model-path
+      - Qwen/Qwen3-ASR-1.7B
+      - --gpu-memory-utilization
+      - "${QWEN3_ASR_GPU_MEMORY_UTILIZATION:-0.17}"
+      - --max-model-len
+      - "${QWEN3_ASR_MAX_MODEL_LEN:-2048}"
+      - --max-num-seqs
+      - "${ASR_LOCAL_PREVIEW_MAX_CONCURRENCY:-10}"
+      - --max-sessions
+      - "${ASR_LOCAL_PREVIEW_MAX_SESSIONS:-16}"
+      - --max-new-tokens
+      - "${QWEN3_ASR_MAX_NEW_TOKENS:-256}"
+      - --soft-window-seconds
+      - "${ASR_LOCAL_STREAM_SOFT_WINDOW_SECONDS:-12}"
+      - --window-seconds
+      - "${ASR_LOCAL_STREAM_WINDOW_SECONDS:-20}"
+      - --overlap-seconds
+      - "${ASR_LOCAL_STREAM_OVERLAP_SECONDS:-1.5}"
+      - --batch-wait-ms
+      - "${QWEN3_ASR_BATCH_WAIT_MS:-10}"
+      - --silence-commit-ms
+      - "${ASR_LOCAL_SILENCE_COMMIT_MS:-750}"
+      - --force-refresh-ms
+      - "${ASR_LOCAL_FORCE_REFRESH_MS:-1000}"
+      - --silence-rms-threshold
+      - "${ASR_LOCAL_SILENCE_RMS_THRESHOLD:-0.006}"
+      - --max-request-audio-seconds
+      - "${ASR_LOCAL_STREAM_WINDOW_SECONDS:-20}"
+      - --unfixed-chunk-num
+      - "2"
+      - --unfixed-token-num
+      - "${ASR_STREAM_UNFIXED_TOKEN_NUM:-64}"
+      - --chunk-size-sec
+      - "1.0"
+      - --stream-context-chars
+      - "${QWEN3_ASR_STREAM_CONTEXT_CHARS:-160}"
+      - --host
+      - 0.0.0.0
+      - --port
+      - "7118"
+    volumes:
+      - ./scripts/run_qwen3_asr.py:/opt/hr-agent/run_qwen3_asr.py:ro
+      - qwen_hf_cache:/root/.cache/huggingface
+      - qwen_vllm_cache:/root/.cache/vllm
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    ports:
+      - "127.0.0.1:7118:7118"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7118/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 900s
+
+
+  qwen3_asr_secondary:
+    profiles: ["asr-local"]
+    image: qwenllm/qwen3-asr:latest@sha256:fb75b775f089e06e5a1aaebffd421e37505cc630d50c86d889d95ffa45a7e16a
+    restart: unless-stopped
+    depends_on:
+      qwen_embedding:
+        condition: service_healthy
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    shm_size: "16g"
+    ipc: host
+    gpus:
+      - driver: nvidia
+        device_ids: ["${QWEN3_ASR_SECONDARY_GPU_DEVICE:-0}"]
+        capabilities: [gpu]
+    environment:
+      <<: *model-download-environment
+      NO_PROXY: localhost,127.0.0.1,::1,qwen3_asr,qwen3_asr_secondary,fish_tts
+      no_proxy: localhost,127.0.0.1,::1,qwen3_asr,qwen3_asr_secondary,fish_tts
+      NVIDIA_VISIBLE_DEVICES: "${QWEN3_ASR_SECONDARY_GPU_DEVICE:-0}"
+      CUDA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    command:
+      - python3
+      - /opt/hr-agent/run_qwen3_asr.py
+      - --asr-model-path
+      - Qwen/Qwen3-ASR-1.7B
+      - --gpu-memory-utilization
+      - "${QWEN3_ASR_GPU_MEMORY_UTILIZATION:-0.17}"
+      - --max-model-len
+      - "${QWEN3_ASR_MAX_MODEL_LEN:-2048}"
+      - --max-num-seqs
+      - "${ASR_LOCAL_PREVIEW_MAX_CONCURRENCY:-10}"
+      - --max-sessions
+      - "${ASR_LOCAL_PREVIEW_MAX_SESSIONS:-16}"
+      - --max-new-tokens
+      - "${QWEN3_ASR_MAX_NEW_TOKENS:-256}"
+      - --soft-window-seconds
+      - "${ASR_LOCAL_STREAM_SOFT_WINDOW_SECONDS:-12}"
+      - --window-seconds
+      - "${ASR_LOCAL_STREAM_WINDOW_SECONDS:-20}"
+      - --overlap-seconds
+      - "${ASR_LOCAL_STREAM_OVERLAP_SECONDS:-1.5}"
+      - --batch-wait-ms
+      - "${QWEN3_ASR_BATCH_WAIT_MS:-10}"
+      - --silence-commit-ms
+      - "${ASR_LOCAL_SILENCE_COMMIT_MS:-750}"
+      - --force-refresh-ms
+      - "${ASR_LOCAL_FORCE_REFRESH_MS:-1000}"
+      - --silence-rms-threshold
+      - "${ASR_LOCAL_SILENCE_RMS_THRESHOLD:-0.006}"
+      - --max-request-audio-seconds
+      - "${ASR_LOCAL_STREAM_WINDOW_SECONDS:-20}"
+      - --unfixed-chunk-num
+      - "2"
+      - --unfixed-token-num
+      - "${ASR_STREAM_UNFIXED_TOKEN_NUM:-64}"
+      - --chunk-size-sec
+      - "1.0"
+      - --stream-context-chars
+      - "${QWEN3_ASR_STREAM_CONTEXT_CHARS:-160}"
+      - --host
+      - 0.0.0.0
+      - --port
+      - "7118"
+    volumes:
+      - ./scripts/run_qwen3_asr.py:/opt/hr-agent/run_qwen3_asr.py:ro
+      - qwen_hf_cache:/root/.cache/huggingface
+      - qwen_vllm_cache:/root/.cache/vllm
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7118/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 900s
+
+  fish_tts_model_init:
+    # Run explicitly before the first Fish TTS deployment or a model revision change.
+    profiles: ["model-init"]
+    image: 06-fish-tts-vllm-omni:0.24.0-s2-pro
+    build: *fish-tts-build
+    restart: "no"
+    user: "0:0"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      <<: *model-download-environment
+      NO_PROXY: localhost,127.0.0.1,::1,fish_tts
+      no_proxy: localhost,127.0.0.1,::1,fish_tts
+      HF_HOME: /app/checkpoints/.hf_home
+      HF_HUB_CACHE: /app/checkpoints/.hf_home/hub
+      XDG_CACHE_HOME: /app/checkpoints/.cache
+      TMPDIR: /app/checkpoints/.tmp
+      FISH_TTS_MODEL_REPOSITORY: fishaudio/s2-pro
+      FISH_TTS_MODEL_REVISION: "${FISH_TTS_MODEL_REVISION:-1de9996b6be38b745688de084d87a5633f714e4e}"
+    entrypoint: ["/bin/bash", "-lc"]
+    command:
+      - |
+        set -euo pipefail
+        install -d -m 0755 \
+          /app/checkpoints/s2-pro \
+          /app/checkpoints/.hf_home/hub \
+          /app/checkpoints/.cache \
+          /app/checkpoints/.tmp
+        ready_marker="/app/checkpoints/s2-pro/.hr-agent-ready-$${FISH_TTS_MODEL_REVISION}"
+        required_files=(
+          codec.pth
+          config.json
+          model-00001-of-00002.safetensors
+          model-00002-of-00002.safetensors
+          model.safetensors.index.json
+          tokenizer.json
+        )
+        model_complete=1
+        [ -f "$${ready_marker}" ] || model_complete=0
+        for filename in "$${required_files[@]}"; do
+          [ -s "/app/checkpoints/s2-pro/$${filename}" ] || model_complete=0
+        done
+        if [ "$${model_complete}" -ne 1 ]; then
+          echo "Downloading pinned Fish Audio S2-Pro checkpoint..."
+          hf download "$${FISH_TTS_MODEL_REPOSITORY}" \
+            --revision "$${FISH_TTS_MODEL_REVISION}" \
+            --local-dir /app/checkpoints/s2-pro
+          for filename in "$${required_files[@]}"; do
+            test -s "/app/checkpoints/s2-pro/$${filename}"
+          done
+          printf '%s\n' "$${FISH_TTS_MODEL_REVISION}" > "$${ready_marker}"
+          chown -R 1000:1000 /app/checkpoints/s2-pro
+        fi
+        chown 1000:1000 /app/checkpoints
+        echo "Fish Audio S2-Pro checkpoint is ready."
+    volumes:
+      - fish_tts_checkpoints:/app/checkpoints
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    healthcheck:
+      disable: true
+
+  fish_tts:
+    image: 06-fish-tts-vllm-omni:0.24.0-s2-pro
+    build: *fish-tts-build
+    profiles: ["tts"]
+    restart: unless-stopped
+    stop_grace_period: 120s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    shm_size: "16g"
+    ipc: host
+    gpus:
+      - driver: nvidia
+        device_ids: ["${FISH_TTS_GPU_DEVICE:-1}"]
+        capabilities: [gpu]
+    environment:
+      <<: [*host-proxy-environment, *tls-client-environment]
+      NO_PROXY: localhost,127.0.0.1,::1,fish_tts
+      no_proxy: localhost,127.0.0.1,::1,fish_tts
+      NVIDIA_VISIBLE_DEVICES: "${FISH_TTS_GPU_DEVICE:-1}"
+      CUDA_VISIBLE_DEVICES: "0"
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      PYTORCH_CUDA_ALLOC_CONF: "expandable_segments:True"
+      # Persist generated TorchInductor/Triton kernels across container recreations.
+      # Keep the path versioned so runtime upgrades cannot reuse incompatible code.
+      TORCHINDUCTOR_CACHE_DIR: /var/cache/fish-tts/torch-2.11.0-cu130-vllm-omni-0.24.0-fast-ar-v1
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      VLLM_OMNI_FISH_KVCACHE_ATTN: required
+      FISH_TTS_MODEL_PATH: /app/checkpoints/s2-pro
+      SPEAKER_SAMPLES_DIR: /app/speakers
+      # The derived image patches the v0.24.0 Fish CUDA graph warmup metadata path.
+      FISH_TTS_DEPLOY_CONFIG: /app/config/fish_s2_pro_dynamic_batch.yaml
+    entrypoint: ["/bin/bash", "-lc"]
+    command:
+      - |
+        set -euo pipefail
+        required_files=(
+          codec.pth
+          config.json
+          model-00001-of-00002.safetensors
+          model-00002-of-00002.safetensors
+          model.safetensors.index.json
+          tokenizer.json
+        )
+        for filename in "$${required_files[@]}"; do
+          if [ ! -s "$${FISH_TTS_MODEL_PATH}/$${filename}" ]; then
+            echo "Fish Audio checkpoint file is missing: $${filename}" >&2
+            exit 1
+          fi
+        done
+        python3 -c "import vllm_omni; from fish_speech.models.dac import modded_dac, rvq"
+        python3 -c "from vllm_omni.attention import fish_kvcache_attn as f; assert f.is_available(), f.load_error()"
+        exec vllm serve "$${FISH_TTS_MODEL_PATH}" \
+          --omni \
+          --host 0.0.0.0 \
+          --port 8091 \
+          --deploy-config "$${FISH_TTS_DEPLOY_CONFIG}"
+    volumes:
+      - fish_tts_checkpoints:/app/checkpoints:ro
+      - fish_tts_speakers:/app/speakers
+      - fish_tts_compile_cache:/var/cache/fish-tts
+      - ./fish_tts/config/fish_s2_pro_dynamic_batch.yaml:/app/config/fish_s2_pro_dynamic_batch.yaml:ro
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    ports:
+      - "127.0.0.1:7119:8091"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl -fsS http://127.0.0.1:8091/health
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 900s
+
+  signoz_collection_agent:
+    image: otel/opentelemetry-collector-contrib:0.139.0
+    restart: unless-stopped
+    user: "0:0"
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    environment:
+      DEPLOYMENT_ENVIRONMENT: "${ENVIRONMENT:-local}"
+      SIGNOZ_OTLP_HTTP_ENDPOINT: http://signoz-ingester:4318
+    networks:
+      - default
+      - signoz
+    volumes:
+      - ./observability/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/hostfs:ro
+    expose:
+      - "4317"
+      - "4318"
+      - "13133"
+    security_opt:
+      - no-new-privileges:true
+
+  local_model_controller:
+    image: "${HR_AGENT_BACKEND_IMAGE:-06-emotion-main-backend:local}"
+    restart: unless-stopped
+    environment:
+      <<: *otel-exporter-environment
+      # The controller only uses the Docker Engine API. Keeping it CPU-only
+      # prevents an NVML issue from blocking all backend replicas at startup.
+      HR_AGENT_GPU_METRICS_ENABLED: "false"
+      LOCAL_MODEL_DOCKER_PROJECT_NAME: "${COMPOSE_PROJECT_NAME:-06-emotion-main}"
+      LOCAL_MODEL_DOCKER_SOCKET_PATH: /var/run/docker.sock
+      LOCAL_MODEL_STOP_TIMEOUT_SECONDS: "${LOCAL_MODEL_STOP_TIMEOUT_SECONDS:-30}"
+      OTEL_SERVICE_NAME: hr-agent-local-model-controller
+    command: >
+      opentelemetry-instrument uvicorn backend.services.local_model_runtime_controller:app
+      --host 0.0.0.0 --port 7120
+    expose:
+      - "7120"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:7120/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  backend_migrate:
+    image: "${HR_AGENT_BACKEND_IMAGE:-06-emotion-main-backend:local}"
+    restart: "no"
+    env_file:
+      - backend/config/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *postgres-client-environment
+    command: ["python", "scripts/init_postgres.py"]
+
+  employee_sync:
+    image: "${HR_AGENT_BACKEND_IMAGE:-06-emotion-main-backend:local}"
+    restart: "no"
+    env_file:
+      - backend/config/.env
+    depends_on:
+      backend_migrate:
+        condition: service_completed_successfully
+    environment:
+      <<: *postgres-client-environment
+    volumes:
+      - ./data:/app/data
+    command:
+      - sh
+      - -c
+      - >-
+        if [ -f data/employee_database/employees.xlsx ]; then
+          python scripts/import_employees.py data/employee_database/employees.xlsx --exact --quiet;
+        else
+          echo 'employees.xlsx not found, skip employee import';
+        fi
+
+  # Dedicated maintenance container. Unlike backend it has no HTTP health
+  # check, so the host autoheal service cannot restart a long KB sync.
+  kb_sync:
+    image: "${HR_AGENT_BACKEND_IMAGE:-06-emotion-main-backend:local}"
+    profiles: ["maintenance"]
+    restart: "no"
+    init: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - backend/config/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      backend_migrate:
+        condition: service_completed_successfully
+      local_model_controller:
+        condition: service_healthy
+      qwen_embedding:
+        condition: service_started
+        required: false
+    environment:
+      <<: [*host-proxy-environment, *postgres-client-environment]
+      NO_PROXY: localhost,127.0.0.1,::1,host.docker.internal,postgres,local_model_controller,qwen_embedding
+      no_proxy: localhost,127.0.0.1,::1,host.docker.internal,postgres,local_model_controller,qwen_embedding
+      LOCAL_MODEL_CONTROLLER_URL: http://local_model_controller:7120
+    volumes:
+      - ./backend:/app/backend:ro
+      - ./scripts:/app/scripts:ro
+      - ./data:/app/data
+    entrypoint: ["python", "scripts/sync_vectorstore.py"]
+    command: []
+    healthcheck:
+      disable: true
+
+  backend:
+    image: "${HR_AGENT_BACKEND_IMAGE:-06-emotion-main-backend:local}"
+    restart: unless-stopped
+    stop_grace_period: 300s
+    deploy:
+      replicas: ${BACKEND_REPLICAS:-2}
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+      args:
+        HTTP_PROXY: http://host.docker.internal:3128
+        HTTPS_PROXY: http://host.docker.internal:3128
+        NO_PROXY: localhost,127.0.0.1,::1,host.docker.internal
+    env_file:
+      - backend/config/.env
+    depends_on:
+      local_model_controller:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend_migrate:
+        condition: service_completed_successfully
+      employee_sync:
+        condition: service_completed_successfully
+      qwen_embedding:
+        condition: service_started
+        required: false
+      qwen_reranker:
+        condition: service_started
+        required: false
+      qwen3_asr:
+        condition: service_started
+        required: false
+      qwen3_asr_secondary:
+        condition: service_started
+        required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      <<: [*host-proxy-environment, *otel-exporter-environment]
+      NO_PROXY: localhost,127.0.0.1,::1,host.docker.internal,backend,frontend,postgres,redis,mineru,local_model_controller,signoz_collection_agent,qwen_embedding,qwen_reranker,qwen3_asr,qwen3_asr_secondary,fish_tts
+      no_proxy: localhost,127.0.0.1,::1,host.docker.internal,backend,frontend,postgres,redis,mineru,local_model_controller,signoz_collection_agent,qwen_embedding,qwen_reranker,qwen3_asr,qwen3_asr_secondary,fish_tts
+      LOCAL_MODEL_AUTO_RECYCLE_ENABLED: "${LOCAL_MODEL_AUTO_RECYCLE_ENABLED:-true}"
+      LOCAL_MODEL_AUTO_START_ENABLED: "${LOCAL_MODEL_AUTO_START_ENABLED:-true}"
+      LOCAL_MODEL_PINNED_SERVICES: "${LOCAL_MODEL_PINNED_SERVICES:-}"
+      LOCAL_MODEL_CONTROLLER_URL: http://local_model_controller:7120
+      LOCAL_MODEL_IDLE_TTL_SECONDS: "${LOCAL_MODEL_IDLE_TTL_SECONDS:-3600}"
+      LOCAL_MODEL_RECYCLE_CHECK_INTERVAL_SECONDS: "${LOCAL_MODEL_RECYCLE_CHECK_INTERVAL_SECONDS:-30}"
+      LOCAL_MODEL_START_TIMEOUT_SECONDS: "${LOCAL_MODEL_START_TIMEOUT_SECONDS:-900}"
+      LOCAL_MODEL_HEALTH_POLL_INTERVAL_SECONDS: "${LOCAL_MODEL_HEALTH_POLL_INTERVAL_SECONDS:-2}"
+      MODEL_WARMUP_ENABLED: "${MODEL_WARMUP_ENABLED:-true}"
+      MODEL_WARMUP_BLOCK_STARTUP: "${MODEL_WARMUP_BLOCK_STARTUP:-false}"
+      MODEL_WARMUP_TIMEOUT_SECONDS: "${MODEL_WARMUP_TIMEOUT_SECONDS:-900}"
+      MODEL_WARMUP_MAX_CONCURRENCY: "${MODEL_WARMUP_MAX_CONCURRENCY:-4}"
+      EMPLOYEE_DIALOGUE_HISTORY_MODE: "${EMPLOYEE_DIALOGUE_HISTORY_MODE:-ecp_labels}"
+      PROMPT_AUTO_RELOAD_ENABLED: "${PROMPT_AUTO_RELOAD_ENABLED:-true}"
+      POSTGRES_POOL_MIN_SIZE: "${POSTGRES_POOL_MIN_SIZE:-1}"
+      POSTGRES_POOL_MAX_SIZE: "${POSTGRES_POOL_MAX_SIZE:-122}"
+      REDIS_MAX_CONNECTIONS: "${REDIS_MAX_CONNECTIONS:-0}"
+      DISTRIBUTED_COORDINATION_ENABLED: "${DISTRIBUTED_COORDINATION_ENABLED:-true}"
+      DISTRIBUTED_LEASE_TTL_SECONDS: "${DISTRIBUTED_LEASE_TTL_SECONDS:-30}"
+      DISTRIBUTED_LEASE_POLL_INTERVAL_MS: "${DISTRIBUTED_LEASE_POLL_INTERVAL_MS:-50}"
+      RAG_GLOBAL_DB_SEARCH_MAX_CONCURRENCY: "${RAG_GLOBAL_DB_SEARCH_MAX_CONCURRENCY:-0}"
+      RAG_GLOBAL_RERANK_MAX_CONCURRENCY: "${RAG_GLOBAL_RERANK_MAX_CONCURRENCY:-98}"
+      WORKFLOW_GLOBAL_DB_MAX_CONCURRENCY: "${WORKFLOW_GLOBAL_DB_MAX_CONCURRENCY:-64}"
+      WORKFLOW_DB_THREAD_POOL_MAX_WORKERS: "${WORKFLOW_DB_THREAD_POOL_MAX_WORKERS:-16}"
+      POSTGRES_HNSW_ITERATIVE_SCAN: "${POSTGRES_HNSW_ITERATIVE_SCAN:-relaxed_order}"
+      POSTGRES_HNSW_EF_SEARCH: "${POSTGRES_HNSW_EF_SEARCH:-100}"
+      POSTGRES_HNSW_MAX_SCAN_TUPLES: "${POSTGRES_HNSW_MAX_SCAN_TUPLES:-20000}"
+      POSTGRES_BM25_LIMIT: "${POSTGRES_BM25_LIMIT:-200}"
+      POSTGRES_ANN_MIN_ROWS: "${POSTGRES_ANN_MIN_ROWS:-10000}"
+      POSTGRES_ANN_FORCE_SCOPES: "${POSTGRES_ANN_FORCE_SCOPES:-employee,organization_unit}"
+      KB_SYNC_ON_STARTUP: "${KB_SYNC_ON_STARTUP:-true}"
+      KB_STARTUP_SYNC_WAIT_TIMEOUT_SECONDS: "${KB_STARTUP_SYNC_WAIT_TIMEOUT_SECONDS:-3600}"
+      KB_ACTIVE_PROFILE_REFRESH_INTERVAL_SECONDS: "${KB_ACTIVE_PROFILE_REFRESH_INTERVAL_SECONDS:-5}"
+      RAG_DB_SEARCH_MAX_CONCURRENCY: "${RAG_DB_SEARCH_MAX_CONCURRENCY:-0}"
+      RAG_THREAD_POOL_MAX_WORKERS: "${RAG_THREAD_POOL_MAX_WORKERS:-98}"
+      EMBEDDING_API_BATCH_SIZE: "${EMBEDDING_API_BATCH_SIZE:-46}"
+      RAG_RERANK_MAX_CONCURRENCY: "${RAG_RERANK_MAX_CONCURRENCY:-98}"
+      RAG_HYBRID_SEARCH_ENABLED: "${RAG_HYBRID_SEARCH_ENABLED:-true}"
+      MODEL_QUEUE_TIMEOUT_SECONDS: "${MODEL_QUEUE_TIMEOUT_SECONDS:-120}"
+      MODEL_TOTAL_MAX_CONCURRENCY: "${MODEL_TOTAL_MAX_CONCURRENCY:-0}"
+      COACH_MODEL_MAX_CONCURRENCY: "${COACH_MODEL_MAX_CONCURRENCY:-28}"
+      COACH_CONVERSATION_CONTEXT_MAX_CHARS: "${COACH_CONVERSATION_CONTEXT_MAX_CHARS:-32000}"
+      COACH_RAG_CONTEXT_MAX_CHARS: "${COACH_RAG_CONTEXT_MAX_CHARS:-24000}"
+      AUTH_ENABLED: "${AUTH_ENABLED:-true}"
+      AUTH_MAX_ACTIVE_SESSIONS: "${AUTH_MAX_ACTIVE_SESSIONS:-0}"
+      AUTH_COOKIE_SECURE: "${AUTH_COOKIE_SECURE:-true}"
+      AUTH_ALLOWED_EMAILS: "${AUTH_ALLOWED_EMAILS:-uay4sgh@bosch.com,fixed-term.yiheng.lu@cn.bosch.com}"
+      AUTH_ADMIN_EMAILS: "${AUTH_ADMIN_EMAILS:-uay4sgh@bosch.com,fixed-term.yiheng.lu@cn.bosch.com}"
+      ASR_ENABLED: "${ASR_ENABLED:-true}"
+      ASR_PROVIDER_MODE: "${ASR_PROVIDER_MODE:-local}"
+      ASR_LOCAL_LANGUAGE_AUTO_DETECT: "${ASR_LOCAL_LANGUAGE_AUTO_DETECT:-${ASR_LOCAL_ZH_EN_AUTO_DETECT:-true}}"
+      ASR_REALTIME_ENABLED: "${ASR_REALTIME_ENABLED:-true}"
+      ASR_REALTIME_MODEL: "${ASR_REALTIME_MODEL:-Qwen/Qwen3-ASR-1.7B}"
+      ASR_LOCAL_STREAMING_URL: "${ASR_LOCAL_STREAMING_URL:-http://qwen3_asr:7118}"
+      ASR_LOCAL_STREAMING_URLS: "${ASR_LOCAL_STREAMING_URLS:-http://qwen3_asr:7118}"
+      ASR_LOCAL_CHUNK_MS: "${ASR_LOCAL_CHUNK_MS:-500}"
+      ASR_LOCAL_REQUEST_TIMEOUT_SECONDS: "${ASR_LOCAL_REQUEST_TIMEOUT_SECONDS:-0}"
+      ASR_LOCAL_ADMISSION_TIMEOUT_SECONDS: "${ASR_LOCAL_ADMISSION_TIMEOUT_SECONDS:-2}"
+      ASR_LOCAL_ROUTING_PROBE_TIMEOUT_SECONDS: "${ASR_LOCAL_ROUTING_PROBE_TIMEOUT_SECONDS:-0.25}"
+      ASR_LOCAL_PREVIEW_MAX_CONCURRENCY: "${ASR_LOCAL_PREVIEW_MAX_CONCURRENCY:-10}"
+      ASR_LOCAL_STREAM_WINDOW_SECONDS: "${ASR_LOCAL_STREAM_WINDOW_SECONDS:-20}"
+      ASR_LOCAL_SILENCE_RMS_THRESHOLD: "${ASR_LOCAL_SILENCE_RMS_THRESHOLD:-0.006}"
+      ASR_BOSCH_PREVIEW_CHUNK_SECONDS: "${ASR_BOSCH_PREVIEW_CHUNK_SECONDS:-0.75}"
+      ASR_BOSCH_FIRST_PREVIEW_CHUNK_SECONDS: "${ASR_BOSCH_FIRST_PREVIEW_CHUNK_SECONDS:-0.4}"
+      ASR_BOSCH_ACCUMULATION_MAX_SECONDS: "${ASR_BOSCH_ACCUMULATION_MAX_SECONDS:-20}"
+      ASR_BOSCH_PREVIEW_OVERLAP_MS: "${ASR_BOSCH_PREVIEW_OVERLAP_MS:-400}"
+      ASR_BOSCH_SILENCE_COMMIT_MS: "${ASR_BOSCH_SILENCE_COMMIT_MS:-400}"
+      ASR_BOSCH_MIN_SPEECH_MS: "${ASR_BOSCH_MIN_SPEECH_MS:-250}"
+      ASR_BOSCH_KEEPWARM_ENABLED: "${ASR_BOSCH_KEEPWARM_ENABLED:-true}"
+      ASR_BOSCH_KEEPWARM_INTERVAL_SECONDS: "${ASR_BOSCH_KEEPWARM_INTERVAL_SECONDS:-45}"
+      ASR_BOSCH_PREVIEW_MAX_CONCURRENCY: "${ASR_BOSCH_PREVIEW_MAX_CONCURRENCY:-8}"
+      ASR_BOSCH_PREVIEW_PER_SESSION_CONCURRENCY: "${ASR_BOSCH_PREVIEW_PER_SESSION_CONCURRENCY:-2}"
+      ASR_BOSCH_PROMPT: "${ASR_BOSCH_PROMPT:-Bosch, 博世, TCL, SL1, SL2, G9, Performance Rating, Career Elements, Leadership Feedback, 高绩效文化}"
+      ASR_BOSCH_PROMPT_CONTEXT_CHARS: "${ASR_BOSCH_PROMPT_CONTEXT_CHARS:-160}"
+      ASR_CAPTURE_MAX_CONNECTIONS: "${ASR_CAPTURE_MAX_CONNECTIONS:-0}"
+      ASR_LOCAL_FINAL_SEGMENT_SECONDS: "${ASR_LOCAL_FINAL_SEGMENT_SECONDS:-10}"
+      ASR_LOCAL_FINAL_PER_RECORDING_CONCURRENCY: "${ASR_LOCAL_FINAL_PER_RECORDING_CONCURRENCY:-8}"
+      ASR_LOCAL_FINAL_TIMEOUT_SECONDS: "${ASR_LOCAL_FINAL_TIMEOUT_SECONDS:-20}"
+      ASR_LOCAL_FINAL_MIN_PREVIEW_RATIO: "${ASR_LOCAL_FINAL_MIN_PREVIEW_RATIO:-0.45}"
+      ASR_REMOTE_FALLBACK_ON_STREAM_FAILURE: "${ASR_REMOTE_FALLBACK_ON_STREAM_FAILURE:-true}"
+      ASR_FINAL_SEGMENT_SECONDS: "${ASR_FINAL_SEGMENT_SECONDS:-45}"
+      ASR_FINAL_PER_RECORDING_CONCURRENCY: "${ASR_FINAL_PER_RECORDING_CONCURRENCY:-8}"
+      ASR_FINAL_MAX_CONCURRENCY: "${ASR_FINAL_MAX_CONCURRENCY:-8}"
+      ASR_RECORDING_TMP_DIR: "${ASR_RECORDING_TMP_DIR:-/app/data/asr_tmp}"
+      ASR_RECORDING_MIN_FREE_BYTES: "${ASR_RECORDING_MIN_FREE_BYTES:-2147483648}"
+      ASR_RECORDING_ORPHAN_TTL_SECONDS: "${ASR_RECORDING_ORPHAN_TTL_SECONDS:-3600}"
+      ASR_HTTP_URL: "${ASR_HTTP_URL:-https://aigc.bosch.com.cn/llmservice/api/v1/audio/transcriptions}"
+      ASR_HTTP_MODEL: "${ASR_HTTP_MODEL:-qwen3-asr-flash}"
+      TTS_ENABLED: "${TTS_ENABLED:-true}"
+      TTS_PROVIDER: "${TTS_PROVIDER:-fish_vllm_omni}"
+      TTS_HTTP_URL: "${TTS_HTTP_URL:-http://fish_tts:8091/v1/audio/speech}"
+      TTS_MODEL: "${TTS_MODEL:-/app/checkpoints/s2-pro}"
+      TTS_MODEL_REVISION: "${FISH_TTS_MODEL_REVISION:-1de9996b6be38b745688de084d87a5633f714e4e}"
+      TTS_STAGE_0_MAX_NUM_SEQS: "10"
+      TTS_STAGE_1_MAX_NUM_SEQS: "10"
+      TTS_DEFAULT_VOICE: "${TTS_DEFAULT_VOICE:-employee-natural}"
+      TTS_AVAILABLE_VOICES: "${TTS_AVAILABLE_VOICES:-employee-natural}"
+      TTS_RANDOM_VOICE_NAME: "${TTS_RANDOM_VOICE_NAME:-Fish Audio 默认音色}"
+      TTS_REQUIRE_REGISTERED_VOICE: "${TTS_REQUIRE_REGISTERED_VOICE:-true}"
+      TTS_MAX_CONCURRENCY: "${TTS_MAX_CONCURRENCY:-10}"
+      TTS_GLOBAL_MAX_CONCURRENCY: "${TTS_GLOBAL_MAX_CONCURRENCY:-10}"
+      TTS_QUEUE_TIMEOUT_SECONDS: "${TTS_QUEUE_TIMEOUT_SECONDS:-0}"
+      TTS_SEND_TIMEOUT_SECONDS: "${TTS_SEND_TIMEOUT_SECONDS:-5}"
+      TTS_AUDIO_QUEUE_MAX_BYTES: "${TTS_AUDIO_QUEUE_MAX_BYTES:-2097152}"
+      TTS_AUDIO_QUEUE_MAX_EVENTS: "${TTS_AUDIO_QUEUE_MAX_EVENTS:-32}"
+      TTS_PLAYBACK_HIGH_WATER_SECONDS: "${TTS_PLAYBACK_HIGH_WATER_SECONDS:-8}"
+      TTS_PLAYBACK_LOW_WATER_SECONDS: "${TTS_PLAYBACK_LOW_WATER_SECONDS:-4}"
+      TTS_PLAYBACK_FEEDBACK_TIMEOUT_SECONDS: "${TTS_PLAYBACK_FEEDBACK_TIMEOUT_SECONDS:-3}"
+      TTS_FIRST_SEGMENT_MIN_CHARS: "${TTS_FIRST_SEGMENT_MIN_CHARS:-16}"
+      TTS_FIRST_SEGMENT_MAX_CHARS: "${TTS_FIRST_SEGMENT_MAX_CHARS:-64}"
+      TTS_FIRST_SEGMENT_WAIT_MS: "${TTS_FIRST_SEGMENT_WAIT_MS:-350}"
+      TTS_SENTENCE_MERGE_MAX_CHARS: "${TTS_SENTENCE_MERGE_MAX_CHARS:-80}"
+      TTS_CONNECT_TIMEOUT_SECONDS: "${TTS_CONNECT_TIMEOUT_SECONDS:-2}"
+      TTS_GENERATION_TIMEOUT_SECONDS: "${TTS_GENERATION_TIMEOUT_SECONDS:-120}"
+      TTS_SAMPLE_RATE: "${TTS_SAMPLE_RATE:-44100}"
+      TTS_SENTENCE_MAX_CHARS: "${TTS_SENTENCE_MAX_CHARS:-180}"
+      TTS_MAX_NEW_TOKENS: "${TTS_MAX_NEW_TOKENS:-1024}"
+      TTS_EMOTION_TAG_MODE: "${TTS_EMOTION_TAG_MODE:-inline}"
+      TTS_EMOTION_MAX_TAGS: "${TTS_EMOTION_MAX_TAGS:-2}"
+      TTS_EMOTION_DELTA_THRESHOLD: "${TTS_EMOTION_DELTA_THRESHOLD:-0.10}"
+      TTS_LEGACY_EMOTION_TAG_DELIMITER: "${TTS_LEGACY_EMOTION_TAG_DELIMITER:-square}"
+      OTEL_SERVICE_NAME: hr-agent-backend
+      OTEL_PYTHON_LOG_CORRELATION: "true"
+    command: >
+      opentelemetry-instrument uvicorn backend.main:app
+      --host 0.0.0.0 --port 7111
+    expose:
+      - "7111"
+    volumes:
+      - ./data:/app/data
+      - ./backend/prompts:/app/backend/prompts:ro
+      - ./backend/business_config/patterns_data.json:/app/backend/business_config/patterns_data.json:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          python3 -c "import urllib.request;
+          urllib.request.urlopen('http://127.0.0.1:7111/api/v1/health', timeout=5)"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      # Platform embedding sync can legitimately rebuild the active knowledge
+      # profile before Uvicorn starts accepting requests. Keep autoheal from
+      # terminating that one-time startup work midway through the rebuild.
+      start_period: 3600s
+
+  frontend:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+      args:
+        HTTP_PROXY: http://host.docker.internal:3128
+        HTTPS_PROXY: http://host.docker.internal:3128
+        NO_PROXY: localhost,127.0.0.1,::1,host.docker.internal
+    environment:
+      APP_RUNTIME_MODE: "${APP_RUNTIME_MODE:-production}"
+      FRONTEND_HTTPS_HOST: "${FRONTEND_HTTPS_HOST:-sgh-c-00589.sgh.apac.bosch.com}"
+      FRONTEND_HTTPS_PORT: "${FRONTEND_HTTPS_PORT:-7443}"
+      WORKFLOW_PAGE_GUIDE_ENABLED: "${WORKFLOW_PAGE_GUIDE_ENABLED:-true}"
+      WORKFLOW_PAGE_GUIDE_ALWAYS_SHOW: "${WORKFLOW_PAGE_GUIDE_ALWAYS_SHOW:-false}"
+      AGENT_INTRODUCTION_VARIANT: "${AGENT_INTRODUCTION_VARIANT:-classic}"
+      NGINX_ENVSUBST_FILTER: "^(APP_RUNTIME_MODE|FRONTEND_HTTPS_HOST|FRONTEND_HTTPS_PORT|WORKFLOW_PAGE_GUIDE_ENABLED|WORKFLOW_PAGE_GUIDE_ALWAYS_SHOW|AGENT_INTRODUCTION_VARIANT)$"
+    ports:
+      - "${FRONTEND_HTTP_PORT:-7110}:7070"
+      - "${FRONTEND_HTTPS_PORT:-7443}:7443"
+    volumes:
+      - frontend_tls_certs:/etc/nginx/certs:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          test -r /etc/nginx/certs/server.crt
+          && test -r /etc/nginx/certs/server.key
+          && wget --no-check-certificate -qO- https://127.0.0.1:7443/ >/dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+
+  backend_autoscaler:
+    image: "${HR_AGENT_BACKEND_IMAGE:-06-emotion-main-backend:local}"
+    # The project checkout is an NFS-mounted 0700 directory. Container root is
+    # root-squashed there, so use the owning host identity and add only the
+    # Docker socket group required by the restricted Engine adapter.
+    user: "1956470149:1956470149"
+    group_add:
+      - "${DOCKER_SOCKET_GID:-999}"
+    restart: unless-stopped
+    # Reconciliation can be waiting for Compose/Docker readiness. Give the
+    # sidecar enough time to finish or cancel cleanly during deployments.
+    stop_grace_period: 420s
+    depends_on:
+      backend:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      HOME: /tmp
+      COMPOSE_PROJECT_NAME: "${COMPOSE_PROJECT_NAME:-06-emotion-main}"
+      REDIS_URL: "${REDIS_URL:-redis://redis:6379/0}"
+      BACKEND_AUTOSCALER_MIN_REPLICAS: "${BACKEND_AUTOSCALER_MIN_REPLICAS:-2}"
+      BACKEND_AUTOSCALER_MAX_REPLICAS: "${BACKEND_AUTOSCALER_MAX_REPLICAS:-8}"
+      BACKEND_AUTOSCALER_TARGET_USERS_PER_REPLICA: "${BACKEND_AUTOSCALER_TARGET_USERS_PER_REPLICA:-8}"
+      BACKEND_AUTOSCALER_SPARE_REPLICAS: "${BACKEND_AUTOSCALER_SPARE_REPLICAS:-1}"
+      BACKEND_AUTOSCALER_ACTIVE_WINDOW_SECONDS: "${BACKEND_AUTOSCALER_ACTIVE_WINDOW_SECONDS:-300}"
+      BACKEND_AUTOSCALER_POLL_SECONDS: "${BACKEND_AUTOSCALER_POLL_SECONDS:-10}"
+      BACKEND_AUTOSCALER_SCALE_DOWN_STABILIZATION_SECONDS: "${BACKEND_AUTOSCALER_SCALE_DOWN_STABILIZATION_SECONDS:-900}"
+      BACKEND_AUTOSCALER_SCALE_DOWN_COOLDOWN_SECONDS: "${BACKEND_AUTOSCALER_SCALE_DOWN_COOLDOWN_SECONDS:-300}"
+      BACKEND_AUTOSCALER_SCALE_DOWN_MIN_IDLE_SECONDS: "${BACKEND_AUTOSCALER_SCALE_DOWN_MIN_IDLE_SECONDS:-30}"
+      BACKEND_AUTOSCALER_START_HEALTH_TIMEOUT_SECONDS: "${BACKEND_AUTOSCALER_START_HEALTH_TIMEOUT_SECONDS:-120}"
+      BACKEND_AUTOSCALER_START_HEALTH_POLL_SECONDS: "${BACKEND_AUTOSCALER_START_HEALTH_POLL_SECONDS:-1}"
+      BACKEND_AUTOSCALER_SCALE_DOWN_PROBE_INTERVAL_SECONDS: "${BACKEND_AUTOSCALER_SCALE_DOWN_PROBE_INTERVAL_SECONDS:-1}"
+      BACKEND_AUTOSCALER_STOP_TIMEOUT_SECONDS: "${BACKEND_AUTOSCALER_STOP_TIMEOUT_SECONDS:-300}"
+      BACKEND_AUTOSCALER_RECONCILE_LEASE_SECONDS: "${BACKEND_AUTOSCALER_RECONCILE_LEASE_SECONDS:-1500}"
+      BACKEND_AUTOSCALER_WATCHDOG_STALE_SECONDS: "${BACKEND_AUTOSCALER_WATCHDOG_STALE_SECONDS:-30}"
+      BACKEND_AUTOSCALER_COMPOSE_WORKING_DIR: /home/uay4sgh/hr_agent/06_emotion
+      BACKEND_AUTOSCALER_COMPOSE_CONFIG_FILES: /home/uay4sgh/hr_agent/06_emotion/docker-compose.yml
+      BACKEND_AUTOSCALER_COMPOSE_ENV_FILE: /home/uay4sgh/hr_agent/06_emotion/backend/config/.env
+      BACKEND_AUTOSCALER_DOCKER_CLI_PATH: /usr/bin/docker
+      BACKEND_AUTOSCALER_DOCKER_SOCKET_PATH: /var/run/docker.sock
+    command: >
+      uvicorn backend.services.backend_autoscaler:app
+      --host 0.0.0.0 --port 7122
+    expose:
+      - "7122"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker:ro
+      - /usr/libexec/docker/cli-plugins:/usr/libexec/docker/cli-plugins:ro
+      - .:/home/uay4sgh/hr_agent/06_emotion:ro
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:7122/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 30s
+
+networks:
+  signoz:
+    name: signoz-network
+    external: true
+
+volumes:
+  postgres_data:
+    name: 06_postgres_data
+  redis_data:
+    name: 06_redis_data
+  mineru_hf_cache:
+    name: 06_mineru_hf_cache
+  mineru_vllm_cache:
+    name: 06_mineru_vllm_cache
+  qwen_hf_cache:
+    name: 06_qwen_hf_cache
+  qwen_vllm_cache:
+    name: 06_qwen_vllm_cache
+  qwen_vllm_reranker_cache:
+    name: 06_qwen_vllm_reranker_cache
+  qwen_vllm_shadow_cache:
+    name: 06_qwen_vllm_shadow_cache
+  fish_tts_checkpoints:
+    name: 06_fish_tts_checkpoints
+  fish_tts_speakers:
+  fish_tts_compile_cache:
+    name: 06_fish_tts_compile_cache
+  frontend_tls_certs:
+    name: "${FRONTEND_TLS_CERT_VOLUME:-docker_proxy_certs}"
+    external: true

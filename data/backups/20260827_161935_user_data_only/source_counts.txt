@@ -1,0 +1,14 @@
+app_users|48
+auth_whitelist|48
+auth_audit_log|462
+employees|27
+employee_import_manifests|1
+personality_facet_profiles|90
+sessions|544
+conversation_summaries|3
+documents|72
+guidance_reports|284
+coach_reports|97
+guidance_report_versions|289
+coach_report_versions|97
+coach_task_results|323

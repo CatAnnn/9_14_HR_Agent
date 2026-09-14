@@ -1,0 +1,12 @@
+{
+  "event_loop_lag_p95_ms": 42.0,
+  "database_connection_wait_p95_ms": 35.0,
+  "connection_pool_exhaustions": 0,
+  "deadlocks": 0,
+  "queue_depth_at_stop": 120,
+  "queue_depth_after_drain": 0,
+  "throughput_rps": 10.5,
+  "single_backend_throughput_rps": 4.0,
+  "single_user_p95_ms": 100000.0,
+  "thirty_user_p95_ms": 104000.0
+}

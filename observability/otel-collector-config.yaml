@@ -1,0 +1,119 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  hostmetrics:
+    collection_interval: 30s
+    root_path: /hostfs
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.logical.count:
+            enabled: true
+      disk: {}
+      load: {}
+      filesystem: {}
+      memory: {}
+      network: {}
+      paging: {}
+      processes: {}
+  docker_stats:
+    endpoint: unix:///var/run/docker.sock
+    # Collector 0.139.0 defaults to Docker API 1.25, which modern daemons
+    # reject. Pin the upstream compatibility baseline used by the receiver's
+    # later fix instead of depending on unavailable version negotiation.
+    api_version: "1.44"
+    collection_interval: 15s
+    timeout: 20s
+    container_labels_to_metric_labels:
+      com.docker.compose.project: docker.compose.project
+      com.docker.compose.service: docker.compose.service
+  filelog/docker:
+    include:
+      - /var/lib/docker/containers/*/*-json.log
+    start_at: end
+    include_file_name: false
+    include_file_path: true
+    operators:
+      - id: container-parser
+        type: container
+        format: docker
+        add_metadata_from_filepath: false
+      - id: extract-container-id
+        type: regex_parser
+        parse_from: attributes["log.file.path"]
+        regex: '^/var/lib/docker/containers/(?P<container_id>[^/]+)/.*$'
+      - id: set-container-id
+        type: move
+        from: attributes.container_id
+        to: resource["container.id"]
+      - id: remove-file-path
+        type: remove
+        field: attributes["log.file.path"]
+
+processors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 512
+    spike_limit_mib: 128
+  resourcedetection:
+    detectors: [env, system, docker]
+    timeout: 2s
+    override: false
+    system:
+      hostname_sources: [os]
+  resource/environment:
+    attributes:
+      - key: deployment.environment
+        value: ${env:DEPLOYMENT_ENVIRONMENT}
+        action: upsert
+  resource/container-logs:
+    attributes:
+      - key: service.name
+        value: hr-agent-container-logs
+        action: insert
+  batch:
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+    timeout: 5s
+
+exporters:
+  otlphttp/signoz:
+    endpoint: ${env:SIGNOZ_OTLP_HTTP_ENDPOINT}
+    compression: gzip
+    timeout: 10s
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 0s
+    sending_queue:
+      enabled: true
+      num_consumers: 4
+      queue_size: 10000
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  telemetry:
+    logs:
+      level: warn
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, resourcedetection, resource/environment, batch]
+      exporters: [otlphttp/signoz]
+    metrics:
+      receivers: [otlp, hostmetrics, docker_stats]
+      processors: [memory_limiter, resourcedetection, resource/environment, batch]
+      exporters: [otlphttp/signoz]
+    logs:
+      receivers: [filelog/docker]
+      processors: [memory_limiter, resourcedetection, resource/environment, resource/container-logs, batch]
+      exporters: [otlphttp/signoz]

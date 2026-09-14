@@ -1,0 +1,7 @@
+services:
+  qwen3_asr:
+    profiles: !reset []
+
+# 默认每实例有界保留 16 个会话，GPU batch 仍独立限制为 10；这里只常驻主 ASR。
+# secondary 保留基础文件中的
+# asr-local profile，需要容灾容量时再显式启用。

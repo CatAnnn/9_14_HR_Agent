@@ -1,0 +1,292 @@
+.workflow-page-guide {
+  order: 1;
+  min-width: 0;
+  display: none;
+  grid-column: 2;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 4px;
+  align-self: center;
+  overflow: clip;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.workflow-page-guide.is-presented {
+  display: grid;
+  visibility: visible;
+}
+
+.workflow-page-guide-host {
+  display: grid !important;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  column-gap: clamp(18px, 3vw, 42px) !important;
+  row-gap: 5px !important;
+}
+
+.workflow-page-guide-host > h1,
+.workflow-page-guide-host > h3 {
+  grid-column: 1;
+  align-self: start;
+}
+
+.workflow-page-guide-host > .report-page-actions {
+  order: 2;
+  grid-column: 3;
+  margin-left: 0 !important;
+}
+
+.workflow-page-guide > .workflow-page-guide-task,
+.workflow-page-guide > .workflow-page-guide-meaning {
+  display: block;
+  grid-column: 1;
+  min-width: 0;
+  font-size: clamp(12.5px, .9vw, 13.5px);
+  line-height: 1.5;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  text-transform: none;
+  white-space: normal;
+  opacity: 0;
+  transform: translate3d(0, 2px, 0);
+  transition:
+    opacity 220ms cubic-bezier(.22, 1, .36, 1),
+    transform 280ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.workflow-page-guide.is-active > .workflow-page-guide-task,
+.workflow-page-guide.is-active > .workflow-page-guide-meaning {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.workflow-page-guide.is-active > .workflow-page-guide-task {
+  transition-delay: 30ms;
+}
+
+.workflow-page-guide.is-active > .workflow-page-guide-meaning {
+  transition-delay: 60ms;
+}
+
+.workflow-page-guide.is-exiting > .workflow-page-guide-task,
+.workflow-page-guide.is-exiting > .workflow-page-guide-meaning {
+  opacity: 0;
+  transform: translate3d(0, -1px, 0);
+  transition-duration: 160ms, 180ms;
+  transition-delay: 0s;
+}
+
+.workflow-page-guide > .workflow-page-guide-task {
+  color: #1d1d1f;
+  font-weight: 700;
+}
+
+.workflow-page-guide > .workflow-page-guide-meaning {
+  color: #6e6e73;
+  font-weight: 400;
+}
+
+.workflow-page-guide-spotlight {
+  position: fixed;
+  z-index: 3190;
+  bottom: 0;
+  border-radius: 0;
+  background: rgba(5, 28, 44, .68);
+  box-shadow: none;
+  contain: paint;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.workflow-page-guide-spotlight.is-active {
+  opacity: 1;
+}
+
+.workflow-page-guide-spotlight.is-exiting {
+  opacity: 0;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+
+.workflow-page-guide-dismiss-surface {
+  position: fixed;
+  inset: 0;
+  z-index: 3200;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  appearance: none;
+  background: transparent;
+  box-shadow: none;
+  font-family: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.workflow-page-guide-dismiss-surface.is-exiting {
+  cursor: default;
+}
+
+.workflow-page-guide-skip-hint {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: start;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin-top: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #051c2c;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  opacity: 0;
+  transform: translate3d(2px, 0, 0);
+  pointer-events: none;
+  transition:
+    opacity 220ms cubic-bezier(.22, 1, .36, 1),
+    transform 280ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.workflow-page-guide-skip-hint::before {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  border-radius: 50%;
+  background: #051c2c;
+  box-shadow: 0 0 0 rgba(5, 28, 44, 0);
+  content: '';
+  animation: workflowGuideHintPulse 2400ms ease-in-out infinite;
+}
+
+@keyframes workflowGuideHintPulse {
+  0%,
+  100% {
+    opacity: .55;
+    box-shadow: 0 0 0 rgba(5, 28, 44, 0);
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(5, 28, 44, .32);
+  }
+}
+
+.workflow-page-guide.is-active > .workflow-page-guide-skip-hint {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 90ms;
+}
+
+.workflow-page-guide.is-exiting > .workflow-page-guide-skip-hint {
+  opacity: 0;
+  transform: translate3d(1px, -1px, 0);
+  transition-duration: 120ms, 160ms;
+  transition-delay: 0s;
+}
+
+.workflow-page-guide-dismiss-surface:hover,
+.workflow-page-guide-dismiss-surface:active,
+.workflow-page-guide-dismiss-surface:focus {
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+}
+
+@media (max-width: 1080px) {
+  .workflow-page-guide-host {
+    grid-template-columns: max-content minmax(0, 1fr) !important;
+    column-gap: 18px !important;
+  }
+
+  .workflow-page-guide-host > h1,
+  .workflow-page-guide-host > h3 {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .workflow-page-guide {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 2px;
+  }
+
+  .workflow-page-guide-host > .report-page-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .workflow-page-guide-host {
+    grid-template-columns: minmax(0, 1fr) !important;
+    row-gap: 6px !important;
+  }
+
+  .workflow-page-guide-host > h1,
+  .workflow-page-guide-host > h3,
+  .workflow-page-guide,
+  .workflow-page-guide-host > .report-page-actions {
+    grid-column: 1;
+  }
+
+  .workflow-page-guide-host > .report-page-actions {
+    grid-row: 3;
+    justify-self: start;
+  }
+
+  .workflow-page-guide {
+    grid-row: 2;
+    column-gap: 8px;
+    row-gap: 3px;
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workflow-page-guide,
+  .workflow-page-guide > .workflow-page-guide-task,
+  .workflow-page-guide > .workflow-page-guide-meaning,
+  .workflow-page-guide-spotlight,
+  .workflow-page-guide-skip-hint {
+    transition: none !important;
+  }
+
+  .workflow-page-guide.is-presented {
+    display: grid;
+    visibility: visible;
+  }
+
+  .workflow-page-guide.is-active > .workflow-page-guide-task,
+  .workflow-page-guide.is-active > .workflow-page-guide-meaning,
+  .workflow-page-guide.is-active > .workflow-page-guide-skip-hint {
+    opacity: 1;
+    transform: none;
+  }
+
+  .workflow-page-guide-skip-hint::before {
+    animation: none !important;
+    opacity: .8;
+  }
+
+  .workflow-page-guide-spotlight.is-active {
+    opacity: 1;
+  }
+
+  .workflow-page-guide-spotlight.is-exiting {
+    opacity: 0;
+  }
+}

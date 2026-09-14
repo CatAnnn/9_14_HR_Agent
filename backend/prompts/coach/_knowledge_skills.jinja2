@@ -1,0 +1,8 @@
+【已激活领域 Skill】
+
+领域知识见 context.active_skills。
+
+- active_skills 由当前案例和对话中的关键词确定；必须逐项考虑全部 Skill，priority 只决定阅读顺序，不得丢弃低优先级项。
+- Skill 的 core_knowledge 与 context.retrieved_chunks 只能辅助理解标准和生成改进建议，不能证明 Manager 或 Employee 已经说过、做过或承诺过任何内容，也不得替代 context.dimension_config。
+- stale=true 表示来源文件已变化，该 Skill 的内嵌正文已停用；只能使用本次实际提供的 context.retrieved_chunks，依据不足时明确需要核对。
+- 评分证据始终以 context.conversation 和 context.dimension_config 为准。生成建议时按“当前对话与已提供案例事实 → 已选意图及红线 → context.retrieved_chunks → 非陈旧 Skill 正文 → 需要核对”的顺序处理冲突。

@@ -1,0 +1,5 @@
+services:
+  qwen_embedding:
+    profiles: !reset []
+  qwen_reranker:
+    profiles: !reset []

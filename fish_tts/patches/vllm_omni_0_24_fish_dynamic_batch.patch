@@ -1,0 +1,150 @@
+--- a/vllm_omni/worker/gpu_model_runner.py
++++ b/vllm_omni/worker/gpu_model_runner.py
+@@ -81,5 +81,7 @@
+         self._sampled_token_ids_cpu_override = None
+         self._omni_query_start_loc_model_kwarg = False
++        self._fish_dynamic_batch_sizes_seen: set[int] = set()
++        self._fish_fast_ar_batch_sizes_seen: set[int] = set()
+ 
+     def _to_list(self, sampled_token_ids: torch.Tensor) -> list[list[int]]:
+         override_fn = self._sampled_token_ids_cpu_override
+@@ -1527,6 +1529,32 @@
+             device=device,
+         )
+ 
++    def _record_fish_dynamic_batch(
++        self,
++        req_ids: list[str],
++        num_scheduled_tokens_np: np.ndarray,
++    ) -> None:
++        model_name = self.model.__class__.__name__
++        stage = {
++            "FishSpeechSlowARForConditionalGeneration": "slow_ar",
++            "FishSpeechDACDecoder": "dac_decoder",
++        }.get(model_name)
++        if stage is None:
++            return
++        actual_batch_size = sum(
++            1 for tokens in num_scheduled_tokens_np if int(tokens) > 0
++        )
++        if actual_batch_size <= 0 or actual_batch_size in self._fish_dynamic_batch_sizes_seen:
++            return
++        self._fish_dynamic_batch_sizes_seen.add(actual_batch_size)
++        logger.info(
++            "[FishDynamicBatch] stage=%s actual_batch_size=%d scheduled_tokens=%d request_count=%d",
++            stage,
++            actual_batch_size,
++            int(num_scheduled_tokens_np.sum()),
++            len(set(req_ids)),
++        )
++
+     def _preprocess(
+         self,
+         scheduler_output: "SchedulerOutput",
+@@ -1646,6 +1674,7 @@
+             dtype=np.int32,
+         )
+         self._omni_num_scheduled_tokens_np = num_scheduled_tokens_np
++        self._record_fish_dynamic_batch(req_ids, num_scheduled_tokens_np)
+ 
+         # Note: only prefill need collect additional_information for now.
+         # Decode don't need per_req_additional_information anymore.
+@@ -1800,1 +1829,10 @@
+-        _cudagraph_mode, batch_desc, _, _, _ = self._determine_batch_execution_and_padding(
++
++        fast_ar_batch_size = len(decode_req_ids)
++        if fast_ar_batch_size not in self._fish_fast_ar_batch_sizes_seen:
++            self._fish_fast_ar_batch_sizes_seen.add(fast_ar_batch_size)
++            logger.info(
++                "[FishDynamicBatch] stage=fast_ar actual_batch_size=%d request_count=%d",
++                fast_ar_batch_size,
++                len(set(decode_req_ids)),
++            )
++        _cudagraph_mode, batch_desc, _, _, _ = self._determine_batch_execution_and_padding(
+--- a/vllm_omni/model_executor/models/fish_speech/fish_speech_slow_ar.py
++++ b/vllm_omni/model_executor/models/fish_speech/fish_speech_slow_ar.py
+@@ -193,8 +193,12 @@
+         self.has_postprocess = True
+         self.mtp_hidden_size = int(self.text_config.hidden_size)
+         self.talker_mtp_output_key = ("codes", "audio")
++        self.talker_mtp_accepts_per_row_generators = True
+         self.gpu_resident_buffer_keys: set[tuple[str, str]] = {("hidden_states", "last")}
+-        self.talker_mtp_graph_safe = True
++        # Per-request generators must advance independently on every replay.
++        # Keep the heavy FastAR model batched, but do not capture its sampling
++        # loop in a CUDA graph that would freeze Python generator arguments.
++        self.talker_mtp_graph_safe = False
+ 
+         # Qwen3 transformer backbone.
+         self.model = Qwen3Model(vllm_config=vllm_config, prefix=maybe_prefix(prefix, "model"))
+@@ -679,6 +683,7 @@
+             top_p=0.9 if top_p is None else float(top_p),
+             seed=seed,
+             generator=kwargs.get("generator"),
++            generators=kwargs.get("generators"),
+         )  # [B, num_codebooks]
+ 
+         # Add codebook embeddings to the input embedding (from preprocess).
+@@ -823,1 +828,1 @@
+-                    batch_sizes=(1,),
++                    batch_sizes=(1, 4),
+--- a/vllm_omni/model_executor/models/fish_speech/fish_speech_dac_decoder.py
++++ b/vllm_omni/model_executor/models/fish_speech/fish_speech_dac_decoder.py
+@@ -96,1 +96,2 @@
+-        self._logged_codec_stats = False
++        self._logged_codec_stats = False
++        self._dynamic_batch_sizes_seen: set[int] = set()
+@@ -420,1 +421,8 @@
+-            batch_size = len(group)
++            batch_size = len(group)
++            if batch_size not in self._dynamic_batch_sizes_seen:
++                self._dynamic_batch_sizes_seen.add(batch_size)
++                logger.info(
++                    "[FishDynamicBatch] stage=dac_model actual_batch_size=%d padded_frames=%d",
++                    batch_size,
++                    batch_size * target_frames,
++                )
+--- a/vllm_omni/model_executor/models/fish_speech/fish_speech_fast_ar.py
++++ b/vllm_omni/model_executor/models/fish_speech/fish_speech_fast_ar.py
+@@ -487,6 +487,7 @@
+         top_p: float = 0.9,
+         seed: int | None = None,
+         generator: torch.Generator | None = None,
++        generators: list[torch.Generator | None] | None = None,
+     ) -> torch.Tensor:
+         """Predict residual codebook codes 0..num_codebooks-1 autoregressively.
+ 
+@@ -506,6 +507,13 @@
+         device = slow_ar_hidden.device
+         dtype = slow_ar_hidden.dtype
+ 
++        if generator is not None and generators is not None:
++            raise ValueError("generator and generators are mutually exclusive")
++        if generators is not None and len(generators) != bsz:
++            raise ValueError(
++                f"Expected one FastAR generator per row: batch={bsz}, generators={len(generators)}"
++            )
++
+         semantic_begin = self.slow_ar_config.semantic_begin_id
+         semantic_end = self.slow_ar_config.semantic_end_id
+         codebook_size = semantic_end - semantic_begin + 1  # 4096
+@@ -533,1 +541,1 @@
+-        if generator is None and seed is not None and use_sampling:
++        if generator is None and generators is None and seed is not None and use_sampling:
+@@ -558,6 +566,15 @@
+                     scaled = sorted_logits.scatter(1, sorted_indices, sorted_logits)
+                 probs = F.softmax(scaled, dim=-1)
+-                next_ids = torch.multinomial(probs, num_samples=1, generator=generator)
++                if generators is None:
++                    next_ids = torch.multinomial(probs, num_samples=1, generator=generator)
++                else:
++                    # Random sampling is row-local while the transformer and
++                    # output projection above remain one real batched forward.
++                    next_ids = torch.cat(
++                        [
++                            torch.multinomial(probs[row : row + 1], 1, generator=generators[row])
++                            for row in range(bsz)
++                        ], dim=0)
+             else:
+                 next_ids = logits.argmax(dim=-1, keepdim=True)
+ 

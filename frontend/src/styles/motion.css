@@ -1,0 +1,517 @@
+/*
+ * Unified Apple-style interaction motion.
+ * This layer is imported last so motion stays consistent without changing layout,
+ * content, business behavior, or component-specific visual design.
+ */
+
+:root {
+  --apple-motion-press: 120ms;
+  --apple-motion-fast: 180ms;
+  --apple-motion-control: 220ms;
+  --apple-motion-layout: 340ms;
+  --apple-motion-panel: 380ms;
+  --apple-motion-ease: cubic-bezier(.2, .8, .2, 1);
+  --apple-motion-spring: cubic-bezier(.32, .72, 0, 1);
+  --apple-motion-enter: cubic-bezier(.16, 1, .3, 1);
+  --apple-motion-focus: rgba(0, 113, 227, .20);
+}
+
+:where(
+  button,
+  [role="button"],
+  [role="option"],
+  [role="menuitem"],
+  input,
+  textarea,
+  select
+) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(
+  button,
+  [role="button"],
+  [role="option"],
+  [role="menuitem"]
+) {
+  touch-action: manipulation;
+}
+
+:where(
+  .btn,
+  .icon-button,
+  .sidebar-brand-mark,
+  .sidebar-toggle,
+  .step-item,
+  .intent-option,
+  .employee-result,
+  .motive-multiselect-trigger,
+  .motive-multiselect-option,
+  .profile-upload-button,
+  .mic-button,
+  .send-button,
+  .context-close,
+  .context-dynamic-setting,
+  .rehearsal-guidance-return,
+  .guidance-export-button,
+  .knowledge-reference-trigger,
+  .sidebar-account-trigger,
+  .sidebar-account-menu-item,
+  .admin-row-actions button,
+  .admin-export-selection-actions button,
+  .admin-export-user,
+  .admin-switch
+) {
+  transition:
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    opacity var(--apple-motion-fast) var(--apple-motion-ease),
+    color var(--apple-motion-fast) var(--apple-motion-ease),
+    background-color var(--apple-motion-fast) var(--apple-motion-ease),
+    border-color var(--apple-motion-fast) var(--apple-motion-ease),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+:where(
+  .btn,
+  .icon-button,
+  .sidebar-brand-mark,
+  .sidebar-toggle,
+  .step-item,
+  .intent-option,
+  .employee-result,
+  .motive-multiselect-trigger,
+  .motive-multiselect-option,
+  .profile-upload-button,
+  .mic-button,
+  .send-button,
+  .context-close,
+  .sidebar-account-trigger,
+  .sidebar-account-menu-item,
+  .admin-row-actions button
+) svg {
+  transition:
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    opacity var(--apple-motion-fast) var(--apple-motion-ease) !important;
+}
+
+:where(
+  .btn,
+  .icon-button,
+  .sidebar-brand-mark,
+  .sidebar-toggle,
+  .step-item,
+  .intent-option,
+  .employee-result,
+  .motive-multiselect-trigger,
+  .motive-multiselect-option,
+  .profile-upload-button,
+  .mic-button,
+  .send-button,
+  .context-close,
+  .context-dynamic-setting,
+  .rehearsal-guidance-return,
+  .guidance-export-button,
+  .knowledge-reference-trigger,
+  .sidebar-account-trigger,
+  .sidebar-account-menu-item,
+  .admin-row-actions button,
+  .admin-export-selection-actions button,
+  .admin-switch
+):focus-visible,
+.admin-export-user:has(input:focus-visible) {
+  outline: 3px solid var(--apple-motion-focus) !important;
+  outline-offset: 2px !important;
+}
+
+:where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea,
+  select,
+  .profile-composer,
+  .message-bar,
+  .admin-export-search
+) {
+  transition:
+    color var(--apple-motion-fast) var(--apple-motion-ease),
+    background-color var(--apple-motion-fast) var(--apple-motion-ease),
+    border-color var(--apple-motion-fast) var(--apple-motion-ease),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+:where(
+  .intent-option,
+  .employee-result,
+  .motive-multiselect-option,
+  .admin-export-user,
+  .value-grid article
+) {
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    color var(--apple-motion-fast) var(--apple-motion-ease),
+    background-color var(--apple-motion-fast) var(--apple-motion-ease),
+    border-color var(--apple-motion-fast) var(--apple-motion-ease),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease),
+    opacity var(--apple-motion-fast) var(--apple-motion-ease) !important;
+}
+
+:where(.admin-table-row, .admin-export-user-list, .context-facts div) {
+  transition:
+    color var(--apple-motion-fast) var(--apple-motion-ease),
+    background-color var(--apple-motion-fast) var(--apple-motion-ease),
+    border-color var(--apple-motion-fast) var(--apple-motion-ease) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(
+    .intent-option,
+    .employee-result,
+    .motive-multiselect-option,
+    .admin-export-user,
+    .value-grid article
+  ):hover:not(:disabled) {
+    transform: translate3d(0, -1px, 0) !important;
+  }
+
+  :where(.sidebar-account-menu-item, .admin-export-selection-actions button):hover:not(:disabled) {
+    transform: translate3d(2px, 0, 0) !important;
+  }
+
+  :where(
+    .knowledge-reference-trigger,
+    .context-dynamic-setting,
+    .rehearsal-guidance-return,
+    .guidance-export-button
+  ):hover:not(:disabled) {
+    opacity: .78;
+  }
+}
+
+:where(.btn, .intent-option, .employee-result, .motive-multiselect-trigger, .motive-multiselect-option):active:not(:disabled) {
+  transform: translate3d(0, 0, 0) scale(.985) !important;
+  transition-duration: var(--apple-motion-press) !important;
+}
+
+:where(.icon-button, .sidebar-brand-mark, .sidebar-toggle, .profile-upload-button, .mic-button, .send-button, .context-close):active:not(:disabled) {
+  transform: translate3d(0, 0, 0) scale(.92) !important;
+  transition-duration: var(--apple-motion-press) !important;
+}
+
+:where(.step-item, .sidebar-account-trigger, .sidebar-account-menu-item, .admin-row-actions button, .admin-export-selection-actions button, .admin-switch):active:not(:disabled) {
+  transform: translate3d(0, 0, 0) scale(.97) !important;
+  transition-duration: var(--apple-motion-press) !important;
+}
+
+:where(.knowledge-reference-trigger, .context-dynamic-setting, .rehearsal-guidance-return, .guidance-export-button):active:not(:disabled) {
+  opacity: .58;
+  transform: translate3d(0, 1px, 0) !important;
+  transition-duration: var(--apple-motion-press) !important;
+}
+
+.option-icon,
+.option-radio,
+.step-icon,
+.rating-pill,
+.status-badge {
+  transition:
+    transform var(--apple-motion-layout) var(--apple-motion-spring),
+    color var(--apple-motion-fast) var(--apple-motion-ease),
+    background-color var(--apple-motion-fast) var(--apple-motion-ease),
+    border-color var(--apple-motion-fast) var(--apple-motion-ease),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+.speech-toggle-track,
+.admin-switch {
+  transition:
+    background-color var(--apple-motion-control) var(--apple-motion-ease),
+    border-color var(--apple-motion-control) var(--apple-motion-ease),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease),
+    opacity var(--apple-motion-fast) var(--apple-motion-ease) !important;
+}
+
+.speech-toggle-track > span,
+.admin-switch > span {
+  will-change: transform;
+  transition:
+    transform var(--apple-motion-layout) var(--apple-motion-spring),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  transition:
+    transform var(--apple-motion-press) var(--apple-motion-spring),
+    filter var(--apple-motion-fast) var(--apple-motion-ease) !important;
+}
+
+input[type="checkbox"]:active,
+input[type="radio"]:active {
+  transform: scale(.90);
+}
+
+#screen-simulation .motive-multiselect-trigger i {
+  transition:
+    transform var(--apple-motion-layout) var(--apple-motion-spring),
+    margin var(--apple-motion-layout) var(--apple-motion-spring),
+    border-color var(--apple-motion-fast) var(--apple-motion-ease) !important;
+}
+
+#screen-simulation .personality-slider input[type="range"]::-webkit-slider-thumb,
+#screen-simulation .personality-slider input[type="range"]::-moz-range-thumb {
+  transition:
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+.app-shell {
+  transition: none !important;
+}
+
+.app-main {
+  transition: none !important;
+}
+
+#screen-profile .profile-layout {
+  transition: none !important;
+}
+
+@media (min-width: 761px) {
+  .app-sidebar,
+  .app-sidebar.is-collapsed {
+    transition:
+      box-shadow var(--apple-motion-control) var(--apple-motion-ease),
+      background-color var(--apple-motion-fast) var(--apple-motion-ease) !important;
+  }
+
+  .app-sidebar .step-copy,
+  .app-sidebar:not(.is-collapsed) .step-copy {
+    width: auto !important;
+    max-width: 156px !important;
+    display: flex !important;
+    opacity: 1;
+    visibility: visible;
+    overflow: hidden !important;
+    transform: translate3d(0, 0, 0);
+    transition:
+      opacity var(--apple-motion-fast) var(--apple-motion-ease) 70ms,
+      transform var(--apple-motion-layout) var(--apple-motion-spring),
+      visibility 0s linear 0s !important;
+  }
+
+  .app-sidebar.is-collapsed .step-item,
+  .app-sidebar.is-collapsed .step-item:hover,
+  .app-sidebar.is-collapsed .step-item:focus-visible,
+  .app-sidebar.is-collapsed .step-item:active,
+  .app-sidebar.is-collapsed .step-item.is-current,
+  .app-sidebar.is-collapsed .step-item.is-complete,
+  .app-sidebar.is-collapsed .step-item:disabled {
+    grid-template-columns: 28px minmax(0, 0fr) !important;
+    justify-content: center !important;
+    gap: 0 !important;
+  }
+
+  .app-sidebar.is-collapsed .step-copy {
+    width: 0 !important;
+    max-width: 0 !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate3d(-6px, 0, 0);
+    transition:
+      opacity var(--apple-motion-press) var(--apple-motion-ease),
+      transform var(--apple-motion-layout) var(--apple-motion-spring),
+      visibility 0s linear var(--apple-motion-fast) !important;
+  }
+}
+
+.emotion-trajectory-node-dot,
+.emotion-trajectory-node-halo,
+.emotion-trajectory-tooltip {
+  transition:
+    opacity var(--apple-motion-fast) var(--apple-motion-ease),
+    color var(--apple-motion-fast) var(--apple-motion-ease),
+    background-color var(--apple-motion-fast) var(--apple-motion-ease),
+    border-color var(--apple-motion-fast) var(--apple-motion-ease),
+    transform var(--apple-motion-control) var(--apple-motion-spring),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+.toast {
+  transition:
+    opacity var(--apple-motion-fast) var(--apple-motion-ease),
+    transform var(--apple-motion-layout) var(--apple-motion-spring),
+    box-shadow var(--apple-motion-control) var(--apple-motion-ease) !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .modal-backdrop {
+    animation: appleMotionBackdropIn var(--apple-motion-control) var(--apple-motion-ease) both;
+  }
+
+  .admin-reset-dialog,
+  .rehearsal-context-panel {
+    transform-origin: center bottom;
+    animation: appleMotionSheetIn var(--apple-motion-panel) var(--apple-motion-enter) both !important;
+  }
+
+  .employee-results,
+  .motive-multiselect-menu {
+    transform-origin: center top;
+    animation: appleMotionPopoverIn 280ms var(--apple-motion-enter) both !important;
+  }
+
+  .sidebar-account-popover {
+    transform-origin: left bottom;
+    animation: appleMotionPopoverUp 260ms var(--apple-motion-enter) both !important;
+  }
+
+  .knowledge-reference-tooltip {
+    transform-origin: center top;
+    animation: appleMotionTooltipIn var(--apple-motion-control) var(--apple-motion-enter) both;
+  }
+
+  .toast.show {
+    animation: appleMotionToastIn var(--apple-motion-layout) var(--apple-motion-enter) both;
+  }
+
+  :where(.auth-error, .auth-success, .intent-eligibility-warning) {
+    animation: appleMotionFeedbackIn 280ms var(--apple-motion-enter) both;
+  }
+
+  :where(.guidance-section, .dimension-report) {
+    animation: appleMotionContentIn var(--apple-motion-layout) var(--apple-motion-enter) both;
+  }
+
+  .chat-list > .chat-msg:last-child {
+    animation: appleMotionMessageIn 300ms var(--apple-motion-enter) both;
+  }
+
+  .intent-option.selected .option-icon,
+  .motive-multiselect-option.selected {
+    animation: appleMotionSelectionPop 320ms var(--apple-motion-enter) both;
+  }
+}
+
+@keyframes appleMotionBackdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes appleMotionSheetIn {
+  from { opacity: 0; transform: translate3d(0, 14px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes appleMotionPopoverIn {
+  from { opacity: 0; transform: translate3d(0, -6px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes appleMotionPopoverUp {
+  from { opacity: 0; transform: translate3d(0, 6px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes appleMotionTooltipIn {
+  from { opacity: 0; transform: translate3d(0, 4px, 0) scale(.99); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes appleMotionToastIn {
+  from { opacity: 0; transform: translate3d(0, 12px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes appleMotionFeedbackIn {
+  from { opacity: 0; transform: translate3d(0, -4px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes appleMotionContentIn {
+  from { opacity: 0; transform: translate3d(0, 6px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes appleMotionMessageIn {
+  from { opacity: 0; transform: translate3d(0, 6px, 0) scale(.995); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes appleMotionSelectionPop {
+  0% { transform: scale(.94); }
+  58% { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+
+@media (hover: none) {
+  :where(
+    .intent-option,
+    .employee-result,
+    .motive-multiselect-option,
+    .admin-export-user,
+    .value-grid article
+  ):hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  :where(
+    .btn,
+    .icon-button,
+    .sidebar-brand-mark,
+    .sidebar-toggle,
+    .step-item,
+    .intent-option,
+    .employee-result,
+    .motive-multiselect-trigger,
+    .motive-multiselect-option,
+    .profile-upload-button,
+    .mic-button,
+    .send-button,
+    .context-close,
+    .knowledge-reference-trigger,
+    .sidebar-account-trigger,
+    .sidebar-account-menu-item,
+    .admin-row-actions button,
+    .admin-export-user
+  ):hover,
+  :where(
+    .btn,
+    .icon-button,
+    .sidebar-brand-mark,
+    .sidebar-toggle,
+    .step-item,
+    .intent-option,
+    .employee-result,
+    .motive-multiselect-trigger,
+    .motive-multiselect-option,
+    .profile-upload-button,
+    .mic-button,
+    .send-button,
+    .context-close,
+    .knowledge-reference-trigger,
+    .sidebar-account-trigger,
+    .sidebar-account-menu-item,
+    .admin-row-actions button,
+    .admin-export-user
+  ):active {
+    transform: none !important;
+  }
+}

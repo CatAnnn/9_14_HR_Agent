@@ -1,0 +1,64 @@
+--- a/vllm_omni/model_executor/models/fish_speech/fish_speech_fast_ar.py
++++ b/vllm_omni/model_executor/models/fish_speech/fish_speech_fast_ar.py
+@@ -562,58 +562,59 @@
+         inv_temperature = 1.0 / max(temperature, 1e-6) if use_sampling else 0.0
+ 
+         # Create a seeded generator for deterministic residual codebook sampling.
+         if generator is None and generators is None and seed is not None and use_sampling:
+             generator = torch.Generator(device=device)
+             generator.manual_seed(seed)
+ 
+         # Residual codebook size (1024) vs semantic codebook size (4096).
+         # The fast_output head has codebook_size (4096) outputs, but residual
+         # codebooks only have 1024 entries.  Truncate logits for steps > 0.
+         residual_codebook_size = 1024
+ 
+         self._run_model_one(embed_buf[:bsz, 0, :], pos_ids[:bsz, 0], 0)
+ 
+         for step in range(1, num_cb):
+             hidden_out = self._run_model_one(embed_buf[:bsz, step, :], pos_ids[:bsz, step], step)
+             logits = self.fast_output(self.fast_norm(hidden_out))
+ 
+             # Residual codebooks (step >= 1) only have 1024 entries.
+             logits = logits[:, :residual_codebook_size]
+ 
+             if use_sampling:
+                 scaled = logits * inv_temperature
+                 if top_k > 0:
+                     topk_vals, _ = scaled.topk(min(top_k, scaled.shape[-1]), dim=-1)
+                     scaled = scaled.masked_fill(scaled < topk_vals[:, -1:], float("-inf"))
+                 if top_p < 1.0:
+                     sorted_logits, sorted_indices = torch.sort(scaled, descending=True)
+-                    cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
+-                    sorted_indices_to_remove = cumulative_probs - F.softmax(sorted_logits, dim=-1) >= top_p
++                    sorted_probs = F.softmax(sorted_logits, dim=-1)
++                    cumulative_probs = torch.cumsum(sorted_probs, dim=-1)
++                    sorted_indices_to_remove = cumulative_probs - sorted_probs >= top_p
+                     sorted_logits[sorted_indices_to_remove] = float("-inf")
+                     scaled = sorted_logits.scatter(1, sorted_indices, sorted_logits)
+                 probs = F.softmax(scaled, dim=-1)
+                 if generators is None:
+                     next_ids = torch.multinomial(probs, num_samples=1, generator=generator)
+                 else:
+                     # Random sampling is row-local while the transformer and
+                     # output projection above remain one real batched forward.
+                     next_ids = torch.cat(
+                         [
+                             torch.multinomial(probs[row : row + 1], 1, generator=generators[row])
+                             for row in range(bsz)
+                         ], dim=0)
+             else:
+                 next_ids = logits.argmax(dim=-1, keepdim=True)
+ 
+             all_codes[:, step] = next_ids.reshape(bsz)
+ 
+             if step < num_cb - 1:
+                 new_embed = self.fast_embeddings(next_ids.reshape(bsz))
+                 embed_buf[:bsz, step + 1, :] = new_embed
+ 
+         return all_codes
+ 
+     def load_weights(self, weights: Iterable[tuple[str, torch.Tensor]]) -> set[str]:
+         """Load weights -- Fast AR weights have already been remapped by the parent."""
+         with set_current_vllm_config(self._vllm_config):
+             params_dict = dict(self.named_parameters(remove_duplicate=False))

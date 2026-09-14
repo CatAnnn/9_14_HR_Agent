@@ -1,0 +1,99 @@
+version: v0.7
+name: conversation_intents
+supported_intents:
+  - id: development
+    name: 发展型反馈
+    description: 聚焦优势，规划长期成长
+    eligibility:
+      performance_ratings: [1, 2, 3]
+      tcl_values: ["++", "+++", "++++"]
+      match_mode: any
+    performance_inference:
+      objective: 基于员工目标完成情况、已有成果和成长空间，形成适用于发展型反馈的绩效画像。
+      profile_tone: 发展型反馈在绩效等级1或2时，整体绩效良好、亮点突出，重点呈现成果贡献和可继续放大的优势。
+      evidence_priority:
+        - 目标完成值、关键产出和业务贡献
+        - 当前岗位与职级所体现的稳定能力
+        - 历史反馈中的优势与发展潜力
+      inference_rules:
+        - 目标达成总览优先说明目标完成程度及其对整体绩效的支撑。
+        - 正向表现重点呈现已经取得的结果、亮点和可复用能力。
+        - 现存差距写成继续发展的具体空间，不得反推为低绩效、纪律问题或退出风险。
+        - 只有资料明确提供岗位或下一职级要求时，才能据此判断能力表现。
+  - id: improvement
+    name: 改进型反馈
+    description: 指出短板，推动达标整改
+    eligibility:
+      performance_ratings: [4, 5]
+      tcl_values: ["#", "+"]
+      match_mode: any
+    performance_inference:
+      objective: 基于目标完成情况和岗位要求识别当前差距，形成可核实、可用于改进沟通的绩效画像。
+      profile_tone: 改进型反馈在绩效等级2、3或4时，核心目标存在一定缺口但仍有改善基础，当前不纳入退出考量。
+      evidence_priority:
+        - 目标完成差距与可观察事实
+        - 质量、时效、协作和行为稳定性
+        - 正向进展、业务影响与已提供的支持
+      inference_rules:
+        - 目标达成总览同时说明完成部分与核心目标缺口。
+        - 正向表现必须保留已有改善、可利用优势和已取得进展。
+        - 现存差距说明目标、行为实例和业务影响，区分单次事件与持续性表现。
+        - 不得输出退出考量，也不得假定员工已进入PIP、受到纪律处分或长期低绩效。
+  - id: exit
+    name: 退出型反馈
+    description: 长期绩效不达标，告知后续处置措施
+    eligibility:
+      performance_ratings: [4, 5]
+      tcl_values: ["#", "+"]
+      match_mode: any
+    performance_inference:
+      objective: 审慎整理可能支持退出型反馈的长期目标差距、历史反馈和改善结果。
+      profile_tone: 退出型反馈在绩效等级4或5时，聚焦长期目标不达标、多次反馈后仍无改善及培养价值有限；证据不足的部分必须明确为待核实。
+      evidence_priority:
+        - 持续性重大目标差距及其业务影响
+        - 历史反馈、改进讨论和实际改善结果
+        - 已采取的培养支持与正式管理行动
+      inference_rules:
+        - 目标达成总览聚焦长期核心目标的完成情况和差距趋势。
+        - 正向表现仍应如实保留，不得为了退出基调删除已有成果。
+        - 只有资料支持时才能描述多次反馈无改善、差距持续或培养价值有限。
+        - 缺少历史证据、改进机会或正式流程信息时，在差距条目中明确列为待核实，不得直接得出解除关系或法律结论。
+  - id: development_improvement
+    name: 发展+改进混合反馈
+    description: 肯定优势，同步整改不足
+    eligibility:
+      performance_ratings: [3, 4, 5]
+      tcl_values: ["#", "+", "++"]
+      match_mode: any
+    performance_inference:
+      objective: 平衡整理员工已有潜力、亮点与限制继续发展的持续性短板。
+      profile_tone: 员工具备潜力与亮点，但持续性短板限制晋升与扩责；完成改进是持续发展的前提，不设置硬性淘汰时限。
+      evidence_priority:
+        - 已有成果、潜力和可复用能力
+        - 限制晋升或扩责的持续性差距
+        - 可利用优势推动改进的证据
+      inference_rules:
+        - 目标达成总览同时概括成果基础和限制进一步发展的核心缺口。
+        - 正向表现明确呈现潜力、亮点和对目标的实际贡献。
+        - 现存差距必须说明如何限制晋升、扩责或持续发展，但不得虚构晋升承诺。
+        - 不得设置硬性淘汰时限，也不得为了保持平衡而虚构正面成果或负面案例。
+  - id: improvement_exit
+    name: 改进+退出预警反馈
+    description: 限期整改，说明未达标将启动对应处置措施
+    eligibility:
+      performance_ratings: [4, 5]
+      tcl_values: ["#", "+"]
+      match_mode: any
+    performance_inference:
+      objective: 整理持续存在的核心绩效差距、明确改进窗口及未达标时的退出流程风险。
+      profile_tone: 核心绩效差距持续存在，需要设置明确改进窗口期并告知未达标将启动退出流程，不再规划长期发展。
+      evidence_priority:
+        - 当前核心目标差距、趋势和业务影响
+        - 既有反馈、支持资源和改进结果
+        - 改进窗口及退出预警相关的明确管理条件
+      inference_rules:
+        - 目标达成总览聚焦核心目标差距及其持续趋势。
+        - 正向表现只保留已发生的进展，不再扩展长期发展潜力或规划。
+        - 现存差距明确呈现行为实例、业务影响和仍需核实的风险条件。
+        - 资料未提供具体窗口或正式流程时只能写待确认，不得虚构期限、PIP、纪律程序或已经作出的退出决定。
+default_intent: improvement

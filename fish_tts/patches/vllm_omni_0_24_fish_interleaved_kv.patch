@@ -1,0 +1,76 @@
+--- a/vllm_omni/attention/fish_kvcache_attn.py
++++ b/vllm_omni/attention/fish_kvcache_attn.py
+@@ -87,0 +88,4 @@
++    if key_cache.shape != value_cache.shape:
++        return False
++    if key_cache.device != query.device or value_cache.device != query.device:
++        return False
+@@ -101,0 +106,3 @@
++    # vLLM >= 0.23 stores KV as (block, K/V, token, head, dim). Unbinding
++    # the K/V axis produces interleaved views whose block stride is larger
++    # than a contiguous cache, while every block remains densely packed.
+@@ -104,2 +110,0 @@
+-        and key_cache.is_contiguous()
+-        and value_cache.is_contiguous()
+@@ -108,0 +114,7 @@
++        return False
++    expected_inner_strides = (key_cache.shape[2] * key_cache.shape[3], key_cache.shape[3], 1)
++    if tuple(key_cache.stride()[1:]) != expected_inner_strides:
++        return False
++    if tuple(value_cache.stride()[1:]) != expected_inner_strides:
++        return False
++    if key_cache.stride(0) <= 0 or value_cache.stride(0) <= 0:
+--- a/vllm_omni/attention/fish_kvcache_backend.py
++++ b/vllm_omni/attention/fish_kvcache_backend.py
+@@ -205 +205,3 @@
+-    if is_fish_kvcache_attn_required():
++    # Reading a CUDA tensor with .item() invalidates FULL CUDA Graph capture.
++    # Capture metadata already carries a conservative CPU upper bound.
++    if is_fish_kvcache_attn_required() and not torch.cuda.is_current_stream_capturing():
+--- a/vllm_omni/attention/fish_kvcache_triton.py
++++ b/vllm_omni/attention/fish_kvcache_triton.py
+@@ -40,0 +41,2 @@
++        K_BLOCK_STRIDE: tl.constexpr,
++        V_BLOCK_STRIDE: tl.constexpr,
+@@ -83,4 +85,7 @@
+-            kv_offsets = (
+-                (physical_block[:, None] * 16 + block_offset[:, None]) * NUM_KV_HEADS + kv_head
+-            ) * BLOCK_D + offs_d[None, :]
+-            k = tl.load(K + kv_offsets, mask=mask_n[:, None], other=0.0)
++            inner_offsets = (
++                (block_offset[:, None] * NUM_KV_HEADS + kv_head) * BLOCK_D
++                + offs_d[None, :]
++            )
++            k_offsets = physical_block[:, None] * K_BLOCK_STRIDE + inner_offsets
++            v_offsets = physical_block[:, None] * V_BLOCK_STRIDE + inner_offsets
++            k = tl.load(K + k_offsets, mask=mask_n[:, None], other=0.0)
+@@ -90 +95 @@
+-            v = tl.load(V + kv_offsets, mask=mask_n[:, None], other=0.0)
++            v = tl.load(V + v_offsets, mask=mask_n[:, None], other=0.0)
+@@ -114,0 +120,2 @@
++        K_BLOCK_STRIDE: tl.constexpr,
++        V_BLOCK_STRIDE: tl.constexpr,
+@@ -168,4 +175,7 @@
+-            kv_offsets = (
+-                (physical_block[:, None] * 16 + block_offset[:, None]) * NUM_KV_HEADS + kv_head
+-            ) * BLOCK_D + offs_d[None, :]
+-            k = tl.load(K + kv_offsets, mask=mask_n[:, None], other=0.0)
++            inner_offsets = (
++                (block_offset[:, None] * NUM_KV_HEADS + kv_head) * BLOCK_D
++                + offs_d[None, :]
++            )
++            k_offsets = physical_block[:, None] * K_BLOCK_STRIDE + inner_offsets
++            v_offsets = physical_block[:, None] * V_BLOCK_STRIDE + inner_offsets
++            k = tl.load(K + k_offsets, mask=mask_n[:, None], other=0.0)
+@@ -175 +185 @@
+-            v = tl.load(V + kv_offsets, mask=mask_n[:, None], other=0.0)
++            v = tl.load(V + v_offsets, mask=mask_n[:, None], other=0.0)
+@@ -277,0 +288,2 @@
++            K_BLOCK_STRIDE=key_cache.stride(0),
++            V_BLOCK_STRIDE=value_cache.stride(0),
+@@ -299,0 +312,2 @@
++        K_BLOCK_STRIDE=key_cache.stride(0),
++        V_BLOCK_STRIDE=value_cache.stride(0),
+@@ -328,0 +343,2 @@
++        K_BLOCK_STRIDE=key_cache.stride(0),
++        V_BLOCK_STRIDE=value_cache.stride(0),

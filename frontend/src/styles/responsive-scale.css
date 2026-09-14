@@ -1,0 +1,19 @@
+/*
+ * The current 1536px-wide desktop is the visual reference. Project CSS is
+ * converted from px to rem at build time, so typography and component geometry
+ * share this one continuous scale without changing the configured font faces.
+ */
+:root {
+  --ui-reference-viewport-width: 1536;
+  --ui-reference-font-size: 16px;
+  font-size: var(--ui-reference-font-size);
+}
+
+@media (min-width: 960px) {
+  :root {
+    font-size: min(
+      var(--ui-reference-font-size),
+      1.0416667vw
+    );
+  }
+}
