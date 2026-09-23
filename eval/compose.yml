@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: tensorchord/vchord-suite:pg16-20260501@sha256:65b98b5aa96507d3d8aa61c5a0ed7d333828f128a72cefd9de677efe92712277
+    environment:
+      POSTGRES_DB: hr_agent_eval
+      POSTGRES_USER: hr_agent
+      POSTGRES_PASSWORD: ${EVAL_DB_PASSWORD:?Set EVAL_DB_PASSWORD}
+      PGPORT: "7244"
+    command:
+      - postgres
+      - -c
+      - port=7244
+      - -c
+      - shared_preload_libraries=vchord,vchord_bm25,vector,pg_tokenizer
+      - -c
+      - 'search_path="$$user", public, bm25_catalog, tokenizer_catalog'
+    ports:
+      - "127.0.0.1:7244:7244"
+    volumes:
+      - agent_quality_eval_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hr_agent -d hr_agent_eval -p 7244"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${EVAL_REDIS_PASSWORD:?Set EVAL_REDIS_PASSWORD}"]
+    ports:
+      - "127.0.0.1:7248:6379"
+    volumes:
+      - agent_quality_eval_redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a '${EVAL_REDIS_PASSWORD}' --no-auth-warning ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+volumes:
+  agent_quality_eval_postgres:
+  agent_quality_eval_redis:

@@ -53,6 +53,10 @@ loadtests/data/audio/*.pcm
 loadtests/results/
 loadtests/artifacts/
 
+# Agent 质量评测的临时数据库输入和运行结果
+eval/runtime/
+eval/results/
+
 # Crawler runtime data and sensitive local inputs
 spider/.playwright-profile/
 spider/results/
