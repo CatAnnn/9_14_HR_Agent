@@ -109,11 +109,15 @@ def evaluate_rules(
         issues.append(language_issue)
     if agent == "employee" and HIDDEN_RATING.search(generated):
         issues.append("hidden_rating_leak: 员工回复包含内部评级或 TCL 字段")
+    if agent == "employee" and len(output["replies"]) != len(case["manager_turns"]):
+        issues.append("employee_turn_count_invalid: 员工回复轮数与经理输入不符")
     if agent == "coach":
         task_results = output["task_results"]
         actual = [task["task_id"] for task in task_results]
         if set(actual) != COACH_TASKS or len(actual) != 4:
             issues.append("coach_dimensions_invalid: 缺少或重复四维结果")
+        if any(task.get("status") == "failed" for task in task_results):
+            issues.append("coach_task_failed: 四维评估中存在失败任务")
         manager_turns = {
             turn["turn_index"]: turn["text"]
             for turn in case["state"].get("conversation", [])

@@ -73,7 +73,7 @@ class IndependentJudge:
             raise JudgeError("Judge 未返回有效 JSON 对象") from exc
         if not isinstance(parsed, dict) or parsed.get("verdict") not in {"pass", "fail", "insufficient_information"}:
             raise JudgeError("Judge verdict 无效")
-        if not isinstance(parsed.get("reasons"), list) or not all(isinstance(item, str) for item in parsed["reasons"]):
+        if not isinstance(parsed.get("reasons"), list) or not parsed["reasons"] or not all(isinstance(item, str) and item.strip() for item in parsed["reasons"]):
             raise JudgeError("Judge reasons 无效")
         dimensions = parsed.get("dimensions")
         if not isinstance(dimensions, dict) or any(
@@ -81,6 +81,8 @@ class IndependentJudge:
             for name in ("factuality", "usefulness", "safety")
         ):
             raise JudgeError("Judge dimensions 无效")
+        if parsed["verdict"] == "pass" and any(dimensions[name] != "pass" for name in ("factuality", "usefulness", "safety")):
+            raise JudgeError("Judge 通过结论与分维结果矛盾")
         return {
             "verdict": parsed["verdict"],
             "reasons": parsed["reasons"],

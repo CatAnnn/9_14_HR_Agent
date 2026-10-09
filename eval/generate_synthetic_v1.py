@@ -27,10 +27,13 @@ SCENARIOS = [
 def _state(index: int, scenario: dict, agent: str) -> dict:
     locale = scenario["locale"]
     conversation = []
-    if agent == "coach" and index != 6:
-        for manager, employee in zip(scenario["manager"], scenario["employee"]):
-            conversation.append({"turn_index": len(conversation) + 1, "speaker": "manager", "text": manager})
-            conversation.append({"turn_index": len(conversation) + 1, "speaker": "employee", "text": employee})
+    if agent == "coach":
+        if index == 6:
+            conversation.append({"turn_index": 1, "speaker": "manager", "text": scenario["manager"][0]})
+        else:
+            for manager, employee in zip(scenario["manager"], scenario["employee"]):
+                conversation.append({"turn_index": len(conversation) + 1, "speaker": "manager", "text": manager})
+                conversation.append({"turn_index": len(conversation) + 1, "speaker": "employee", "text": employee})
     return {
         "locale": locale,
         "setup_ready": True,
@@ -52,7 +55,7 @@ def _state(index: int, scenario: dict, agent: str) -> dict:
         "personality": {"openness": 55, "conscientiousness": 60, "extraversion": 45, "agreeableness": 55, "neuroticism": 50},
         "motivation": {"primary_motive_id": "recognition", "primary_score": 50},
         "conversation": conversation,
-        "user_turn_count": len(conversation) // 2,
+        "user_turn_count": sum(turn["speaker"] == "manager" for turn in conversation),
     }
 
 

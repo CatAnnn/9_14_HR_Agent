@@ -6,7 +6,6 @@ from collections import Counter
 from datetime import datetime, timezone
 import hashlib
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
@@ -88,6 +87,7 @@ def _cleanup_session(repository: Any, session_id: str) -> None:
 def _build_state(case: dict[str, Any], session_id: str) -> Any:
     from backend.business_config.loader import get_config_loader
     from backend.schemas.state import SessionState
+    from backend.services.emotion_transition_service import EmotionTransitionService
 
     payload = dict(case["state"])
     payload["session_id"] = session_id
@@ -99,7 +99,13 @@ def _build_state(case: dict[str, Any], session_id: str) -> Any:
     payload["stage"] = "setup_ready"
     payload["guidance_report_id"] = None
     payload["coach_report_id"] = None
-    return SessionState.model_validate(payload)
+    state = SessionState.model_validate(payload)
+    if state.emotion_state is None:
+        state.emotion_state = EmotionTransitionService().initial_state(
+            intent_id=state.intent.intent_id,
+            personality=state.personality,
+        )
+    return state
 
 
 async def _invoke_case(runtime: Any, case: dict[str, Any], session_id: str) -> dict[str, Any]:
@@ -135,8 +141,8 @@ async def _one_trial(
     saved = False
     try:
         state = _build_state(case, session_id)
-        await asyncio.to_thread(runtime.session_service.save_session, state)
         saved = True
+        await asyncio.to_thread(runtime.session_service.save_session, state)
         output = await _invoke_case(runtime, case, session_id)
         record["output"] = output
         record["execution_pass"] = True
@@ -165,7 +171,7 @@ async def _one_trial(
     return record
 
 
-def summarize(records: list[dict[str, Any]], *, trials: int, judge_enabled: bool) -> dict[str, Any]:
+def summarize(records: list[dict[str, Any]], *, trials: int, judge_enabled: bool, _include_agent: bool = True) -> dict[str, Any]:
     by_case: dict[str, list[dict[str, Any]]] = {}
     for record in records:
         by_case.setdefault(record["case_id"], []).append(record)
@@ -180,6 +186,18 @@ def summarize(records: list[dict[str, Any]], *, trials: int, judge_enabled: bool
         summary["pass_at_1"] = round(sum(bool(rows[0]["overall_pass"]) for rows in by_case.values()) / len(by_case), 4) if by_case else 0
         summary[f"pass_at_{trials}"] = round(sum(any(row["overall_pass"] is True for row in rows) for rows in by_case.values()) / len(by_case), 4) if by_case else 0
         summary[f"pass_all_{trials}"] = round(sum(len(rows) == trials and all(row["overall_pass"] is True for row in rows) for rows in by_case.values()) / len(by_case), 4) if by_case else 0
+    if _include_agent:
+        agents = sorted({row["agent"] for row in records if row.get("agent")})
+        if agents:
+            summary["by_agent"] = {
+                agent: summarize(
+                    [row for row in records if row.get("agent") == agent],
+                    trials=trials,
+                    judge_enabled=judge_enabled,
+                    _include_agent=False,
+                )
+                for agent in agents
+            }
     return summary
 
 
@@ -192,7 +210,13 @@ async def run_live(cases: list[dict[str, Any]], drafts: dict[str, dict[str, Any]
     errors = isolated_target_errors(settings.database_url, settings.redis_url, settings.runtime_data_dir)
     if errors:
         raise RuntimeError("隔离环境检查失败: " + "; ".join(errors))
-    tested_models = {settings.guidance_model, settings.employee_model, settings.coach_evaluator_model}
+    tested_models = {
+        settings.guidance_model,
+        settings.employee_model,
+        settings.coach_evaluator_model,
+        settings.model_retry_race_model,
+        settings.default_chat_model,
+    }
     judge = None if args.skip_judge else IndependentJudge.from_environment(tested_models)
     runtime = ApplicationRuntime(settings)
     runtime.start()
@@ -210,7 +234,6 @@ async def run_live(cases: list[dict[str, Any]], drafts: dict[str, dict[str, Any]
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "data_provenance": "synthetic",
             "label_status": "draft_unreviewed",
-            "expert_agreement": None,
             "release_eligible": False,
             "quality_conclusion": "仅用于框架试运行和明显问题排查；未经专家审核，不构成真实业务质量基线。",
             "versions": {
